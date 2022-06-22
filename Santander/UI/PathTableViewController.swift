@@ -43,6 +43,7 @@ class PathContentsTableViewController: UITableViewController {
         super.viewDidLoad()
         
         self.title = self.pathName
+//        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: <#T##UIImage?#>, style: <#T##UIBarButtonItem.Style#>, target: <#T##Any?#>, action: <#T##Selector?#>)
         
         self.navigationController?.navigationBar.prefersLargeTitles = UserPreferences.useLargeNavigationTitles
         
@@ -129,3 +130,12 @@ class PathContentsTableViewController: UITableViewController {
         return nil
     }
 }
+
+/// The ways to filter items of a path
+enum FilterType {
+    case alphabetically
+    case dateCreated
+    case dateModified
+}
+
+//URLResourceValues().addedToDirectoryDate

@@ -48,7 +48,7 @@ class PathInformationTableView: UITableViewController {
             
             return num
         case 1:
-            return 2
+            return 3
         case 2:
             return self.path.isDirectory ? 3 : 4
         default:
@@ -84,9 +84,17 @@ class PathInformationTableView: UITableViewController {
         case (1, 1):
             conf.text = "Last modified"
             
-            conf.secondaryText = (try? self.path.resourceValues(
-                forKeys: [.contentModificationDateKey]
-            ))?.contentModificationDate?.formatted(
+            conf.secondaryText = (try? self.path.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate)?
+                .formatted(
+                date: .long,
+                time: .shortened
+            ) ?? "N/A"
+            
+        case (1, 2):
+            conf.text = "Last accessed"
+            
+            conf.secondaryText = (try? self.path.resourceValues(forKeys: [.contentAccessDateKey]).contentAccessDate)?
+                .formatted(
                 date: .long,
                 time: .shortened
             ) ?? "N/A"
