@@ -4,9 +4,8 @@
 //
 //  Created by Serena on 21/06/2022
 //
-	
 
-import Foundation
+import UIKit
 import UniformTypeIdentifiers
 
 extension URL {
@@ -45,5 +44,25 @@ extension URL {
         }
         
         return try? resourceValues(forKeys: [.totalFileSizeKey]).totalFileSize
+    }
+}
+
+extension UIViewController {
+    func errorAlert(_ errorDescription: String, title: String) {
+        let alert = UIAlertController(title: title, message: "Error occured: \(errorDescription)", preferredStyle: .alert)
+        alert.addAction(.init(title: "OK", style: .cancel))
+        self.present(alert, animated: true)
+    }
+    
+    func errorAlert(_ error: Error, title: String) {
+        self.errorAlert(error.localizedDescription, title: title)
+    }
+}
+
+extension UIMenu {
+    func appending(_ element: UIMenuElement) -> UIMenu {
+        var children = self.children
+        children.append(element)
+        return self.replacingChildren(children)
     }
 }

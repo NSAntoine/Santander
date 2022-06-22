@@ -134,4 +134,9 @@ class PathInformationTableView: UITableViewController {
         return cell
     }
     
+    override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        // Only allow highlighting on the 'size' row, which is the only one where tapping has action
+        return (indexPath.section, indexPath.row) == (0, 2) && self.path.size != nil
+    }
+    
 }

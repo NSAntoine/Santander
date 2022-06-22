@@ -65,7 +65,7 @@ class PathContentsTableViewController: UITableViewController {
             self.present(newVC, animated: true)
         }
         
-        var menuActions: [UIAction] = [sortAction]
+        var menuActions: [UIMenuElement] = [makeGoToMenu(), sortAction]
         
         // if we're in the "Favourites" sheet, don't display the favourites button
         if !isFavouritePathsSheet {
@@ -168,12 +168,12 @@ class PathContentsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
-        let selectedItem = self.contents[indexPath.row].path
-        let itemAlreadyFavourited = UserPreferences.favouritePaths.contains(selectedItem)
+        let selectedItem = self.contents[indexPath.row]
+        let itemAlreadyFavourited = UserPreferences.favouritePaths.contains(selectedItem.path)
         let favouriteAction = UIContextualAction(style: .normal, title: nil) { _, _, handler in
             // if the item already exists, remove it
             if itemAlreadyFavourited {
-                UserPreferences.favouritePaths.removeAll { $0 == selectedItem }
+                UserPreferences.favouritePaths.removeAll { $0 == selectedItem.path }
                 
                 // if we're in the favourites sheet, reload the table
                 if self.isFavouritePathsSheet {
@@ -182,7 +182,7 @@ class PathContentsTableViewController: UITableViewController {
                 }
             } else {
                 // otherwise, append it
-                UserPreferences.favouritePaths.append(selectedItem)
+                UserPreferences.favouritePaths.append(selectedItem.path)
             }
             
             handler(true)
@@ -190,7 +190,24 @@ class PathContentsTableViewController: UITableViewController {
         
         favouriteAction.backgroundColor = .systemYellow
         favouriteAction.image = itemAlreadyFavourited ? UIImage(systemName: "star.fill") : UIImage(systemName: "star")
-        return UISwipeActionsConfiguration(actions: [favouriteAction])
+
+        let deleteAction = UIContextualAction(style: .destructive, title: nil) { _, _, completion in
+            do {
+                try FileManager.default.removeItem(at: selectedItem)
+                self.contents.removeAll { $0 == selectedItem }
+                self.tableView.deleteRows(at: [indexPath], with: .automatic)
+                completion(true)
+            } catch {
+                self.errorAlert(error, title: "Couldn't remove item \(selectedItem.lastPathComponent)")
+                completion(false)
+            }
+        }
+        
+        deleteAction.image = UIImage(systemName: "trash")
+        
+        let config = UISwipeActionsConfiguration(actions: [deleteAction, favouriteAction])
+        config.performsFirstActionWithFullSwipe = false
+        return config
     }
     
     func presentSortingWays() {
@@ -208,6 +225,56 @@ class PathContentsTableViewController: UITableViewController {
         alert.addAction(cancelAction)
         
         self.present(alert, animated: true)
+    }
+    
+    // A UIMenu containing different, common, locations to go to, as well as an option
+    // to go to a specified URL
+    func makeGoToMenu() -> UIMenu {
+        var menu = UIMenu(title: "Go to..")
+        
+        let commonLocations: [String: URL?] = [
+            "Home" : URL(fileURLWithPath: NSHomeDirectory()),
+            "Applications": FileManager.default.urls(for: .applicationDirectory, in: .userDomainMask).first,
+            "Documents" : FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
+            "Downloads": FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first
+        ]
+        
+        for (locationName, locationURL) in commonLocations {
+            guard let locationURL, FileManager.default.fileExists(atPath: locationURL.path) else {
+                continue
+            }
+            
+            menu = menu.appending(UIAction(title: locationName, handler: { _ in
+                self.navigationController?.pushViewController(PathContentsTableViewController(path: locationURL), animated: true)
+            }))
+        }
+        
+        let otherLocationAction = UIAction(title: "Other..") { _ in
+            let alert = UIAlertController(title: "Other Location", message: "Type the URL of the other path you want to go to", preferredStyle: .alert)
+            
+            alert.addTextField { textfield in
+                textfield.placeholder = "url.."
+            }
+                
+            let goAction = UIAlertAction(title: "Go", style: .default) { _ in
+                guard let text = alert.textFields?.first?.text else {
+                    self.errorAlert("Valid path must be input", title: "Error")
+                    return
+                }
+                
+                let url = URL(fileURLWithPath: text)
+                self.navigationController?.pushViewController(PathContentsTableViewController(path: url), animated: true)
+            }
+            
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            alert.addAction(goAction)
+            alert.preferredAction = goAction
+            self.present(alert, animated: true)
+        }
+        
+        menu = menu.appending(otherLocationAction)
+        
+        return menu
     }
     
     func sortContents(with filter: SortingWays) {
