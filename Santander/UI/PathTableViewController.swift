@@ -8,17 +8,29 @@
 
 import UIKit
 
+/// Represents the subpaths under a Directory
 class PathContentsTableViewController: UITableViewController {
-    let path: URL
     
-    var sortedContents: [URL] {
-        path.contents.sorted { firstURL, secondURL in
+    /// The contents of the path
+    let contents: [URL]
+    
+    /// The path name to be used as the ViewController's title
+    let pathName: String
+    
+    /// Initialize with a given path URL
+    init(style: UITableView.Style = .plain, path: URL) {
+        self.contents = path.contents.sorted { firstURL, secondURL in
             firstURL.lastPathComponent < secondURL.lastPathComponent
         }
+        
+        self.pathName = path.lastPathComponent
+        super.init(style: style)
     }
     
-    init(style: UITableView.Style = .plain, path: URL) {
-        self.path = path
+    /// Initialize with the given specified URLs
+    init(style: UITableView.Style = .plain, contents: [URL], title: String) {
+        self.contents = contents
+        self.pathName = title
         
         super.init(style: style)
     }
@@ -30,11 +42,13 @@ class PathContentsTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = path.lastPathComponent
+        self.title = self.pathName
         
-        if self.path.contents.isEmpty && self.path.isDirectory {
+        self.navigationController?.navigationBar.prefersLargeTitles = UserPreferences.useLargeNavigationTitles
+        
+        if self.contents.isEmpty {
             let label = UILabel()
-            label.text = "No items in \(path.lastPathComponent) directory"
+            label.text = "No items found."
             label.font = .systemFont(ofSize: 20, weight: .medium)
             label.textColor = .systemGray
             
@@ -48,7 +62,7 @@ class PathContentsTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.path.contents.count
+        return self.contents.count
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -57,7 +71,7 @@ class PathContentsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
         let navController = UINavigationController(
-            rootViewController: PathInformationTableView(style: .insetGrouped, path: sortedContents[indexPath.row])
+            rootViewController: PathInformationTableView(style: .insetGrouped, path: contents[indexPath.row])
         )
         
         navController.modalPresentationStyle = .pageSheet
@@ -71,7 +85,7 @@ class PathContentsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         self.navigationController?.pushViewController(
-            PathContentsTableViewController(path: sortedContents[indexPath.row]),
+            PathContentsTableViewController(path: contents[indexPath.row]),
             animated: true
         )
     }
@@ -80,7 +94,7 @@ class PathContentsTableViewController: UITableViewController {
         let cell = UITableViewCell()
         var cellConf = cell.defaultContentConfiguration()
         
-        let fsItem = sortedContents[indexPath.row]
+        let fsItem = contents[indexPath.row]
         cellConf.text = fsItem.lastPathComponent
         
         // if the item starts is a dotfile / dotdirectory
@@ -102,5 +116,16 @@ class PathContentsTableViewController: UITableViewController {
         cell.accessoryType = .detailDisclosureButton 
         cell.contentConfiguration = cellConf
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+//        let favouriteAction = UIContextualAction(
+//            style: .normal,
+//            title: nil) { _, _, completion in
+//                <#code#>
+//            }
+        
+//        UISwipeActionsConfiguration(actions: <#T##[UIContextualAction]#>)
+        return nil
     }
 }

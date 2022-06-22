@@ -34,12 +34,16 @@ class PathInformationTableView: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0:
-            let num = 2
+            var num = 2
             
             // If the type, ie 'Property List', is available
             // add a row for it
             if self.path.localizedTypeDescription != nil {
-                return num + 1
+                num += 1
+            }
+            
+            if self.path.isDirectory {
+                num += 1
             }
             
             return num
@@ -63,6 +67,9 @@ class PathInformationTableView: UITableViewController {
             conf.text = "Path"
             conf.secondaryText = self.path.path
         case (0, 2):
+            conf.text = self.path.isDirectory ? "Items" : "Type"
+            conf.secondaryText = self.path.isDirectory ? self.path.contents.count.description : self.path.localizedTypeDescription
+        case (0, 3): // 0, 3 is only encountered when we have a directory with a type
             conf.text = "Type"
             conf.secondaryText = self.path.localizedTypeDescription
         case (1, 0):
