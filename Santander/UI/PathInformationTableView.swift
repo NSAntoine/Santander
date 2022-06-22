@@ -11,6 +11,8 @@ import UIKit
 class PathInformationTableView: UITableViewController {
     let path: URL
     
+    var showByteCount: Bool = false
+    
     init(style: UITableView.Style, path: URL) {
         self.path = path
         
@@ -34,7 +36,7 @@ class PathInformationTableView: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0:
-            var num = 2
+            var num = 3
             
             // If the type, ie 'Property List', is available
             // add a row for it
@@ -56,6 +58,13 @@ class PathInformationTableView: UITableViewController {
         }
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if (indexPath.section, indexPath.row) == (0, 2) {
+            showByteCount.toggle()
+            tableView.reloadRows(at: [indexPath], with: .automatic)
+        }
+    }
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
         var conf = cell.defaultContentConfiguration()
@@ -67,9 +76,16 @@ class PathInformationTableView: UITableViewController {
             conf.text = "Path"
             conf.secondaryText = self.path.path
         case (0, 2):
+            conf.text = "Size"
+            if let size = self.path.size {
+                conf.secondaryText = ByteCountFormatStyle(style: .file, allowedUnits: .all, spellsOutZero: false, includesActualByteCount: showByteCount).format(Int64(size))
+            } else {
+                conf.secondaryText = "N/A"
+            }
+        case (0, 3):
             conf.text = self.path.isDirectory ? "Items" : "Type"
             conf.secondaryText = self.path.isDirectory ? self.path.contents.count.description : self.path.localizedTypeDescription
-        case (0, 3): // 0, 3 is only encountered when we have a directory with a type
+        case (0, 4): // this is only encountered when we have a directory with a type description
             conf.text = "Type"
             conf.secondaryText = self.path.localizedTypeDescription
         case (1, 0):

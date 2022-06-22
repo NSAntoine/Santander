@@ -38,4 +38,12 @@ extension URL {
     var lastAccessedDate: Date? {
         try? resourceValues(forKeys: [.contentAccessDateKey]).contentAccessDate
     }
+    
+    var size: Int? {
+        if self.isDirectory { // todo: good dir support
+            return nil
+        }
+        
+        return try? resourceValues(forKeys: [.totalFileSizeKey]).totalFileSize
+    }
 }
