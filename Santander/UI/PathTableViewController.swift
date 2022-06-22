@@ -12,10 +12,12 @@ import UIKit
 class PathContentsTableViewController: UITableViewController {
     
     /// The contents of the path
-    let contents: [URL]
+    var contents: [URL]
     
     /// The path name to be used as the ViewController's title
     let pathName: String
+    
+    var sortWay: SortingWays = .alphabetically
     
     /// Initialize with a given path URL
     init(style: UITableView.Style = .plain, path: URL) {
@@ -43,15 +45,24 @@ class PathContentsTableViewController: UITableViewController {
         super.viewDidLoad()
         
         self.title = self.pathName
-//        self.navigationItem.rightBarButtonItem = UIBarButtonItem(image: <#T##UIImage?#>, style: <#T##UIBarButtonItem.Style#>, target: <#T##Any?#>, action: <#T##Selector?#>)
         
-        self.navigationController?.navigationBar.prefersLargeTitles = UserPreferences.useLargeNavigationTitles
+        let sortAction = UIAction(title: "Sort by..") { _ in
+            self.presentSortingWays()
+        }
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: .init(systemName: "ellipsis.circle.fill"),
+            menu: .init(children: [sortAction])
+        )
+        
+        self.navigationController?.navigationBar.prefersLargeTitles = /*UserPreferences.useLargeNavigationTitles*/ true
         
         if self.contents.isEmpty {
             let label = UILabel()
             label.text = "No items found."
             label.font = .systemFont(ofSize: 20, weight: .medium)
             label.textColor = .systemGray
+            label.textAlignment = .center
             
             self.view.addSubview(label)
             label.translatesAutoresizingMaskIntoConstraints = false
@@ -101,7 +112,7 @@ class PathContentsTableViewController: UITableViewController {
         // if the item starts is a dotfile / dotdirectory
         // ie, .conf or .zshrc,
         // display it as gray
-        if fsItem.lastPathComponent.hasPrefix(".") {
+        if fsItem.lastPathComponent.first == "." {
             cellConf.textProperties.color = .gray
         }
         
@@ -119,23 +130,76 @@ class PathContentsTableViewController: UITableViewController {
         return cell
     }
     
-    override func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-//        let favouriteAction = UIContextualAction(
-//            style: .normal,
-//            title: nil) { _, _, completion in
-//                <#code#>
-//            }
+    func presentSortingWays() {
+        let actions = SortingWays.allCases.map { type in
+            UIAlertAction(title: type.description, style: .default) { _ in
+                self.sortContents(with: type)
+        }}
         
-//        UISwipeActionsConfiguration(actions: <#T##[UIContextualAction]#>)
-        return nil
+        let alert = UIAlertController(title: "Sort", message: nil, preferredStyle: .actionSheet)
+        for action in actions {
+            alert.addAction(action)
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in }
+        alert.addAction(cancelAction)
+        
+        self.present(alert, animated: true)
+    }
+    
+    func sortContents(with filter: SortingWays) {
+        switch filter {
+        case .alphabetically:
+            self.contents = self.contents.sorted { firstURL, secondURL in
+                firstURL.lastPathComponent < secondURL.lastPathComponent
+            }
+        case .dateCreated:
+            self.contents = self.contents.sorted { firstURL, secondURL in
+                guard let firstDate = firstURL.creationDate, let secondDate = secondURL.creationDate else {
+                    return false
+                }
+                
+                return firstDate > secondDate
+            }
+        case .dateModified:
+            self.contents = self.contents.sorted { firstURL, secondURL in
+                guard let firstDate = firstURL.lastModifiedDate, let secondDate = secondURL.lastModifiedDate else {
+                    return false
+                }
+                
+                return firstDate > secondDate
+            }
+        case .dateAccessed:
+            self.contents = self.contents.sorted { firstURL, secondURL in
+                guard let firstDate = firstURL.lastAccessedDate, let secondDate = secondURL.lastAccessedDate else {
+                    return false
+                }
+                
+                return firstDate > secondDate
+            }
+        }
+        
+        self.tableView.reloadData()
     }
 }
 
-/// The ways to filter items of a path
-enum FilterType {
+/// The ways to sort the items of a path
+enum SortingWays: CaseIterable, CustomStringConvertible {
     case alphabetically
     case dateCreated
     case dateModified
+    case dateAccessed
+    
+    var description: String {
+        switch self {
+        case .alphabetically:
+            return "Alphabetically"
+        case .dateCreated:
+            return "Date created"
+        case .dateModified:
+            return "Date modified"
+        case .dateAccessed:
+            return "Date accessed"
+        }
+    }
 }
-
-//URLResourceValues().addedToDirectoryDate

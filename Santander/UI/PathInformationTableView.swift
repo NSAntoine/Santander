@@ -75,7 +75,7 @@ class PathInformationTableView: UITableViewController {
         case (1, 0):
             conf.text = "Created"
             
-            conf.secondaryText = (try? self.path.resourceValues(forKeys: [.creationDateKey]).creationDate)?
+            conf.secondaryText = self.path.creationDate?
                 .formatted(
                 date: .long,
                 time: .shortened
@@ -84,7 +84,7 @@ class PathInformationTableView: UITableViewController {
         case (1, 1):
             conf.text = "Last modified"
             
-            conf.secondaryText = (try? self.path.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate)?
+            conf.secondaryText = path.lastModifiedDate?
                 .formatted(
                 date: .long,
                 time: .shortened
@@ -93,7 +93,7 @@ class PathInformationTableView: UITableViewController {
         case (1, 2):
             conf.text = "Last accessed"
             
-            conf.secondaryText = (try? self.path.resourceValues(forKeys: [.contentAccessDateKey]).contentAccessDate)?
+            conf.secondaryText = path.lastAccessedDate?
                 .formatted(
                 date: .long,
                 time: .shortened

@@ -26,4 +26,16 @@ extension URL {
     var localizedTypeDescription: String? {
         return UTType(filenameExtension: self.pathExtension)?.localizedDescription?.localizedCapitalized
     }
+    
+    var creationDate: Date? {
+        try? resourceValues(forKeys: [.creationDateKey]).creationDate
+    }
+    
+    var lastModifiedDate: Date? {
+        try? resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate
+    }
+    
+    var lastAccessedDate: Date? {
+        try? resourceValues(forKeys: [.contentAccessDateKey]).contentAccessDate
+    }
 }
