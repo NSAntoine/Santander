@@ -92,6 +92,9 @@ class PathContentsTableViewController: UITableViewController {
         // To-do: a settings for this & other options
         self.navigationController?.navigationBar.prefersLargeTitles = /*UserPreferences.useLargeNavigationTitles*/ true
         
+        tableView.dragInteractionEnabled = true
+        tableView.dropDelegate = self
+        
         if self.contents.isEmpty {
             let label = UILabel()
             label.text = "No items found."
@@ -121,8 +124,9 @@ class PathContentsTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedItem = contents[indexPath.row]
         self.navigationController?.pushViewController(
-            PathContentsTableViewController(path: contents[indexPath.row]),
+            PathContentsTableViewController(path: selectedItem),
             animated: true
         )
     }
@@ -158,7 +162,7 @@ class PathContentsTableViewController: UITableViewController {
         if fsItem.isDirectory {
             cellConf.image = UIImage(systemName: "folder.fill")
         } else {
-            // TODO: we should display the icon for the file with https://indiestack.com/2018/05/icon-for-file-with-uikit/
+            // TODO: we should display the icon for files with https://indiestack.com/2018/05/icon-for-file-with-uikit/
             cellConf.image = UIImage(systemName: "doc.fill")
         }
         
@@ -310,6 +314,14 @@ class PathContentsTableViewController: UITableViewController {
                 
                 return firstDate > secondDate
             }
+        case .size:
+            self.contents = self.contents.sorted { firstURL, secondURL in
+                guard let firstSize = firstURL.size, let secondSize = secondURL.size else {
+                    return false
+                }
+                
+                return firstSize > secondSize
+            }
         }
         
         self.tableView.reloadData()
@@ -337,11 +349,14 @@ enum SortingWays: CaseIterable, CustomStringConvertible {
     case dateCreated
     case dateModified
     case dateAccessed
+    case size
     
     var description: String {
         switch self {
         case .alphabetically:
             return "Alphabetically"
+        case .size:
+            return "Size"
         case .dateCreated:
             return "Date created"
         case .dateModified:
@@ -349,5 +364,52 @@ enum SortingWays: CaseIterable, CustomStringConvertible {
         case .dateAccessed:
             return "Date accessed"
         }
+    }
+}
+
+extension PathContentsTableViewController: UITableViewDropDelegate {
+    
+    func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
+        
+        guard let currentPath = self.currentPath else {
+            return
+        }
+        
+        let destIndexPath: IndexPath
+        if let indexPath = coordinator.destinationIndexPath {
+            destIndexPath = indexPath
+        } else {
+            let section = tableView.numberOfSections - 1
+            destIndexPath = IndexPath(row: tableView.numberOfRows(inSection: section), section: section)
+        }
+        
+        coordinator.items.first?.dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: "public.content") { url, err in
+            guard let url = url, err == nil else {
+                DispatchQueue.main.async {
+                    self.errorAlert("Error: \(err?.localizedDescription ?? "Unknown")", title: "Failed to import file")
+                }
+                return
+            }
+            
+            let newPath = currentPath
+                .appendingPathComponent(url.lastPathComponent)
+            
+            do {
+                try FileManager.default.copyItem(at: url, to: newPath)
+                DispatchQueue.main.async {
+                    self.contents = currentPath.contents
+                    tableView.insertRows(at: [destIndexPath], with: .automatic)
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.errorAlert("Error: \(error)", title: "Failed to copy item")
+                }
+            }
+            
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, canHandle session: UIDropSession) -> Bool {
+        return currentPath != nil
     }
 }
