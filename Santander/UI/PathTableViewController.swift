@@ -23,6 +23,9 @@ class PathContentsTableViewController: UITableViewController {
     /// is this ViewController being presented as the `Favourite` paths?
     let isFavouritePathsSheet: Bool
     
+    /// The current path from which items are presented
+    var currentPath: URL? = nil
+    
     /// Initialize with a given path URL
     init(style: UITableView.Style = .plain, path: URL, isFavouritePathsSheet: Bool = false) {
         self.contents = path.contents.sorted { firstURL, secondURL in
@@ -30,6 +33,7 @@ class PathContentsTableViewController: UITableViewController {
         }
         
         self.pathName = path.lastPathComponent
+        self.currentPath = path
         self.isFavouritePathsSheet = isFavouritePathsSheet
         super.init(style: style)
     }
@@ -72,11 +76,20 @@ class PathContentsTableViewController: UITableViewController {
             menuActions.append(seeFavouritesAction)
         }
         
+        if let currentPath {
+            let showInfoAction = UIAction(title: "Info", image: .init(systemName: "info.circle")) { _ in
+                self.openInfoBottomSheet(path: currentPath)
+            }
+            
+            menuActions.append(showInfoAction)
+        }
+        
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: .init(systemName: "ellipsis.circle.fill"),
             menu: .init(children: menuActions)
         )
         
+        // To-do: a settings for this & other options
         self.navigationController?.navigationBar.prefersLargeTitles = /*UserPreferences.useLargeNavigationTitles*/ true
         
         if self.contents.isEmpty {
@@ -104,17 +117,7 @@ class PathContentsTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
-        let navController = UINavigationController(
-            rootViewController: PathInformationTableView(style: .insetGrouped, path: contents[indexPath.row])
-        )
-        
-        navController.modalPresentationStyle = .pageSheet
-        
-        if let sheetController = navController.sheetPresentationController {
-            sheetController.detents = [.medium(), .large()]
-        }
-        
-        self.present(navController, animated: true)
+        openInfoBottomSheet(path: contents[indexPath.row])
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -311,9 +314,24 @@ class PathContentsTableViewController: UITableViewController {
         
         self.tableView.reloadData()
     }
+    
+    /// Opens the information bottom sheet for a specified path
+    func openInfoBottomSheet(path: URL) {
+        let navController = UINavigationController(
+            rootViewController: PathInformationTableView(style: .insetGrouped, path: path)
+        )
+        
+        navController.modalPresentationStyle = .pageSheet
+        
+        if let sheetController = navController.sheetPresentationController {
+            sheetController.detents = [.medium(), .large()]
+        }
+        
+        self.present(navController, animated: true)
+    }
 }
 
-/// The ways to sort the items of a path
+/// The ways to sort the contents
 enum SortingWays: CaseIterable, CustomStringConvertible {
     case alphabetically
     case dateCreated
