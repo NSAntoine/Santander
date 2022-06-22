@@ -17,22 +17,28 @@ class PathContentsTableViewController: UITableViewController {
     /// The path name to be used as the ViewController's title
     let pathName: String
     
+    /// The method of sorting
     var sortWay: SortingWays = .alphabetically
     
+    /// is this ViewController being presented as the `Favourite` paths?
+    let isFavouritePathsSheet: Bool
+    
     /// Initialize with a given path URL
-    init(style: UITableView.Style = .plain, path: URL) {
+    init(style: UITableView.Style = .plain, path: URL, isFavouritePathsSheet: Bool = false) {
         self.contents = path.contents.sorted { firstURL, secondURL in
             firstURL.lastPathComponent < secondURL.lastPathComponent
         }
         
         self.pathName = path.lastPathComponent
+        self.isFavouritePathsSheet = isFavouritePathsSheet
         super.init(style: style)
     }
     
     /// Initialize with the given specified URLs
-    init(style: UITableView.Style = .plain, contents: [URL], title: String) {
+    init(style: UITableView.Style = .plain, contents: [URL], title: String, isFavouritePathsSheet: Bool = false) {
         self.contents = contents
         self.pathName = title
+        self.isFavouritePathsSheet = isFavouritePathsSheet
         
         super.init(style: style)
     }
@@ -50,9 +56,25 @@ class PathContentsTableViewController: UITableViewController {
             self.presentSortingWays()
         }
         
+        let seeFavouritesAction = UIAction(title: "Favourites", image: UIImage(systemName: "star.fill")) { _ in
+            let newVC = UINavigationController(rootViewController: PathContentsTableViewController(
+                contents: UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) },
+                title: "Favourites",
+                isFavouritePathsSheet: true)
+            )
+            self.present(newVC, animated: true)
+        }
+        
+        var menuActions: [UIAction] = [sortAction]
+        
+        // if we're in the "Favourites" sheet, don't display the favourites button
+        if !isFavouritePathsSheet {
+            menuActions.append(seeFavouritesAction)
+        }
+        
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: .init(systemName: "ellipsis.circle.fill"),
-            menu: .init(children: [sortAction])
+            menu: .init(children: menuActions)
         )
         
         self.navigationController?.navigationBar.prefersLargeTitles = /*UserPreferences.useLargeNavigationTitles*/ true
@@ -103,7 +125,16 @@ class PathContentsTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell()
+        let cell: UITableViewCell
+        
+        // If the current ViewController is being presented as the Favourites sheet
+        // initialize as a view cell with the style of a subtitle
+        if isFavouritePathsSheet {
+            cell = UITableViewCell(style: .subtitle, reuseIdentifier: nil)
+        } else {
+            cell = UITableViewCell()
+        }
+        
         var cellConf = cell.defaultContentConfiguration()
         
         let fsItem = contents[indexPath.row]
@@ -111,9 +142,14 @@ class PathContentsTableViewController: UITableViewController {
         
         // if the item starts is a dotfile / dotdirectory
         // ie, .conf or .zshrc,
-        // display it as gray
+        // display the label as gray
         if fsItem.lastPathComponent.first == "." {
             cellConf.textProperties.color = .gray
+            cellConf.secondaryTextProperties.color = .gray
+        }
+        
+        if isFavouritePathsSheet {
+            cellConf.secondaryText = fsItem.path // Display full path if we're in the Favourites sheet
         }
         
         if fsItem.isDirectory {
@@ -128,6 +164,33 @@ class PathContentsTableViewController: UITableViewController {
         cell.accessoryType = .detailDisclosureButton 
         cell.contentConfiguration = cellConf
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        let selectedItem = self.contents[indexPath.row].path
+        let itemAlreadyFavourited = UserPreferences.favouritePaths.contains(selectedItem)
+        let favouriteAction = UIContextualAction(style: .normal, title: nil) { _, _, handler in
+            // if the item already exists, remove it
+            if itemAlreadyFavourited {
+                UserPreferences.favouritePaths.removeAll { $0 == selectedItem }
+                
+                // if we're in the favourites sheet, reload the table
+                if self.isFavouritePathsSheet {
+                    self.contents = UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) }
+                    self.tableView.deleteRows(at: [indexPath], with: .automatic)
+                }
+            } else {
+                // otherwise, append it
+                UserPreferences.favouritePaths.append(selectedItem)
+            }
+            
+            handler(true)
+        }
+        
+        favouriteAction.backgroundColor = .systemYellow
+        favouriteAction.image = itemAlreadyFavourited ? UIImage(systemName: "star.fill") : UIImage(systemName: "star")
+        return UISwipeActionsConfiguration(actions: [favouriteAction])
     }
     
     func presentSortingWays() {
