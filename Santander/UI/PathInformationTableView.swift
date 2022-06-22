@@ -11,10 +11,6 @@ import UIKit
 class PathInformationTableView: UITableViewController {
     let path: URL
     
-    // show type identifier rather than description
-    // ie, com.apple.property-list rather than Property List
-    var showTypeIdentifier: Bool = false
-    
     init(style: UITableView.Style, path: URL) {
         self.path = path
         
@@ -32,35 +28,28 @@ class PathInformationTableView: UITableViewController {
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 4
+        return 3
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0:
-            return self.path.isDirectory ? 3 : 2
+            let num = 2
+            
+            // If the type, ie 'Property List', is available
+            // add a row for it
+            if self.path.localizedTypeDescription != nil {
+                return num + 1
+            }
+            
+            return num
         case 1:
             return 2
         case 2:
-            if self.path.typeIdentifier != nil || self.path.localizedTypeDescription != nil {
-                return 2
-            }
-            
-            return 1
-        case 3:
             return self.path.isDirectory ? 3 : 4
         default:
             fatalError("Impossible to be here")
         }
-    }
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        // If the user tapped on the "Type", switch between type identifier & type descriptions
-        if (indexPath.section, indexPath.row) == (2, 1) {
-            showTypeIdentifier.toggle()
-            tableView.reloadRows(at: [indexPath], with: .automatic)
-        }
-        
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -74,10 +63,10 @@ class PathInformationTableView: UITableViewController {
             conf.text = "Path"
             conf.secondaryText = self.path.path
         case (0, 2):
-            conf.text = "Items"
-            conf.secondaryText = self.path.contents.count.description
+            conf.text = "Type"
+            conf.secondaryText = self.path.localizedTypeDescription
         case (1, 0):
-            conf.text = "Creation Date"
+            conf.text = "Created"
             
             conf.secondaryText = (try? self.path.resourceValues(forKeys: [.creationDateKey]).creationDate)?
                 .formatted(
@@ -86,7 +75,7 @@ class PathInformationTableView: UITableViewController {
             ) ?? "N/A"
             
         case (1, 1):
-            conf.text = "Modification Date"
+            conf.text = "Last modified"
             
             conf.secondaryText = (try? self.path.resourceValues(
                 forKeys: [.contentModificationDateKey]
@@ -96,33 +85,15 @@ class PathInformationTableView: UITableViewController {
             ) ?? "N/A"
             
         case (2, 0):
-            conf.text = "Type"
-            
-            let replacementText = self.path.isDirectory ? "Directory" : "File"
-            conf.secondaryText = replacementText
-        case (2, 1):
-            conf.text = "Kind"
-            
-            let secondaryText: String?
-            
-            if showTypeIdentifier {
-                secondaryText = self.path.typeIdentifier
-            } else {
-                secondaryText = self.path.localizedTypeDescription
-            }
-            
-            conf.secondaryText = secondaryText
-            
-        case (3, 0):
             conf.text = "Deletable"
             conf.secondaryText = FileManager.default.isDeletableFile(atPath: self.path.path) ? "Yes" : "No"
-        case (3, 1):
+        case (2, 1):
             conf.text = "Readable"
             conf.secondaryText = FileManager.default.isReadableFile(atPath: self.path.path) ? "Yes" : "No"
-        case (3, 2):
+        case (2, 2):
             conf.text = "Writable"
             conf.secondaryText = FileManager.default.isWritableFile(atPath: self.path.path) ? "Yes" : "No"
-        case (3, 3):
+        case (2, 3):
             conf.text = "Executable"
             conf.secondaryText = FileManager.default.isExecutableFile(atPath: self.path.path) ? "Yes" : "No"
         default: break

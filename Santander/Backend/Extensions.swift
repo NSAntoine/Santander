@@ -26,8 +26,4 @@ extension URL {
     var localizedTypeDescription: String? {
         return UTType(filenameExtension: self.pathExtension)?.localizedDescription?.localizedCapitalized
     }
-    
-    var typeIdentifier: String? {
-        return UTType(filenameExtension: self.pathExtension)?.description
-    }
 }
