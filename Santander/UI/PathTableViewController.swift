@@ -7,6 +7,7 @@
 	
 
 import UIKit
+import UniformTypeIdentifiers
 
 /// Represents the subpaths under a Directory
 class PathContentsTableViewController: UITableViewController {
@@ -94,6 +95,7 @@ class PathContentsTableViewController: UITableViewController {
         
         tableView.dragInteractionEnabled = true
         tableView.dropDelegate = self
+        tableView.dragDelegate = self
         
         if self.contents.isEmpty {
             let label = UILabel()
@@ -367,7 +369,7 @@ enum SortingWays: CaseIterable, CustomStringConvertible {
     }
 }
 
-extension PathContentsTableViewController: UITableViewDropDelegate {
+extension PathContentsTableViewController: UITableViewDropDelegate, UITableViewDragDelegate {
     
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
         
@@ -402,7 +404,7 @@ extension PathContentsTableViewController: UITableViewDropDelegate {
                 }
             } catch {
                 DispatchQueue.main.async {
-                    self.errorAlert("Error: \(error)", title: "Failed to copy item")
+                    self.errorAlert("Error: \(error.localizedDescription)", title: "Failed to copy item")
                 }
             }
             
@@ -411,5 +413,27 @@ extension PathContentsTableViewController: UITableViewDropDelegate {
     
     func tableView(_ tableView: UITableView, canHandle session: UIDropSession) -> Bool {
         return currentPath != nil
+    }
+    
+    func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        let selectedItem = contents[indexPath.row]
+        guard !selectedItem.isDirectory else {
+            return []
+        }
+        
+        let itemProvider = NSItemProvider()
+        
+        let typeID = UTType(filenameExtension: selectedItem.pathExtension)?.identifier ?? "public.content"
+        
+        itemProvider.registerFileRepresentation(
+            forTypeIdentifier: typeID,
+            visibility: .all) { completion in
+                completion(selectedItem, true, nil)
+                return nil
+            }
+        
+        return [
+            UIDragItem(itemProvider: itemProvider)
+        ]
     }
 }
