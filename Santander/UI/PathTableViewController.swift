@@ -26,10 +26,6 @@ class PathContentsTableViewController: UITableViewController {
         get {
             return isSeaching ? filteredSearchContents : unfilteredContents
         }
-        
-        set {
-            self.contents = newValue
-        }
     }
     
     /// The path name to be used as the ViewController's title
@@ -81,10 +77,6 @@ class PathContentsTableViewController: UITableViewController {
             )
         }
         
-        let sortAction = UIAction(title: "Sort by..") { _ in
-            self.presentSortingWays()
-        }
-        
         let seeFavouritesAction = UIAction(title: "Favourites", image: UIImage(systemName: "star.fill")) { _ in
             let newVC = UINavigationController(rootViewController: PathContentsTableViewController(
                 contents: UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) },
@@ -94,7 +86,7 @@ class PathContentsTableViewController: UITableViewController {
             self.present(newVC, animated: true)
         }
         
-        var menuActions: [UIMenuElement] = [makeGoToMenu(), sortAction]
+        var menuActions: [UIMenuElement] = [makeGoToMenu(), makeSortMenu()]
         
         // if we're in the "Favourites" sheet, don't display the favourites button
         if !isFavouritePathsSheet {
@@ -216,7 +208,7 @@ class PathContentsTableViewController: UITableViewController {
                 
                 // if we're in the favourites sheet, reload the table
                 if self.isFavouritePathsSheet {
-                    self.contents = UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) }
+                    self.unfilteredContents = UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) }
                     self.tableView.deleteRows(at: [indexPath], with: .automatic)
                 }
             } else {
@@ -233,7 +225,7 @@ class PathContentsTableViewController: UITableViewController {
         let deleteAction = UIContextualAction(style: .destructive, title: nil) { _, _, completion in
             do {
                 try FileManager.default.removeItem(at: selectedItem)
-                self.contents.removeAll { $0 == selectedItem }
+                self.unfilteredContents.removeAll { $0 == selectedItem }
                 self.tableView.deleteRows(at: [indexPath], with: .automatic)
                 completion(true)
             } catch {
@@ -249,21 +241,14 @@ class PathContentsTableViewController: UITableViewController {
         return config
     }
     
-    func presentSortingWays() {
+    func makeSortMenu() -> UIMenu {
         let actions = SortingWays.allCases.map { type in
-            UIAlertAction(title: type.description, style: .default) { _ in
+            UIAction(title: type.description) { _ in
                 self.sortContents(with: type)
         }}
         
-        let alert = UIAlertController(title: "Sort", message: nil, preferredStyle: .actionSheet)
-        for action in actions {
-            alert.addAction(action)
-        }
-        
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in }
-        alert.addAction(cancelAction)
-        
-        self.present(alert, animated: true)
+        let menu = UIMenu(title: "Sort by..", image: UIImage(systemName: "filemenu.and.selection"))
+        return menu.replacingChildren(actions)
     }
     
     // A UIMenu containing different, common, locations to go to, as well as an option
@@ -327,11 +312,11 @@ class PathContentsTableViewController: UITableViewController {
     func sortContents(with filter: SortingWays) {
         switch filter {
         case .alphabetically:
-            self.contents = self.contents.sorted { firstURL, secondURL in
+            self.unfilteredContents = self.contents.sorted { firstURL, secondURL in
                 firstURL.lastPathComponent < secondURL.lastPathComponent
             }
         case .dateCreated:
-            self.contents = self.contents.sorted { firstURL, secondURL in
+            self.unfilteredContents = self.contents.sorted { firstURL, secondURL in
                 guard let firstDate = firstURL.creationDate, let secondDate = secondURL.creationDate else {
                     return false
                 }
@@ -339,7 +324,7 @@ class PathContentsTableViewController: UITableViewController {
                 return firstDate > secondDate
             }
         case .dateModified:
-            self.contents = self.contents.sorted { firstURL, secondURL in
+            self.unfilteredContents = self.contents.sorted { firstURL, secondURL in
                 guard let firstDate = firstURL.lastModifiedDate, let secondDate = secondURL.lastModifiedDate else {
                     return false
                 }
@@ -347,7 +332,7 @@ class PathContentsTableViewController: UITableViewController {
                 return firstDate > secondDate
             }
         case .dateAccessed:
-            self.contents = self.contents.sorted { firstURL, secondURL in
+            self.unfilteredContents = self.contents.sorted { firstURL, secondURL in
                 guard let firstDate = firstURL.lastAccessedDate, let secondDate = secondURL.lastAccessedDate else {
                     return false
                 }
@@ -355,7 +340,7 @@ class PathContentsTableViewController: UITableViewController {
                 return firstDate > secondDate
             }
         case .size:
-            self.contents = self.contents.sorted { firstURL, secondURL in
+            self.unfilteredContents = self.contents.sorted { firstURL, secondURL in
                 guard let firstSize = firstURL.size, let secondSize = secondURL.size else {
                     return false
                 }
@@ -394,7 +379,7 @@ enum SortingWays: CaseIterable, CustomStringConvertible {
     var description: String {
         switch self {
         case .alphabetically:
-            return "Alphabetically"
+            return "Alphabetical order"
         case .size:
             return "Size"
         case .dateCreated:
@@ -437,7 +422,7 @@ extension PathContentsTableViewController: UITableViewDropDelegate, UITableViewD
             do {
                 try FileManager.default.copyItem(at: url, to: newPath)
                 DispatchQueue.main.async {
-                    self.contents = currentPath.contents
+                    self.unfilteredContents = currentPath.contents
                     tableView.insertRows(at: [destIndexPath], with: .automatic)
                 }
             } catch {
