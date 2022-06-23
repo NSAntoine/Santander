@@ -8,6 +8,7 @@
 
 import UIKit
 import UniformTypeIdentifiers
+import QuickLook
 
 /// Represents the subpaths under a Directory
 class PathContentsTableViewController: UITableViewController {
@@ -236,7 +237,24 @@ class PathContentsTableViewController: UITableViewController {
         
         deleteAction.image = UIImage(systemName: "trash")
         
-        let config = UISwipeActionsConfiguration(actions: [deleteAction, favouriteAction])
+        var actions: [UIContextualAction] = [deleteAction, favouriteAction]
+        
+        if !selectedItem.isDirectory {
+            // Action for previewing with QuickLook
+            let previewItem = UIContextualAction(style: .normal, title: nil) { _, _, completion in
+                let controller = QLPreviewController()
+                let shared = FilePreviewDataSource(fileURL: selectedItem)
+                controller.dataSource = shared
+                self.present(controller, animated: true)
+                completion(true)
+            }
+            
+            previewItem.backgroundColor = .systemBlue
+            previewItem.image = UIImage(systemName: "magnifyingglass")
+            actions.append(previewItem)
+        }
+        
+        let config = UISwipeActionsConfiguration(actions: actions)
         config.performsFirstActionWithFullSwipe = false
         return config
     }
@@ -306,7 +324,14 @@ class PathContentsTableViewController: UITableViewController {
     
     /// Opens a path in the UI
     func goToPath(path: URL) {
-        self.navigationController?.pushViewController(PathContentsTableViewController(path: path), animated: true)
+        if path.isDirectory {
+            self.navigationController?.pushViewController(PathContentsTableViewController(path: path), animated: true)
+        } else {
+            let controller = QLPreviewController()
+            let shared = FilePreviewDataSource(fileURL: path)
+            controller.dataSource = shared
+            self.present(controller, animated: true)
+        }
     }
     
     func sortContents(with filter: SortingWays) {

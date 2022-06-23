@@ -15,6 +15,7 @@
 		3789B5EC28622B7C00058688 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3789B5EA28622B7C00058688 /* LaunchScreen.storyboard */; };
 		3789B5F428622E0D00058688 /* PathTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3789B5F328622E0D00058688 /* PathTableViewController.swift */; };
 		37932F052863205F00BF48C8 /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37932F042863205F00BF48C8 /* UserPreferences.swift */; };
+		37DE0FA22864902400E5EBBC /* FilePreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DE0FA12864902400E5EBBC /* FilePreviewViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		3789B5ED28622B7C00058688 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		3789B5F328622E0D00058688 /* PathTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathTableViewController.swift; sourceTree = "<group>"; };
 		37932F042863205F00BF48C8 /* UserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferences.swift; sourceTree = "<group>"; };
+		37DE0FA12864902400E5EBBC /* FilePreviewViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -55,6 +57,7 @@
 			children = (
 				3789B5F328622E0D00058688 /* PathTableViewController.swift */,
 				3771D37E2862493E00E200B6 /* PathInformationTableView.swift */,
+				37DE0FA12864902400E5EBBC /* FilePreviewViewController.swift */,
 			);
 			path = UI;
 			sourceTree = "<group>";
@@ -163,6 +166,7 @@
 				37932F052863205F00BF48C8 /* UserPreferences.swift in Sources */,
 				3789B5F428622E0D00058688 /* PathTableViewController.swift in Sources */,
 				3789B5E028622B7A00058688 /* AppDelegate.swift in Sources */,
+				37DE0FA22864902400E5EBBC /* FilePreviewViewController.swift in Sources */,
 				3771D37F2862493E00E200B6 /* PathInformationTableView.swift in Sources */,
 				3789B5E228622B7A00058688 /* SceneDelegate.swift in Sources */,
 			);
