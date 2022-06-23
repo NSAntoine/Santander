@@ -335,42 +335,35 @@ class PathContentsTableViewController: UITableViewController {
     }
     
     func sortContents(with filter: SortingWays) {
-        switch filter {
-        case .alphabetically:
-            self.unfilteredContents = self.contents.sorted { firstURL, secondURL in
-                firstURL.lastPathComponent < secondURL.lastPathComponent
-            }
-        case .dateCreated:
-            self.unfilteredContents = self.contents.sorted { firstURL, secondURL in
-                guard let firstDate = firstURL.creationDate, let secondDate = secondURL.creationDate else {
-                    return false
-                }
+        self.unfilteredContents = self.contents.sorted { firstURL, secondURL in
+            switch filter {
+            case .alphabetically:
+                return firstURL.lastPathComponent < secondURL.lastPathComponent
                 
-                return firstDate > secondDate
-            }
-        case .dateModified:
-            self.unfilteredContents = self.contents.sorted { firstURL, secondURL in
-                guard let firstDate = firstURL.lastModifiedDate, let secondDate = secondURL.lastModifiedDate else {
-                    return false
-                }
-                
-                return firstDate > secondDate
-            }
-        case .dateAccessed:
-            self.unfilteredContents = self.contents.sorted { firstURL, secondURL in
-                guard let firstDate = firstURL.lastAccessedDate, let secondDate = secondURL.lastAccessedDate else {
-                    return false
-                }
-                
-                return firstDate > secondDate
-            }
-        case .size:
-            self.unfilteredContents = self.contents.sorted { firstURL, secondURL in
+            case .size:
                 guard let firstSize = firstURL.size, let secondSize = secondURL.size else {
                     return false
                 }
                 
-                return firstSize > secondSize
+                return firstSize < secondSize
+            case .dateCreated:
+                guard let firstDate = firstURL.creationDate, let secondDate = secondURL.creationDate else {
+                    return false
+                }
+                
+                return firstDate < secondDate
+            case .dateModified:
+                guard let firstDate = firstURL.lastModifiedDate, let secondDate = secondURL.lastModifiedDate else {
+                    return false
+                }
+                
+                return firstDate < secondDate
+            case .dateAccessed:
+                guard let firstDate = firstURL.lastAccessedDate, let secondDate = secondURL.lastAccessedDate else {
+                    return false
+                }
+                
+                return firstDate < secondDate
             }
         }
         
