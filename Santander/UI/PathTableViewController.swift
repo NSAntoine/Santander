@@ -12,8 +12,25 @@ import UniformTypeIdentifiers
 /// Represents the subpaths under a Directory
 class PathContentsTableViewController: UITableViewController {
     
-    /// The contents of the path
-    var contents: [URL]
+    /// The contents of the path, unfiltered
+    var unfilteredContents: [URL]
+    
+    /// The contents of the path, filtered by the search
+    var filteredSearchContents: [URL] = []
+    
+    /// A Boolean representing if the user is currently searching
+    var isSeaching: Bool = false
+    
+    /// The contents of the path to show in UI
+    var contents: [URL] {
+        get {
+            return isSeaching ? filteredSearchContents : unfilteredContents
+        }
+        
+        set {
+            self.contents = newValue
+        }
+    }
     
     /// The path name to be used as the ViewController's title
     let pathName: String
@@ -29,7 +46,7 @@ class PathContentsTableViewController: UITableViewController {
     
     /// Initialize with a given path URL
     init(style: UITableView.Style = .plain, path: URL, isFavouritePathsSheet: Bool = false) {
-        self.contents = path.contents.sorted { firstURL, secondURL in
+        self.unfilteredContents = path.contents.sorted { firstURL, secondURL in
             firstURL.lastPathComponent < secondURL.lastPathComponent
         }
         
@@ -41,7 +58,7 @@ class PathContentsTableViewController: UITableViewController {
     
     /// Initialize with the given specified URLs
     init(style: UITableView.Style = .plain, contents: [URL], title: String, isFavouritePathsSheet: Bool = false) {
-        self.contents = contents
+        self.unfilteredContents = contents
         self.pathName = title
         self.isFavouritePathsSheet = isFavouritePathsSheet
         
@@ -99,6 +116,15 @@ class PathContentsTableViewController: UITableViewController {
         
         // To-do: a settings for this & other options
         self.navigationController?.navigationBar.prefersLargeTitles = /*UserPreferences.useLargeNavigationTitles*/ true
+        if !contents.isEmpty {
+            let searchController = UISearchController(searchResultsController: nil)
+            searchController.searchBar.delegate = self
+            searchController.obscuresBackgroundDuringPresentation = false
+            if let currentPath {
+                searchController.searchBar.scopeButtonTitles = [currentPath.lastPathComponent, "Subdirectories"]
+            }
+            self.navigationItem.searchController = searchController
+        }
         
         tableView.dragInteractionEnabled = true
         tableView.dropDelegate = self
@@ -140,9 +166,9 @@ class PathContentsTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell: UITableViewCell
         
-        // If the current ViewController is being presented as the Favourites sheet
+        // If the current ViewController is being presented as the Favourites sheet or the user is searching
         // initialize as a view cell with the style of a subtitle
-        if isFavouritePathsSheet {
+        if isFavouritePathsSheet || self.isSeaching {
             cell = UITableViewCell(style: .subtitle, reuseIdentifier: nil)
         } else {
             cell = UITableViewCell()
@@ -161,8 +187,8 @@ class PathContentsTableViewController: UITableViewController {
             cellConf.secondaryTextProperties.color = .gray
         }
         
-        if isFavouritePathsSheet {
-            cellConf.secondaryText = fsItem.path // Display full path if we're in the Favourites sheet
+        if isFavouritePathsSheet || self.isSeaching {
+            cellConf.secondaryText = fsItem.path // Display full path if we're in the Favourites sheet or searching
         }
         
         if fsItem.isDirectory {
@@ -447,5 +473,46 @@ extension PathContentsTableViewController: UITableViewDropDelegate, UITableViewD
         return [
             UIDragItem(itemProvider: itemProvider)
         ]
+    }
+}
+
+extension PathContentsTableViewController: UISearchBarDelegate {
+    
+    func cancelSearch() {
+        self.filteredSearchContents = []
+        self.isSeaching = false
+        tableView.reloadData()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        updateResults(searchBar: searchBar)
+    }
+    
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        cancelSearch()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
+        updateResults(searchBar: searchBar)
+    }
+    
+    func updateResults(searchBar: UISearchBar) {
+        guard let searchText = searchBar.text, !searchText.isEmpty else {
+            cancelSearch()
+            return
+        }
+        
+        self.isSeaching = true
+        let results: [URL]
+        if let currentPath, searchBar.selectedScopeButtonIndex == 1 {
+            results = FileManager.default.enumerator(at: currentPath, includingPropertiesForKeys: [])?.allObjects.compactMap { $0 as? URL } ?? []
+        } else {
+            results = unfilteredContents
+        }
+        
+        // Eventually, I want to make it so that the user can choose between if they want to search for the file name
+        // and for the path
+        self.filteredSearchContents = results.filter { $0.lastPathComponent.localizedCaseInsensitiveContains(searchText) }
+        tableView.reloadData()
     }
 }
