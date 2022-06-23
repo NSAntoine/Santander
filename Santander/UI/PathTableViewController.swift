@@ -272,14 +272,14 @@ class PathContentsTableViewController: UITableViewController {
     // A UIMenu containing different, common, locations to go to, as well as an option
     // to go to a specified URL
     func makeGoToMenu() -> UIMenu {
-        var menu = UIMenu(title: "Go to..")
+        var menu = UIMenu(title: "Go to..", image: UIImage(systemName: "arrow.right"))
         
         let commonLocations: [String: URL?] = [
             "Home" : URL(fileURLWithPath: NSHomeDirectory()),
             "Applications": FileManager.default.urls(for: .applicationDirectory, in: .userDomainMask).first,
             "Documents" : FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
             "Downloads": FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first,
-            "Root (/)" : URL(fileURLWithPath: "/"),
+            "/ (Root)" : URL(fileURLWithPath: "/"),
             "var": URL(fileURLWithPath: "/var")
         ]
         
@@ -301,8 +301,8 @@ class PathContentsTableViewController: UITableViewController {
             }
                 
             let goAction = UIAlertAction(title: "Go", style: .default) { _ in
-                guard let text = alert.textFields?.first?.text else {
-                    self.errorAlert("Valid path must be input", title: "Error")
+                guard let text = alert.textFields?.first?.text, FileManager.default.fileExists(atPath: text) else {
+                    self.errorAlert("URL inputted must be valid and must exist", title: "Error")
                     return
                 }
                 
@@ -345,7 +345,7 @@ class PathContentsTableViewController: UITableViewController {
                     return false
                 }
                 
-                return firstSize < secondSize
+                return firstSize > secondSize
             case .dateCreated:
                 guard let firstDate = firstURL.creationDate, let secondDate = secondURL.creationDate else {
                     return false

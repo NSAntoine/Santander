@@ -55,7 +55,7 @@ extension URL {
             return try? Int(FileManager.default.allocatedSizeOfDirectory(at: self))
         }
         
-        return try? Int(self.regularFileAllocatedSize())
+        return try? resourceValues(forKeys: [.fileSizeKey]).fileSize
     }
 }
 
