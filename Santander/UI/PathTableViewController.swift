@@ -57,6 +57,13 @@ class PathContentsTableViewController: UITableViewController {
         
         self.title = self.pathName
         
+        if let currentPath, currentPath.lastPathComponent != "/" {
+            self.navigationItem.backBarButtonItem = UIBarButtonItem(
+                title: currentPath.lastPathComponent,
+                image: nil, primaryAction: nil, menu: nil
+            )
+        }
+        
         let sortAction = UIAction(title: "Sort by..") { _ in
             self.presentSortingWays()
         }
@@ -127,10 +134,7 @@ class PathContentsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedItem = contents[indexPath.row]
-        self.navigationController?.pushViewController(
-            PathContentsTableViewController(path: selectedItem),
-            animated: true
-        )
+        goToPath(path: selectedItem)
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -245,7 +249,9 @@ class PathContentsTableViewController: UITableViewController {
             "Home" : URL(fileURLWithPath: NSHomeDirectory()),
             "Applications": FileManager.default.urls(for: .applicationDirectory, in: .userDomainMask).first,
             "Documents" : FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
-            "Downloads": FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first
+            "Downloads": FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first,
+            "Root (/)" : URL(fileURLWithPath: "/"),
+            "var": URL(fileURLWithPath: "/var")
         ]
         
         for (locationName, locationURL) in commonLocations {
@@ -254,7 +260,7 @@ class PathContentsTableViewController: UITableViewController {
             }
             
             menu = menu.appending(UIAction(title: locationName, handler: { _ in
-                self.navigationController?.pushViewController(PathContentsTableViewController(path: locationURL), animated: true)
+                self.goToPath(path: locationURL)
             }))
         }
         
@@ -272,7 +278,7 @@ class PathContentsTableViewController: UITableViewController {
                 }
                 
                 let url = URL(fileURLWithPath: text)
-                self.navigationController?.pushViewController(PathContentsTableViewController(path: url), animated: true)
+                self.goToPath(path: url)
             }
             
             alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
@@ -284,6 +290,12 @@ class PathContentsTableViewController: UITableViewController {
         menu = menu.appending(otherLocationAction)
         
         return menu
+    }
+    
+    
+    /// Opens a path in the UI
+    func goToPath(path: URL) {
+        self.navigationController?.pushViewController(PathContentsTableViewController(path: path), animated: true)
     }
     
     func sortContents(with filter: SortingWays) {
@@ -348,10 +360,10 @@ class PathContentsTableViewController: UITableViewController {
 /// The ways to sort the contents
 enum SortingWays: CaseIterable, CustomStringConvertible {
     case alphabetically
+    case size
     case dateCreated
     case dateModified
     case dateAccessed
-    case size
     
     var description: String {
         switch self {
