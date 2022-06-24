@@ -290,8 +290,13 @@ class PathContentsTableViewController: UITableViewController {
     
     /// Opens a path in the UI
     func goToPath(path: URL) {
-        if path.isDirectory {
-            self.navigationController?.pushViewController(PathContentsTableViewController(path: path), animated: true)
+        // if we're going to a directory, or a search result,
+        // go to the directory path
+        if path.isDirectory || self.isSeaching {
+            // Make sure we're opening a directory,
+            // or the parent directory of the file selected
+            let dirToOpen = path.isDirectory ? path : path.deletingLastPathComponent()
+            self.navigationController?.pushViewController(PathContentsTableViewController(path: dirToOpen), animated: true)
         } else {
             let controller = QLPreviewController()
             let shared = FilePreviewDataSource(fileURL: path)
