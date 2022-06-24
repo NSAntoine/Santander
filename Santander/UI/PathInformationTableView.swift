@@ -40,7 +40,7 @@ class PathInformationTableView: UITableViewController {
         case 0:
             return self.path.isDirectory ? 4 : 3
         case 1:
-            return 1
+            return 2
         case 2:
             return 3
         case 3:
@@ -94,6 +94,9 @@ class PathInformationTableView: UITableViewController {
         case (1, 0):
             conf.text = "Type"
             conf.secondaryText = self.path.contentType?.localizedDescription?.localizedCapitalized ?? "N/A"
+        case (1, 1):
+            conf.text = "MIME Type"
+            conf.secondaryText = self.path.contentType?.preferredMIMEType ?? "N/A"
         case (2, 0):
             conf.text = "Created"
             
