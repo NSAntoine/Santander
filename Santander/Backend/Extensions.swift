@@ -62,6 +62,10 @@ extension URL {
     var displayName: String {
         return FileManager.default.displayName(atPath: self.path)
     }
+    
+    var realPath: String? {
+        return try? FileManager.default.destinationOfSymbolicLink(atPath: self.path)
+    }
 }
 
 extension UIViewController {

@@ -13,6 +13,7 @@ class PathInformationTableView: UITableViewController {
     
     var showByteCount: Bool = false
     var showDisplayName: Bool = false
+    var showRealPath: Bool = false
     
     init(style: UITableView.Style, path: URL) {
         self.path = path
@@ -53,6 +54,8 @@ class PathInformationTableView: UITableViewController {
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
             showDisplayName.toggle()
+        case (0, 1):
+            showRealPath.toggle()
         case (0, 2):
             showByteCount.toggle()
         default:
@@ -70,8 +73,14 @@ class PathInformationTableView: UITableViewController {
             conf.text = showDisplayName ? "Display Name" : "Name"
             conf.secondaryText = showDisplayName ? self.path.displayName : self.path.lastPathComponent
         case (0, 1):
-            conf.text = "Path"
-            conf.secondaryText = self.path.path
+            conf.text = showRealPath ? "Real Path" : "Path"
+            let pathString: String = showRealPath ? (self.path.realPath ?? "N/A") : self.path.path
+            if pathString == "N/A" {
+                conf.secondaryText = "N/A"
+            } else {
+                conf.secondaryText = URL(fileURLWithPath: pathString).path
+            }
+            
         case (0, 2):
             conf.text = "Size"
             if let size = self.path.size {
@@ -132,8 +141,16 @@ class PathInformationTableView: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-        // Only allow highlighting on the 'size' & 'name' row
-        return (indexPath.section, indexPath.row) == (0, 0) || (indexPath.section, indexPath.row) == (0, 2) && self.path.size != nil
+        switch (indexPath.section, indexPath.row) {
+        case (0, 0):
+            return true
+        case (0, 1):
+            return (try? FileManager.default.destinationOfSymbolicLink(atPath: self.path.path)) != nil
+        case (0, 2):
+            return self.path.size != nil
+        default:
+            return false
+        }
     }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
