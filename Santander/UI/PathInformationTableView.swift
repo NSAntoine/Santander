@@ -59,7 +59,7 @@ class PathInformationTableView: UITableViewController {
         case (0, 2):
             showByteCount.toggle()
         default:
-            break
+            return
         }
         
         tableView.reloadRows(at: [indexPath], with: .automatic)
