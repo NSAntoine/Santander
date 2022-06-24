@@ -71,7 +71,7 @@ class PathContentsTableViewController: UITableViewController {
         
         self.title = self.pathName
         
-        if let currentPath, currentPath.lastPathComponent != "/" {
+        if let currentPath = currentPath, currentPath.lastPathComponent != "/" {
             self.navigationItem.backBarButtonItem = UIBarButtonItem(
                 title: currentPath.lastPathComponent,
                 image: nil, primaryAction: nil, menu: nil
@@ -94,7 +94,7 @@ class PathContentsTableViewController: UITableViewController {
             menuActions.append(seeFavouritesAction)
         }
         
-        if let currentPath {
+        if let currentPath = currentPath {
             let showInfoAction = UIAction(title: "Info", image: .init(systemName: "info.circle")) { _ in
                 self.openInfoBottomSheet(path: currentPath)
             }
@@ -113,7 +113,8 @@ class PathContentsTableViewController: UITableViewController {
             let searchController = UISearchController(searchResultsController: nil)
             searchController.searchBar.delegate = self
             searchController.obscuresBackgroundDuringPresentation = false
-            if let currentPath {
+            self.navigationItem.hidesSearchBarWhenScrolling = false
+            if let currentPath = currentPath {
                 searchController.searchBar.scopeButtonTitles = [currentPath.lastPathComponent, "Subdirectories"]
             }
             self.navigationItem.searchController = searchController
@@ -157,45 +158,7 @@ class PathContentsTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell: UITableViewCell
-        
-        // If the current ViewController is being presented as the Favourites sheet or the user is searching
-        // initialize as a view cell with the style of a subtitle
-        if isFavouritePathsSheet || self.isSeaching {
-            cell = UITableViewCell(style: .subtitle, reuseIdentifier: nil)
-        } else {
-            cell = UITableViewCell()
-        }
-        
-        var cellConf = cell.defaultContentConfiguration()
-        
-        let fsItem = contents[indexPath.row]
-        cellConf.text = fsItem.lastPathComponent
-        
-        // if the item starts is a dotfile / dotdirectory
-        // ie, .conf or .zshrc,
-        // display the label as gray
-        if fsItem.lastPathComponent.first == "." {
-            cellConf.textProperties.color = .gray
-            cellConf.secondaryTextProperties.color = .gray
-        }
-        
-        if isFavouritePathsSheet || self.isSeaching {
-            cellConf.secondaryText = fsItem.path // Display full path if we're in the Favourites sheet or searching
-        }
-        
-        if fsItem.isDirectory {
-            cellConf.image = UIImage(systemName: "folder.fill")
-        } else {
-            // TODO: we should display the icon for files with https://indiestack.com/2018/05/icon-for-file-with-uikit/
-            cellConf.image = UIImage(systemName: "doc.fill")
-        }
-        
-        // If the item is a file, show just the "i" icon,
-        // otherwise show the icon & a disclosure button
-        cell.accessoryType = .detailDisclosureButton 
-        cell.contentConfiguration = cellConf
-        return cell
+        return self.cellRow(forURL: contents[indexPath.row], displayFullPathAsSubtitle: self.isSeaching || self.isFavouritePathsSheet)
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -284,7 +247,7 @@ class PathContentsTableViewController: UITableViewController {
         ]
         
         for (locationName, locationURL) in commonLocations {
-            guard let locationURL, FileManager.default.fileExists(atPath: locationURL.path) else {
+            guard let locationURL = locationURL, FileManager.default.fileExists(atPath: locationURL.path) else {
                 continue
             }
             
@@ -383,6 +346,63 @@ class PathContentsTableViewController: UITableViewController {
         }
         
         self.present(navController, animated: true)
+    }
+    
+    /// Returns the cell row to be used
+    func cellRow(forURL fsItem: URL, displayFullPathAsSubtitle: Bool = false) -> UITableViewCell {
+        let cell: UITableViewCell
+        
+        // If we should display the full path as a subtitle, init with the style as `subtitle`
+        if displayFullPathAsSubtitle {
+            cell = UITableViewCell(style: .subtitle, reuseIdentifier: nil)
+        } else {
+            cell = UITableViewCell()
+        }
+        
+        var cellConf = cell.defaultContentConfiguration()
+        
+        cellConf.text = fsItem.lastPathComponent
+        
+        // if the item starts is a dotfile / dotdirectory
+        // ie, .conf or .zshrc,
+        // display the label as gray
+        if fsItem.lastPathComponent.first == "." {
+            cellConf.textProperties.color = .gray
+            cellConf.secondaryTextProperties.color = .gray
+        }
+        
+        if displayFullPathAsSubtitle {
+            cellConf.secondaryText = fsItem.path // Display full path as the subtitle text if we should
+        }
+        
+        if fsItem.isDirectory {
+            cellConf.image = UIImage(systemName: "folder.fill")
+        } else {
+            // TODO: we should display the icon for files with https://indiestack.com/2018/05/icon-for-file-with-uikit/
+            cellConf.image = UIImage(systemName: "doc.fill")
+        }
+        
+        cell.accessoryType = .detailDisclosureButton
+        cell.contentConfiguration = cellConf
+        return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let item = contents[indexPath.row]
+        return UIContextMenuConfiguration(identifier: nil) {
+            return UINavigationController(rootViewController: PathInformationTableView(style: .insetGrouped, path: item))
+        } actionProvider: { _ in
+            let copyName = UIAction(title: "Name") { _ in
+                UIPasteboard.general.string = item.lastPathComponent
+            }
+            
+            let copyPath = UIAction(title: "Path") { _ in
+                UIPasteboard.general.string = item.path
+            }
+            
+            let copyMenu = UIMenu(title: "Copy..", image: UIImage(systemName: "doc.on.doc"), children: [copyName, copyPath])
+            return UIMenu(title: "", children: [copyMenu])
+        }
     }
 }
 
@@ -507,7 +527,7 @@ extension PathContentsTableViewController: UISearchBarDelegate {
         
         self.isSeaching = true
         let results: [URL]
-        if let currentPath, searchBar.selectedScopeButtonIndex == 1 {
+        if let currentPath = currentPath, searchBar.selectedScopeButtonIndex == 1 {
             results = FileManager.default.enumerator(at: currentPath, includingPropertiesForKeys: [])?.allObjects.compactMap { $0 as? URL } ?? []
         } else {
             results = unfilteredContents
