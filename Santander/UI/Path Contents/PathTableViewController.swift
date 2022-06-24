@@ -394,19 +394,35 @@ class PathContentsTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         let item = contents[indexPath.row]
         return UIContextMenuConfiguration(identifier: nil) {
-            return UINavigationController(rootViewController: PathInformationTableView(style: .insetGrouped, path: item))
+            return nil
         } actionProvider: { _ in
-            let copyName = UIAction(title: "Name") { _ in
-                UIPasteboard.general.string = item.lastPathComponent
+            
+            let movePath = UIAction(title: "Move") { _ in
+                let vc = PathOperationViewController(movingPath: item, sourceContentsVC: self, operationType: .move, startingPath: self.currentPath ?? .root)
+                self.present(UINavigationController(rootViewController: vc), animated: true)
             }
             
-            let copyPath = UIAction(title: "Path") { _ in
-                UIPasteboard.general.string = item.path
+            let copyPath = UIAction(title: "Copy") { _ in
+                let vc = PathOperationViewController(movingPath: item, sourceContentsVC: self, operationType: .copy, startingPath: self.currentPath ?? .root)
+                self.present(UINavigationController(rootViewController: vc), animated: true)
             }
             
-            let copyMenu = UIMenu(title: "Copy..", image: UIImage(systemName: "doc.on.doc"), children: [copyName, copyPath])
-            return UIMenu(title: "", children: [copyMenu])
+            let pasteboardOptions = UIMenu(title: "Copy to pasteboard..", image: UIImage(systemName: "doc.on.doc"), children: self.makePasteboardMenuElements(for: item))
+            let operationItemsMenu = UIMenu(options: .displayInline, children: [movePath, copyPath])
+            return UIMenu(children: [pasteboardOptions, operationItemsMenu])
         }
+    }
+    
+    func makePasteboardMenuElements(for url: URL) -> [UIMenuElement] {
+        let copyName = UIAction(title: "Name") { _ in
+            UIPasteboard.general.string = url.lastPathComponent
+        }
+        
+        let copyPath = UIAction(title: "Path") { _ in
+            UIPasteboard.general.string = url.path
+        }
+        
+        return [copyName, copyPath]
     }
 }
 

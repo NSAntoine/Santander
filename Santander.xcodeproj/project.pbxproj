@@ -18,6 +18,7 @@
 		37C6E0C52865CF7C00BDDA16 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C42865CF7C00BDDA16 /* SettingsTableViewController.swift */; };
 		37C6E0C828662C4100BDDA16 /* DragAndDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */; };
 		37C6E0CA28662C6800BDDA16 /* SortingWays.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C928662C6800BDDA16 /* SortingWays.swift */; };
+		37C6E0CE28665B2A00BDDA16 /* PathOperationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0CD28665B2A00BDDA16 /* PathOperationViewController.swift */; };
 		37DE0FA22864902400E5EBBC /* FilePreviewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */; };
 /* End PBXBuildFile section */
 
@@ -35,6 +36,7 @@
 		37C6E0C42865CF7C00BDDA16 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragAndDrop.swift; sourceTree = "<group>"; };
 		37C6E0C928662C6800BDDA16 /* SortingWays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortingWays.swift; sourceTree = "<group>"; };
+		37C6E0CD28665B2A00BDDA16 /* PathOperationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathOperationViewController.swift; sourceTree = "<group>"; };
 		37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewDataSource.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -104,6 +106,7 @@
 			isa = PBXGroup;
 			children = (
 				3789B5F328622E0D00058688 /* PathTableViewController.swift */,
+				37C6E0CD28665B2A00BDDA16 /* PathOperationViewController.swift */,
 				37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */,
 			);
 			path = "Path Contents";
@@ -178,6 +181,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				37C6E0CE28665B2A00BDDA16 /* PathOperationViewController.swift in Sources */,
 				3771D37B2862329D00E200B6 /* Extensions.swift in Sources */,
 				37C6E0C52865CF7C00BDDA16 /* SettingsTableViewController.swift in Sources */,
 				37C6E0CA28662C6800BDDA16 /* SortingWays.swift in Sources */,
