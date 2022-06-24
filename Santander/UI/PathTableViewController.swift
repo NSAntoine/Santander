@@ -306,13 +306,14 @@ class PathContentsTableViewController: UITableViewController {
             switch filter {
             case .alphabetically:
                 return firstURL.lastPathComponent < secondURL.lastPathComponent
-                
             case .size:
                 guard let firstSize = firstURL.size, let secondSize = secondURL.size else {
                     return false
                 }
                 
                 return firstSize > secondSize
+            case .type:
+                return firstURL.contentType == secondURL.contentType
             case .dateCreated:
                 guard let firstDate = firstURL.creationDate, let secondDate = secondURL.creationDate else {
                     return false
@@ -414,6 +415,7 @@ class PathContentsTableViewController: UITableViewController {
 enum SortingWays: CaseIterable, CustomStringConvertible {
     case alphabetically
     case size
+    case type
     case dateCreated
     case dateModified
     case dateAccessed
@@ -424,6 +426,8 @@ enum SortingWays: CaseIterable, CustomStringConvertible {
             return "Alphabetical order"
         case .size:
             return "Size"
+        case .type:
+            return "Type"
         case .dateCreated:
             return "Date created"
         case .dateModified:
