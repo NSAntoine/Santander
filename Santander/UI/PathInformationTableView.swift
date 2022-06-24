@@ -12,6 +12,7 @@ class PathInformationTableView: UITableViewController {
     let path: URL
     
     var showByteCount: Bool = false
+    var showDisplayName: Bool = false
     
     init(style: UITableView.Style, path: URL) {
         self.path = path
@@ -49,10 +50,16 @@ class PathInformationTableView: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if (indexPath.section, indexPath.row) == (0, 2) {
+        switch (indexPath.section, indexPath.row) {
+        case (0, 0):
+            showDisplayName.toggle()
+        case (0, 2):
             showByteCount.toggle()
-            tableView.reloadRows(at: [indexPath], with: .automatic)
+        default:
+            break
         }
+        
+        tableView.reloadRows(at: [indexPath], with: .automatic)
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -60,8 +67,8 @@ class PathInformationTableView: UITableViewController {
         var conf = cell.defaultContentConfiguration()
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
-            conf.text = "Name"
-            conf.secondaryText = self.path.lastPathComponent
+            conf.text = showDisplayName ? "Display Name" : "Name"
+            conf.secondaryText = showDisplayName ? self.path.displayName : self.path.lastPathComponent
         case (0, 1):
             conf.text = "Path"
             conf.secondaryText = self.path.path
@@ -125,8 +132,21 @@ class PathInformationTableView: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-        // Only allow highlighting on the 'size' row, which is the only one where tapping has action
-        return (indexPath.section, indexPath.row) == (0, 2) && self.path.size != nil
+        // Only allow highlighting on the 'size' & 'name' row
+        return (indexPath.section, indexPath.row) == (0, 0) || (indexPath.section, indexPath.row) == (0, 2) && self.path.size != nil
     }
     
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        return headerTitle(forSection: section)
+    }
+    
+    func headerTitle(forSection section: Int) -> String {
+        switch section {
+        case 0: return "General"
+        case 1: return "Type"
+        case 2: return "Date Metadata"
+        case 3: return "Permissions"
+        default: fatalError("\(#function): Unknown Section num \(section)")
+        }
+    }
 }

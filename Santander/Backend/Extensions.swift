@@ -57,6 +57,11 @@ extension URL {
     var contentType: UTType? {
         return try? resourceValues(forKeys: [.contentTypeKey]).contentType
     }
+    
+    /// Display name of the URL path
+    var displayName: String {
+        return FileManager.default.displayName(atPath: self.path)
+    }
 }
 
 extension UIViewController {
