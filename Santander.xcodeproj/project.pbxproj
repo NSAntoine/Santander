@@ -16,6 +16,8 @@
 		3789B5F428622E0D00058688 /* PathTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3789B5F328622E0D00058688 /* PathTableViewController.swift */; };
 		37932F052863205F00BF48C8 /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37932F042863205F00BF48C8 /* UserPreferences.swift */; };
 		37C6E0C52865CF7C00BDDA16 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C42865CF7C00BDDA16 /* SettingsTableViewController.swift */; };
+		37C6E0C828662C4100BDDA16 /* DragAndDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */; };
+		37C6E0CA28662C6800BDDA16 /* SortingWays.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C928662C6800BDDA16 /* SortingWays.swift */; };
 		37DE0FA22864902400E5EBBC /* FilePreviewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */; };
 /* End PBXBuildFile section */
 
@@ -31,6 +33,8 @@
 		3789B5F328622E0D00058688 /* PathTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathTableViewController.swift; sourceTree = "<group>"; };
 		37932F042863205F00BF48C8 /* UserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferences.swift; sourceTree = "<group>"; };
 		37C6E0C42865CF7C00BDDA16 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
+		37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragAndDrop.swift; sourceTree = "<group>"; };
+		37C6E0C928662C6800BDDA16 /* SortingWays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortingWays.swift; sourceTree = "<group>"; };
 		37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewDataSource.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -50,6 +54,7 @@
 			children = (
 				3771D37A2862329D00E200B6 /* Extensions.swift */,
 				37932F042863205F00BF48C8 /* UserPreferences.swift */,
+				37C6E0C928662C6800BDDA16 /* SortingWays.swift */,
 			);
 			path = Backend;
 			sourceTree = "<group>";
@@ -57,7 +62,7 @@
 		3771D3792862328B00E200B6 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				3789B5F328622E0D00058688 /* PathTableViewController.swift */,
+				37C6E0C628662C2900BDDA16 /* Path Contents */,
 				37C6E0C42865CF7C00BDDA16 /* SettingsTableViewController.swift */,
 				3771D37E2862493E00E200B6 /* PathInformationTableView.swift */,
 				37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */,
@@ -93,6 +98,15 @@
 				3789B5ED28622B7C00058688 /* Info.plist */,
 			);
 			path = Santander;
+			sourceTree = "<group>";
+		};
+		37C6E0C628662C2900BDDA16 /* Path Contents */ = {
+			isa = PBXGroup;
+			children = (
+				3789B5F328622E0D00058688 /* PathTableViewController.swift */,
+				37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */,
+			);
+			path = "Path Contents";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -166,6 +180,8 @@
 			files = (
 				3771D37B2862329D00E200B6 /* Extensions.swift in Sources */,
 				37C6E0C52865CF7C00BDDA16 /* SettingsTableViewController.swift in Sources */,
+				37C6E0CA28662C6800BDDA16 /* SortingWays.swift in Sources */,
+				37C6E0C828662C4100BDDA16 /* DragAndDrop.swift in Sources */,
 				37932F052863205F00BF48C8 /* UserPreferences.swift in Sources */,
 				3789B5F428622E0D00058688 /* PathTableViewController.swift in Sources */,
 				3789B5E028622B7A00058688 /* AppDelegate.swift in Sources */,
