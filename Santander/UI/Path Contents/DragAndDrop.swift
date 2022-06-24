@@ -17,14 +17,6 @@ extension PathContentsTableViewController: UITableViewDropDelegate, UITableViewD
             return
         }
         
-        let destIndexPath: IndexPath
-        if let indexPath = coordinator.destinationIndexPath {
-            destIndexPath = indexPath
-        } else {
-            let section = tableView.numberOfSections - 1
-            destIndexPath = IndexPath(row: tableView.numberOfRows(inSection: section), section: section)
-        }
-        
         coordinator.items.first?.dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: "public.content") { url, err in
             guard let url = url, err == nil else {
                 DispatchQueue.main.async {
@@ -39,8 +31,8 @@ extension PathContentsTableViewController: UITableViewDropDelegate, UITableViewD
             do {
                 try FileManager.default.copyItem(at: url, to: newPath)
                 DispatchQueue.main.async {
-                    self.unfilteredContents = currentPath.contents
-                    tableView.insertRows(at: [destIndexPath], with: .automatic)
+                    self.unfilteredContents.append(url)
+                    tableView.reloadSections([0], with: .automatic)
                 }
             } catch {
                 DispatchQueue.main.async {
