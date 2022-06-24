@@ -30,28 +30,18 @@ class PathInformationTableView: UITableViewController {
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0:
-            var num = 3
-            
-            // If the type, ie 'Property List', is available
-            // add a row for it
-            if self.path.localizedTypeDescription != nil {
-                num += 1
-            }
-            
-            if self.path.isDirectory {
-                num += 1
-            }
-            
-            return num
+            return self.path.isDirectory ? 4 : 3
         case 1:
-            return 3
+            return 1
         case 2:
+            return 3
+        case 3:
             return self.path.isDirectory ? 3 : 4
         default:
             fatalError("Impossible to be here")
@@ -83,12 +73,12 @@ class PathInformationTableView: UITableViewController {
                 conf.secondaryText = "N/A"
             }
         case (0, 3):
-            conf.text = self.path.isDirectory ? "Items" : "Type"
-            conf.secondaryText = self.path.isDirectory ? self.path.contents.count.description : self.path.localizedTypeDescription
-        case (0, 4): // this is only encountered when we have a directory with a type description
-            conf.text = "Type"
-            conf.secondaryText = self.path.localizedTypeDescription
+            conf.text = "Items"
+            conf.secondaryText = self.path.contents.count.description
         case (1, 0):
+            conf.text = "Type"
+            conf.secondaryText = self.path.contentType?.localizedDescription?.localizedCapitalized ?? "N/A"
+        case (2, 0):
             conf.text = "Created"
             
             conf.secondaryText = self.path.creationDate?
@@ -97,7 +87,7 @@ class PathInformationTableView: UITableViewController {
                 time: .shortened
             ) ?? "N/A"
             
-        case (1, 1):
+        case (2, 1):
             conf.text = "Last modified"
             
             conf.secondaryText = path.lastModifiedDate?
@@ -106,7 +96,7 @@ class PathInformationTableView: UITableViewController {
                 time: .shortened
             ) ?? "N/A"
             
-        case (1, 2):
+        case (2, 2):
             conf.text = "Last accessed"
             
             conf.secondaryText = path.lastAccessedDate?
@@ -115,23 +105,22 @@ class PathInformationTableView: UITableViewController {
                 time: .shortened
             ) ?? "N/A"
             
-        case (2, 0):
+        case (3, 0):
             conf.text = "Deletable"
             conf.secondaryText = FileManager.default.isDeletableFile(atPath: self.path.path) ? "Yes" : "No"
-        case (2, 1):
+        case (3, 1):
             conf.text = "Readable"
             conf.secondaryText = FileManager.default.isReadableFile(atPath: self.path.path) ? "Yes" : "No"
-        case (2, 2):
+        case (3, 2):
             conf.text = "Writable"
             conf.secondaryText = FileManager.default.isWritableFile(atPath: self.path.path) ? "Yes" : "No"
-        case (2, 3):
+        case (3, 3):
             conf.text = "Executable"
             conf.secondaryText = FileManager.default.isExecutableFile(atPath: self.path.path) ? "Yes" : "No"
         default: break
         }
         
         cell.contentConfiguration = conf
-        cell.selectionStyle = .none
         return cell
     }
     

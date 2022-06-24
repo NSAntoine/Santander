@@ -34,10 +34,6 @@ extension URL {
         return (try? newURL.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
     }
     
-    var localizedTypeDescription: String? {
-        return UTType(filenameExtension: self.pathExtension)?.localizedDescription?.localizedCapitalized
-    }
-    
     var creationDate: Date? {
         try? resourceValues(forKeys: [.creationDateKey]).creationDate
     }
@@ -56,6 +52,10 @@ extension URL {
         }
         
         return try? resourceValues(forKeys: [.fileSizeKey]).fileSize
+    }
+    
+    var contentType: UTType? {
+        return try? resourceValues(forKeys: [.contentTypeKey]).contentType
     }
 }
 
