@@ -102,18 +102,22 @@ class PathContentsTableViewController: UITableViewController {
             menuActions.append(showInfoAction)
         }
         
+        let settingsAction = UIAction(title: "Settings", image: UIImage(systemName: "gear")) { _ in
+            self.present(UINavigationController(rootViewController: SettingsTableViewController(style: .insetGrouped)), animated: true)
+        }
+        menuActions.append(settingsAction)
+        
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: .init(systemName: "ellipsis.circle.fill"),
             menu: .init(children: menuActions)
         )
         
-        // To-do: a settings for this & other options
-        self.navigationController?.navigationBar.prefersLargeTitles = /*UserPreferences.useLargeNavigationTitles*/ true
+        self.navigationController?.navigationBar.prefersLargeTitles = UserPreferences.useLargeNavigationTitles
         if !contents.isEmpty {
             let searchController = UISearchController(searchResultsController: nil)
             searchController.searchBar.delegate = self
             searchController.obscuresBackgroundDuringPresentation = false
-            self.navigationItem.hidesSearchBarWhenScrolling = false
+            self.navigationItem.hidesSearchBarWhenScrolling = !UserPreferences.alwaysShowSearchBar
             if let currentPath = currentPath {
                 searchController.searchBar.scopeButtonTitles = [currentPath.lastPathComponent, "Subdirectories"]
             }
@@ -478,13 +482,14 @@ extension PathContentsTableViewController: UITableViewDropDelegate, UITableViewD
     
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
         let selectedItem = contents[indexPath.row]
-        guard !selectedItem.isDirectory else {
-            return []
-        }
-        
         let itemProvider = NSItemProvider()
         
-        let typeID = UTType(filenameExtension: selectedItem.pathExtension)?.identifier ?? "public.content"
+        let typeID: String
+        if selectedItem.isDirectory {
+            typeID = UTType.folder.identifier
+        } else {
+            typeID = UTType(filenameExtension: selectedItem.pathExtension)?.identifier ?? "public.content"
+        }
         
         itemProvider.registerFileRepresentation(
             forTypeIdentifier: typeID,

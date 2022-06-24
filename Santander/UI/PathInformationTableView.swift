@@ -131,6 +131,7 @@ class PathInformationTableView: UITableViewController {
         }
         
         cell.contentConfiguration = conf
+        cell.selectionStyle = .none
         return cell
     }
     

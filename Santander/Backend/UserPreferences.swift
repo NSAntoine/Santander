@@ -9,7 +9,15 @@
 import Foundation
 
 enum UserPreferences {
-    static var useLargeNavigationTitles: Bool = UserDefaults.standard.bool(forKey: "UseLargeNavTitles")
+    static var useLargeNavigationTitles: Bool {
+        get {
+            UserDefaults.standard.object(forKey: "UseLargeNavTitles") as? Bool ?? true
+        }
+        
+        set {
+            UserDefaults.standard.set(newValue, forKey: "UseLargeNavTitles")
+        }
+    }
     
     static var favouritePaths: [String] {
         get {
@@ -18,6 +26,16 @@ enum UserPreferences {
         
         set {
             UserDefaults.standard.set(newValue, forKey: "FavPaths")
+        }
+    }
+    
+    static var alwaysShowSearchBar: Bool {
+        get {
+            UserDefaults.standard.bool(forKey: "AlwaysShowSearchBar")
+        }
+        
+        set {
+            UserDefaults.standard.set(newValue, forKey: "AlwaysShowSearchBar")
         }
     }
 }
