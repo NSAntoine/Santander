@@ -334,10 +334,12 @@ class PathContentsTableViewController: UITableViewController {
             rootViewController: PathInformationTableView(style: .insetGrouped, path: path)
         )
         
-        navController.modalPresentationStyle = .pageSheet
-        
-        if let sheetController = navController.sheetPresentationController {
-            sheetController.detents = [.medium(), .large()]
+        if #available(iOS 15.0, *) {
+            navController.modalPresentationStyle = .pageSheet
+            
+            if let sheetController = navController.sheetPresentationController {
+                sheetController.detents = [.medium(), .large()]
+            }
         }
         
         self.present(navController, animated: true)

@@ -17,7 +17,7 @@ extension PathContentsTableViewController: UITableViewDropDelegate, UITableViewD
             return
         }
         
-        coordinator.items.first?.dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: "public.content") { url, err in
+        coordinator.items.first?.dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: "public.item") { url, err in
             guard let url = url, err == nil else {
                 DispatchQueue.main.async {
                     self.errorAlert("Error: \(err?.localizedDescription ?? "Unknown")", title: "Failed to import file")
@@ -32,7 +32,7 @@ extension PathContentsTableViewController: UITableViewDropDelegate, UITableViewD
                 try FileManager.default.copyItem(at: url, to: newPath)
                 DispatchQueue.main.async {
                     self.unfilteredContents.append(url)
-                    tableView.reloadSections([0], with: .automatic)
+                    tableView.reloadData()
                 }
             } catch {
                 DispatchQueue.main.async {
