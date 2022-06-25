@@ -36,6 +36,11 @@ class PathOperationViewController: PathContentsTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        self.navigationController?.navigationBar.prefersLargeTitles = false
+        self.title = self.operationType == .move ? "Moving to.." : "Copying to.."
+        if let currentPath = self.currentPath {
+            self.navigationItem.backBarButtonItem = UIBarButtonItem(title: currentPath.lastPathComponent, style: .plain, target: nil, action: nil)
+        }
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(done))
     }
     

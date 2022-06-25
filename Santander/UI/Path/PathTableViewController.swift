@@ -107,7 +107,7 @@ class PathContentsTableViewController: UITableViewController {
         menuActions.append(settingsAction)
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-            image: .init(systemName: "ellipsis.circle.fill"),
+            image: .init(systemName: "ellipsis.circle"),
             menu: .init(children: menuActions)
         )
         
@@ -149,10 +149,6 @@ class PathContentsTableViewController: UITableViewController {
     
     override func numberOfSections(in tableView: UITableView) -> Int {
         return 1
-    }
-    
-    override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
-        openInfoBottomSheet(path: contents[indexPath.row])
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -203,24 +199,7 @@ class PathContentsTableViewController: UITableViewController {
         
         deleteAction.image = UIImage(systemName: "trash")
         
-        var actions: [UIContextualAction] = [deleteAction, favouriteAction]
-        
-        if !selectedItem.isDirectory {
-            // Action for previewing with QuickLook
-            let previewItem = UIContextualAction(style: .normal, title: nil) { _, _, completion in
-                let controller = QLPreviewController()
-                let shared = FilePreviewDataSource(fileURL: selectedItem)
-                controller.dataSource = shared
-                self.present(controller, animated: true)
-                completion(true)
-            }
-            
-            previewItem.backgroundColor = .systemBlue
-            previewItem.image = UIImage(systemName: "magnifyingglass")
-            actions.append(previewItem)
-        }
-        
-        let config = UISwipeActionsConfiguration(actions: actions)
+        let config = UISwipeActionsConfiguration(actions: [deleteAction, favouriteAction])
         config.performsFirstActionWithFullSwipe = false
         return config
     }
@@ -385,13 +364,14 @@ class PathContentsTableViewController: UITableViewController {
         }
         
         if fsItem.isDirectory {
+            // Display the disclosureIndicator only for directories
+            cell.accessoryType = .disclosureIndicator
             cellConf.image = UIImage(systemName: "folder.fill")
         } else {
             // TODO: we should display the icon for files with https://indiestack.com/2018/05/icon-for-file-with-uikit/
             cellConf.image = UIImage(systemName: "doc.fill")
         }
         
-        cell.accessoryType = .detailDisclosureButton
         cell.contentConfiguration = cellConf
         return cell
     }
@@ -402,28 +382,32 @@ class PathContentsTableViewController: UITableViewController {
             return nil
         } actionProvider: { _ in
             
-            let movePath = UIAction(title: "Move") { _ in
+            let movePath = UIAction(title: "Move to..", image: UIImage(systemName: "arrow.right")) { _ in
                 let vc = PathOperationViewController(movingPath: item, sourceContentsVC: self, operationType: .move, startingPath: self.currentPath ?? .root)
                 self.present(UINavigationController(rootViewController: vc), animated: true)
             }
             
-            let copyPath = UIAction(title: "Copy") { _ in
+            let copyPath = UIAction(title: "Copy to..", image: UIImage(systemName: "doc.on.doc")) { _ in
                 let vc = PathOperationViewController(movingPath: item, sourceContentsVC: self, operationType: .copy, startingPath: self.currentPath ?? .root)
                 self.present(UINavigationController(rootViewController: vc), animated: true)
             }
             
-            let pasteboardOptions = UIMenu(title: "Copy to pasteboard..", image: UIImage(systemName: "doc.on.doc"), children: self.makePasteboardMenuElements(for: item))
+            let pasteboardOptions = UIMenu(options: .displayInline, children: self.makePasteboardMenuElements(for: item))
             let operationItemsMenu = UIMenu(options: .displayInline, children: [movePath, copyPath])
-            return UIMenu(children: [pasteboardOptions, operationItemsMenu])
+            let informationAction = UIAction(title: "Info", image: UIImage(systemName: "info.circle")) { _ in
+                self.openInfoBottomSheet(path: item)
+            }
+            
+            return UIMenu(children: [informationAction, operationItemsMenu, pasteboardOptions])
         }
     }
     
     func makePasteboardMenuElements(for url: URL) -> [UIMenuElement] {
-        let copyName = UIAction(title: "Name") { _ in
+        let copyName = UIAction(title: "Copy name") { _ in
             UIPasteboard.general.string = url.lastPathComponent
         }
         
-        let copyPath = UIAction(title: "Path") { _ in
+        let copyPath = UIAction(title: "Copy path") { _ in
             UIPasteboard.general.string = url.path
         }
         

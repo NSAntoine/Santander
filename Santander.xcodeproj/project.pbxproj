@@ -64,7 +64,7 @@
 		3771D3792862328B00E200B6 /* UI */ = {
 			isa = PBXGroup;
 			children = (
-				37C6E0C628662C2900BDDA16 /* Path Contents */,
+				37C6E0C628662C2900BDDA16 /* Path */,
 				37C6E0C42865CF7C00BDDA16 /* SettingsTableViewController.swift */,
 				3771D37E2862493E00E200B6 /* PathInformationTableView.swift */,
 				37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */,
@@ -102,14 +102,14 @@
 			path = Santander;
 			sourceTree = "<group>";
 		};
-		37C6E0C628662C2900BDDA16 /* Path Contents */ = {
+		37C6E0C628662C2900BDDA16 /* Path */ = {
 			isa = PBXGroup;
 			children = (
 				3789B5F328622E0D00058688 /* PathTableViewController.swift */,
 				37C6E0CD28665B2A00BDDA16 /* PathOperationViewController.swift */,
 				37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */,
 			);
-			path = "Path Contents";
+			path = Path;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
