@@ -13,6 +13,8 @@ class PathListsSplitViewController: PathContentsTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        // Select the first item by default
+        tableView(self.tableView, didSelectRowAt: [0, 0])
         self.navigationItem.rightBarButtonItem = nil
     }
     
@@ -26,7 +28,7 @@ class PathListsSplitViewController: PathContentsTableViewController {
             // or the parent directory of the file selected
             let dirToOpen = path.isDirectory ? path : path.deletingLastPathComponent()
             self.splitViewController?.setViewController(
-                PathContentsTableViewController(path: dirToOpen), for: .secondary)
+                UINavigationController(rootViewController: PathContentsTableViewController(path: dirToOpen)), for: .secondary)
         } else {
             self.goToFile(path: path)
         }

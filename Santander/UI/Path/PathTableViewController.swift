@@ -429,7 +429,6 @@ class PathContentsTableViewController: UITableViewController {
             } else if UIDevice.current.userInterfaceIdiom == .pad && !UserPreferences.sidebarPaths.contains(item.path) {
                 let addToSidebarAction = UIAction(title: "Add to sidebar", image: UIImage(systemName: "sidebar.leading")) { _ in
                     UserPreferences.sidebarPaths.append(item.path)
-                    self.splitViewController?.reloadInputViews()
                 }
                 
                 children.append(addToSidebarAction)
