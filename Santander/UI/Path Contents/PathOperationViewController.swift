@@ -87,3 +87,9 @@ enum PathSelectionOperation: CustomStringConvertible {
         }
     }
 }
+
+extension UITableView.Style {
+    static var automatic: UITableView.Style {
+        return UserPreferences.usePlainStyleTableView ? .plain : .insetGrouped
+    }
+}

@@ -29,12 +29,13 @@ class SettingsTableViewController: UITableViewController {
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 2
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0: return 2
+        case 1: return 1
         default: fatalError("How'd we get here?")
         }
     }
@@ -50,6 +51,9 @@ class SettingsTableViewController: UITableViewController {
         case (0, 1):
             cell.label.text = "Always show search bar"
             cell.defaultKey = "AlwaysShowSearchBar"
+        case (1, 0):
+            cell.label.text = "Display items in plain style"
+            cell.defaultKey = "usePlainStyleTableView"
         default: break
         }
         
@@ -60,6 +64,7 @@ class SettingsTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
         case 0: return "Navigation"
+        case 1: return "Views"
         default: return nil
         }
     }

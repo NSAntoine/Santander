@@ -41,7 +41,7 @@ class PathContentsTableViewController: UITableViewController {
     var currentPath: URL? = nil
     
     /// Initialize with a given path URL
-    init(style: UITableView.Style = .plain, path: URL, isFavouritePathsSheet: Bool = false) {
+    init(style: UITableView.Style = .automatic, path: URL, isFavouritePathsSheet: Bool = false) {
         self.unfilteredContents = path.contents.sorted { firstURL, secondURL in
             firstURL.lastPathComponent < secondURL.lastPathComponent
         }
@@ -53,7 +53,7 @@ class PathContentsTableViewController: UITableViewController {
     }
     
     /// Initialize with the given specified URLs
-    init(style: UITableView.Style = .plain, contents: [URL], title: String, isFavouritePathsSheet: Bool = false) {
+    init(style: UITableView.Style = .automatic, contents: [URL], title: String, isFavouritePathsSheet: Bool = false) {
         self.unfilteredContents = contents
         self.pathName = title
         self.isFavouritePathsSheet = isFavouritePathsSheet

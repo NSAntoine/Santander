@@ -38,4 +38,14 @@ enum UserPreferences {
             UserDefaults.standard.set(newValue, forKey: "AlwaysShowSearchBar")
         }
     }
+    
+    static var usePlainStyleTableView: Bool {
+        get {
+            UserDefaults.standard.object(forKey: "usePlainStyleTableView") as? Bool ?? true
+        }
+        
+        set {
+            UserDefaults.standard.set(newValue, forKey: "usePlainStyleTableView")
+        }
+    }
 }

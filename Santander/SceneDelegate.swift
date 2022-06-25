@@ -19,7 +19,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = UINavigationController(rootViewController: PathContentsTableViewController(style: .plain, path: URL(fileURLWithPath: FileManager.default.currentDirectoryPath)))
+        window.rootViewController = UINavigationController(rootViewController: PathContentsTableViewController(style: .automatic, path: URL(fileURLWithPath: FileManager.default.currentDirectoryPath)))
         window.makeKeyAndVisible()
         self.window = window
     }
