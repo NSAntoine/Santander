@@ -40,7 +40,7 @@ class PathInformationTableView: UITableViewController {
         case 0:
             return self.path.isDirectory ? 4 : 3
         case 1:
-            return 2
+            return self.path.contentType?.preferredMIMEType != nil ? 2 : 1
         case 2:
             return 3
         case 3:
@@ -146,7 +146,8 @@ class PathInformationTableView: UITableViewController {
     override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
-            return true
+            // Only allow display name to be shown if it's different from the lastPathComponent
+            return path.displayName != path.lastPathComponent
         case (0, 1):
             return (try? FileManager.default.destinationOfSymbolicLink(atPath: self.path.path)) != nil
         case (0, 2):
