@@ -35,7 +35,7 @@ class SettingsTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0: return 2
-        case 1: return 1
+        case 1: return 2
         default: fatalError("How'd we get here?")
         }
     }
@@ -54,6 +54,9 @@ class SettingsTableViewController: UITableViewController {
         case (1, 0):
             cell.label.text = "Display items in plain style"
             cell.defaultKey = "usePlainStyleTableView"
+        case (1, 1):
+            cell.label.text = "Show information button"
+            cell.defaultKey = "ShowInfoButton"
         default: break
         }
         

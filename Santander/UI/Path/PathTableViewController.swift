@@ -40,6 +40,8 @@ class PathContentsTableViewController: UITableViewController {
     /// The current path from which items are presented
     var currentPath: URL? = nil
     
+    let showInfoButton: Bool = UserPreferences.showInfoButton
+    
     /// Initialize with a given path URL
     init(style: UITableView.Style = .automatic, path: URL, isFavouritePathsSheet: Bool = false) {
         self.unfilteredContents = path.contents.sorted { firstURL, secondURL in
@@ -341,6 +343,10 @@ class PathContentsTableViewController: UITableViewController {
         self.present(navController, animated: true)
     }
     
+    override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
+        self.openInfoBottomSheet(path: contents[indexPath.row])
+    }
+    
     /// Returns the cell row to be used
     func cellRow(forURL fsItem: URL, displayFullPathAsSubtitle: Bool = false) -> UITableViewCell {
         let cell: UITableViewCell
@@ -370,11 +376,16 @@ class PathContentsTableViewController: UITableViewController {
         
         if fsItem.isDirectory {
             // Display the disclosureIndicator only for directories
-            cell.accessoryType = .disclosureIndicator
             cellConf.image = UIImage(systemName: "folder.fill")
         } else {
             // TODO: we should display the icon for files with https://indiestack.com/2018/05/icon-for-file-with-uikit/
             cellConf.image = UIImage(systemName: "doc.fill")
+        }
+        
+        if showInfoButton {
+            cell.accessoryType = .detailDisclosureButton
+        } else if fsItem.isDirectory {
+            cell.accessoryType = .disclosureIndicator
         }
         
         cell.contentConfiguration = cellConf
@@ -415,7 +426,7 @@ class PathContentsTableViewController: UITableViewController {
                 }
                 
                 children.append(shareAction)
-            } else if !UserPreferences.sidebarPaths.contains(item.path) {
+            } else if UIDevice.current.userInterfaceIdiom == .pad && !UserPreferences.sidebarPaths.contains(item.path) {
                 let addToSidebarAction = UIAction(title: "Add to sidebar", image: UIImage(systemName: "sidebar.leading")) { _ in
                     UserPreferences.sidebarPaths.append(item.path)
                     self.splitViewController?.reloadInputViews()

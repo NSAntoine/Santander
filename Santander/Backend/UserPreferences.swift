@@ -59,4 +59,14 @@ enum UserPreferences {
             UserDefaults.standard.set(newValue, forKey: "sidebarPaths")
         }
     }
+    
+    static var showInfoButton: Bool {
+        get {
+            return UserDefaults.standard.bool(forKey: "ShowInfoButton")
+        }
+        
+        set {
+            UserDefaults.standard.set(newValue, forKey: "ShowInfoButton")
+        }
+    }
 }
