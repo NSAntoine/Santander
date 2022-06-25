@@ -70,7 +70,7 @@ class PathInformationTableView: UITableViewController {
         var conf = cell.defaultContentConfiguration()
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
-            conf.text = showDisplayName ? "Display Name" : "Name"
+            conf.text = showDisplayName ? "Display name" : "Name"
             conf.secondaryText = showDisplayName ? self.path.displayName : self.path.lastPathComponent
         case (0, 1):
             conf.text = showRealPath ? "Real Path" : "Path"

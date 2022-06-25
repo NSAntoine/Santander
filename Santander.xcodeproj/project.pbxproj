@@ -19,6 +19,8 @@
 		37C6E0C828662C4100BDDA16 /* DragAndDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */; };
 		37C6E0CA28662C6800BDDA16 /* SortingWays.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C928662C6800BDDA16 /* SortingWays.swift */; };
 		37C6E0CE28665B2A00BDDA16 /* PathOperationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0CD28665B2A00BDDA16 /* PathOperationViewController.swift */; };
+		37C6E0D028673AFF00BDDA16 /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0CF28673AFF00BDDA16 /* Search.swift */; };
+		37C6E0D22867653A00BDDA16 /* PathsListSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0D12867653A00BDDA16 /* PathsListSplitViewController.swift */; };
 		37DE0FA22864902400E5EBBC /* FilePreviewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */; };
 /* End PBXBuildFile section */
 
@@ -37,6 +39,8 @@
 		37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragAndDrop.swift; sourceTree = "<group>"; };
 		37C6E0C928662C6800BDDA16 /* SortingWays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortingWays.swift; sourceTree = "<group>"; };
 		37C6E0CD28665B2A00BDDA16 /* PathOperationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathOperationViewController.swift; sourceTree = "<group>"; };
+		37C6E0CF28673AFF00BDDA16 /* Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
+		37C6E0D12867653A00BDDA16 /* PathsListSplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathsListSplitViewController.swift; sourceTree = "<group>"; };
 		37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewDataSource.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -106,6 +110,8 @@
 			isa = PBXGroup;
 			children = (
 				3789B5F328622E0D00058688 /* PathTableViewController.swift */,
+				37C6E0CF28673AFF00BDDA16 /* Search.swift */,
+				37C6E0D12867653A00BDDA16 /* PathsListSplitViewController.swift */,
 				37C6E0CD28665B2A00BDDA16 /* PathOperationViewController.swift */,
 				37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */,
 			);
@@ -190,6 +196,8 @@
 				3789B5F428622E0D00058688 /* PathTableViewController.swift in Sources */,
 				3789B5E028622B7A00058688 /* AppDelegate.swift in Sources */,
 				37DE0FA22864902400E5EBBC /* FilePreviewDataSource.swift in Sources */,
+				37C6E0D22867653A00BDDA16 /* PathsListSplitViewController.swift in Sources */,
+				37C6E0D028673AFF00BDDA16 /* Search.swift in Sources */,
 				3771D37F2862493E00E200B6 /* PathInformationTableView.swift in Sources */,
 				3789B5E228622B7A00058688 /* SceneDelegate.swift in Sources */,
 			);

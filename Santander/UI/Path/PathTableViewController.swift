@@ -19,12 +19,12 @@ class PathContentsTableViewController: UITableViewController {
     var filteredSearchContents: [URL] = []
     
     /// A Boolean representing if the user is currently searching
-    var isSeaching: Bool = false
+    var isSearching: Bool = false
     
     /// The contents of the path to show in UI
     var contents: [URL] {
         get {
-            return isSeaching ? filteredSearchContents : unfilteredContents
+            return isSearching ? filteredSearchContents : unfilteredContents
         }
     }
     
@@ -116,6 +116,7 @@ class PathContentsTableViewController: UITableViewController {
             let searchController = UISearchController(searchResultsController: nil)
             searchController.searchBar.delegate = self
             searchController.obscuresBackgroundDuringPresentation = false
+            searchController.searchResultsUpdater = self
             self.navigationItem.hidesSearchBarWhenScrolling = !UserPreferences.alwaysShowSearchBar
             if let currentPath = currentPath {
                 searchController.searchBar.scopeButtonTitles = [currentPath.lastPathComponent, "Subdirectories"]
@@ -157,7 +158,7 @@ class PathContentsTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return self.cellRow(forURL: contents[indexPath.row], displayFullPathAsSubtitle: self.isSeaching || self.isFavouritePathsSheet)
+        return self.cellRow(forURL: contents[indexPath.row], displayFullPathAsSubtitle: self.isSearching || self.isFavouritePathsSheet)
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -267,20 +268,24 @@ class PathContentsTableViewController: UITableViewController {
     }
     
     
+    func goToFile(path: URL) {
+        let controller = QLPreviewController()
+        let shared = FilePreviewDataSource(fileURL: path)
+        controller.dataSource = shared
+        self.present(controller, animated: true)
+    }
+    
     /// Opens a path in the UI
     func goToPath(path: URL) {
         // if we're going to a directory, or a search result,
         // go to the directory path
-        if path.isDirectory || self.isSeaching {
+        if path.isDirectory || self.isSearching {
             // Make sure we're opening a directory,
             // or the parent directory of the file selected
             let dirToOpen = path.isDirectory ? path : path.deletingLastPathComponent()
             self.navigationController?.pushViewController(PathContentsTableViewController(path: dirToOpen), animated: true)
         } else {
-            let controller = QLPreviewController()
-            let shared = FilePreviewDataSource(fileURL: path)
-            controller.dataSource = shared
-            self.present(controller, animated: true)
+            self.goToFile(path: path)
         }
     }
     
@@ -375,7 +380,7 @@ class PathContentsTableViewController: UITableViewController {
         cell.contentConfiguration = cellConf
         return cell
     }
-    
+        
     override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         let item = contents[indexPath.row]
         return UIContextMenuConfiguration(identifier: nil) {
@@ -398,7 +403,29 @@ class PathContentsTableViewController: UITableViewController {
                 self.openInfoBottomSheet(path: item)
             }
             
-            return UIMenu(children: [informationAction, operationItemsMenu, pasteboardOptions])
+            // Seperate the children into an array
+            // So that we can choose if the share action should be allowed
+            var children: [UIMenuElement] = [informationAction]
+            if !item.isDirectory {
+                let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+                    let vc = UIActivityViewController.init(activityItems: [item], applicationActivities: [])
+                    vc.popoverPresentationController?.sourceView = self.view
+                    vc.popoverPresentationController?.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+                    self.present(vc, animated: true)
+                }
+                
+                children.append(shareAction)
+            } else if !UserPreferences.sidebarPaths.contains(item.path) {
+                let addToSidebarAction = UIAction(title: "Add to sidebar", image: UIImage(systemName: "sidebar.leading")) { _ in
+                    UserPreferences.sidebarPaths.append(item.path)
+                    self.splitViewController?.reloadInputViews()
+                }
+                
+                children.append(addToSidebarAction)
+            }
+            
+            children.append(contentsOf: [operationItemsMenu, pasteboardOptions])
+            return UIMenu(children: children)
         }
     }
     
@@ -412,46 +439,5 @@ class PathContentsTableViewController: UITableViewController {
         }
         
         return [copyName, copyPath]
-    }
-}
-
-extension PathContentsTableViewController: UISearchBarDelegate {
-    
-    func cancelSearch() {
-        self.filteredSearchContents = []
-        self.isSeaching = false
-        tableView.reloadData()
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        updateResults(searchBar: searchBar)
-    }
-    
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        cancelSearch()
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
-        updateResults(searchBar: searchBar)
-    }
-    
-    func updateResults(searchBar: UISearchBar) {
-        guard let searchText = searchBar.text, !searchText.isEmpty else {
-            cancelSearch()
-            return
-        }
-        
-        self.isSeaching = true
-        let results: [URL]
-        if let currentPath = currentPath, searchBar.selectedScopeButtonIndex == 1 {
-            results = FileManager.default.enumerator(at: currentPath, includingPropertiesForKeys: [])?.allObjects.compactMap { $0 as? URL } ?? []
-        } else {
-            results = unfilteredContents
-        }
-        
-        // Eventually, I want to make it so that the user can choose between if they want to search for the file name
-        // and for the path
-        self.filteredSearchContents = results.filter { $0.lastPathComponent.localizedCaseInsensitiveContains(searchText) }
-        tableView.reloadData()
     }
 }

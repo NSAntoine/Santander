@@ -48,4 +48,15 @@ enum UserPreferences {
             UserDefaults.standard.set(newValue, forKey: "usePlainStyleTableView")
         }
     }
+    
+    /// The paths to dispaly in the sidebar
+    static var sidebarPaths: [String] {
+        get {
+            UserDefaults.standard.stringArray(forKey: "sidebarPaths") ?? [URL.root.path]
+        }
+        
+        set {
+            UserDefaults.standard.set(newValue, forKey: "sidebarPaths")
+        }
+    }
 }

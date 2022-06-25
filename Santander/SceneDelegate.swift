@@ -19,7 +19,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
         let window = UIWindow(windowScene: windowScene)
-        window.rootViewController = UINavigationController(rootViewController: PathContentsTableViewController(style: .automatic, path: URL(fileURLWithPath: FileManager.default.currentDirectoryPath)))
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            let splitVC = UISplitViewController(style: .doubleColumn)
+            let sidebarURLs = UserPreferences.sidebarPaths.map { URL(fileURLWithPath: $0) }
+            splitVC.setViewController(PathListsSplitViewController(contents: sidebarURLs, title: "Santander"), for: .primary)
+            window.rootViewController = splitVC
+        } else {
+            window.rootViewController = UINavigationController(rootViewController: PathContentsTableViewController(style: .automatic, path: URL(fileURLWithPath: FileManager.default.currentDirectoryPath)))
+        }
         window.makeKeyAndVisible()
         self.window = window
     }
