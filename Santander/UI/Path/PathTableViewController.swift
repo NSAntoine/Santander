@@ -428,12 +428,22 @@ class PathContentsTableViewController: UITableViewController {
                 }
                 
                 children.append(shareAction)
-            } else if UIDevice.current.userInterfaceIdiom == .pad && !UserPreferences.sidebarPaths.contains(item.path) {
-                let addToSidebarAction = UIAction(title: "Add to sidebar", image: UIImage(systemName: "sidebar.leading")) { _ in
-                    UserPreferences.sidebarPaths.append(item.path)
+            }
+            
+            if UIDevice.current.userInterfaceIdiom == .pad {
+                var menu = UIMenu(title: "Add to group..", image: UIImage(systemName: "sidebar.leading"), children: [])
+                
+                for (index, var group) in UserPreferences.pathGroups.enumerated() {
+                    let addAction = UIAction(title: group.name) { _ in
+                        UserPreferences.pathGroups.remove(at: index)
+                        group.paths.append(item)
+                        UserPreferences.pathGroups.append(group)
+                    }
+                    
+                    menu = menu.appending(addAction)
                 }
                 
-                children.append(addToSidebarAction)
+                children.append(menu)
             }
             
             children.append(contentsOf: [operationItemsMenu, pasteboardOptions])

@@ -16,6 +16,12 @@ class PathListsSplitViewController: PathContentsTableViewController {
         // Select the first item by default
         tableView(self.tableView, didSelectRowAt: [0, 0])
         self.navigationItem.rightBarButtonItem = nil
+        self.navigationItem.searchController = nil
+        self.toolbarItems = [UIBarButtonItem(title: "New group..", style: .plain, target: self, action: #selector(newGroup))]
+        NotificationCenter.default.addObserver(forName: .pathGroupsDidChange, object: nil, queue: nil) { _ in
+            self.tableView.reloadData()
+        }
+        self.navigationController?.setToolbarHidden(false, animated: false)
     }
     
     override func goToPath(path: URL) {
@@ -35,24 +41,76 @@ class PathListsSplitViewController: PathContentsTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        guard self.contents.count > 1 else {
+        let pathGroups = UserPreferences.pathGroups[indexPath.section]
+        guard pathGroups.paths[indexPath.row] != .root && pathGroups.name != "Defaults" else {
             return nil
         }
         
         let removeAction = UIContextualAction(style: .destructive, title: nil) { _, _, completion in
-            UserPreferences.sidebarPaths.remove(at: indexPath.row)
-            self.unfilteredContents = UserPreferences.sidebarPaths.map { URL(fileURLWithPath: $0) }
-            self.tableView.deleteRows(at: [indexPath], with: .fade)
+            UserPreferences.pathGroups[indexPath.section].paths.remove(at: indexPath.row)
+            
+            if UserPreferences.pathGroups[indexPath.section].paths.isEmpty {
+                // if the group is now empty, completely remove it
+                UserPreferences.pathGroups.remove(at: indexPath.section)
+            }
+            
             completion(true)
         }
         
         return UISwipeActionsConfiguration(actions: [removeAction])
     }
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        
-        super.tableView(tableView, didSelectRowAt: indexPath)
-        self.currentPath = contents[indexPath.row] // Set the current path
+
+    override var contents: [URL] {
+        return UserPreferences.pathGroups.flatMap(\.paths)
     }
     
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let item = UserPreferences.pathGroups[indexPath.section].paths[indexPath.row]
+        goToPath(path: item)
+        self.currentPath = UserPreferences.pathGroups[indexPath.section].paths[indexPath.row] // Set the current path
+    }
+    
+    override func numberOfSections(in tableView: UITableView) -> Int {
+        return UserPreferences.pathGroups.count
+    }
+    
+    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return UserPreferences.pathGroups[section].paths.count
+    }
+    
+    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        cellRow(forURL: UserPreferences.pathGroups[indexPath.section].paths[indexPath.row], displayFullPathAsSubtitle: true)
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        UserPreferences.pathGroups[section].name
+    }
+    
+    @objc func newGroup() {
+        let alert = UIAlertController(title: "New group", message: "Enter the name of the group", preferredStyle: .alert)
+        alert.addTextField { textField in
+            textField.placeholder = "name.."
+        }
+        
+        let addAction = UIAlertAction(title: "Add", style: .default) { _ in
+            guard let name = alert.textFields?.first?.text, !name.isEmpty else {
+                alert.dismiss(animated: true)
+                self.errorAlert("Name must be inputted", title: "Invalid name")
+                return
+            }
+            
+            guard !UserPreferences.pathGroups.map(\.name).contains(name) else {
+                alert.dismiss(animated: true)
+                self.errorAlert("\"\(name)\" Already exists", title: "Item already exists")
+                return
+            }
+            
+            UserPreferences.pathGroups.append(.init(name: name, paths: []))
+            self.tableView.reloadData()
+        }
+        
+        alert.addAction(.init(title: "Cancel", style: .cancel))
+        alert.addAction(addAction)
+        self.present(alert, animated: true)
+    }
 }

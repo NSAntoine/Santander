@@ -49,17 +49,6 @@ enum UserPreferences {
         }
     }
     
-    /// The paths to dispaly in the sidebar
-    static var sidebarPaths: [String] {
-        get {
-            UserDefaults.standard.stringArray(forKey: "sidebarPaths") ?? [URL.root.path]
-        }
-        
-        set {
-            UserDefaults.standard.set(newValue, forKey: "sidebarPaths")
-        }
-    }
-    
     static var showInfoButton: Bool {
         get {
             return UserDefaults.standard.bool(forKey: "ShowInfoButton")
@@ -68,5 +57,35 @@ enum UserPreferences {
         set {
             UserDefaults.standard.set(newValue, forKey: "ShowInfoButton")
         }
+    }
+    
+    static var pathGroups: [PathGroup] {
+        get {
+            guard let data = UserDefaults.standard.data(forKey: "UserPathGroups"),
+                  let decoded = try? JSONDecoder().decode([PathGroup].self, from: data), !decoded.isEmpty else {
+                return PathGroup.defaults
+            }
+
+            return decoded
+        }
+        
+        set {
+            guard let encoded = try? JSONEncoder().encode(newValue) else {
+                return
+            }
+            
+            UserDefaults.standard.set(encoded, forKey: "UserPathGroups")
+            NotificationCenter.default.post(name: .pathGroupsDidChange, object: nil)
+        }
+    }
+}
+
+/// A Group containing paths
+struct PathGroup: Codable, Hashable {
+    let name: String
+    var paths: [URL]
+    
+    static var defaults: [PathGroup] {
+        return [PathGroup(name: "Default", paths: [.root])]
     }
 }

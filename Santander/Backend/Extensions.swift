@@ -145,3 +145,9 @@ fileprivate let allocatedSizeResourceKeys: Set<URLResourceKey> = [
     .fileAllocatedSizeKey,
     .totalFileAllocatedSizeKey,
 ]
+
+extension NSNotification.Name {
+    static var pathGroupsDidChange: NSNotification.Name {
+        return NSNotification.Name("pathGroupsDidChange")
+    }
+}
