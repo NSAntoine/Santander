@@ -185,7 +185,7 @@ class PathContentsTableViewController: UITableViewController {
             handler(true)
         }
         
-        favouriteAction.backgroundColor = .systemYellow
+        favouriteAction.backgroundColor = .systemBlue
         favouriteAction.image = itemAlreadyFavourited ? UIImage(systemName: "star.fill") : UIImage(systemName: "star")
 
         let deleteAction = UIContextualAction(style: .destructive, title: nil) { _, _, completion in
@@ -446,7 +446,16 @@ class PathContentsTableViewController: UITableViewController {
                 children.append(menu)
             }
             
+            let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
+                do {
+                    try FileManager.default.removeItem(at: item)
+                } catch {
+                    self.errorAlert(error, title: "Unable to delete item")
+                }
+            }
+            
             children.append(contentsOf: [operationItemsMenu, pasteboardOptions])
+            children.append(contentsOf: [UIMenu(options: .displayInline, children: [deleteAction])])
             return UIMenu(children: children)
         }
     }
