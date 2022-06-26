@@ -37,7 +37,7 @@ class PathOperationViewController: PathContentsTableViewController {
         super.viewDidLoad()
         
         self.navigationController?.navigationBar.prefersLargeTitles = false
-        self.title = self.operationType == .move ? "Moving to.." : "Copying to.."
+        self.title = self.operationType.verbDescription
         if let currentPath = self.currentPath {
             self.navigationItem.backBarButtonItem = UIBarButtonItem(title: currentPath.lastPathComponent, style: .plain, target: nil, action: nil)
         }
@@ -51,10 +51,12 @@ class PathOperationViewController: PathContentsTableViewController {
         }
         
         let destinationPath = currentPath.appendingPathComponent(movingPath.lastPathComponent)
+        print("Importing \(movingPath) to \(destinationPath)")
         do {
-            if operationType == .move {
+            switch operationType {
+            case .move:
                 try FileManager.default.moveItem(at: movingPath, to: destinationPath)
-            } else {
+            case .copy, .import:
                 try FileManager.default.copyItem(at: movingPath, to: destinationPath)
             }
             
@@ -83,12 +85,28 @@ enum PathSelectionOperation: CustomStringConvertible {
     /// To move the path
     case copy
     
+    /// To import the path
+    case `import`
+    
     var description: String {
         switch self {
         case .move:
             return "move"
         case .copy:
             return "copy"
+        case .import:
+            return "import"
+        }
+    }
+    
+    var verbDescription: String {
+        switch self {
+        case .move:
+            return "Moving to.."
+        case .copy:
+            return "Copying to.."
+        case .import:
+            return "Importing to.."
         }
     }
 }

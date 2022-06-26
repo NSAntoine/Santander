@@ -1,5 +1,5 @@
 //
-//  PathTableViewController.swift
+//  PathContentsTableViewController.swift
 //  Santander
 //
 //  Created by Serena on 21/06/2022
@@ -223,7 +223,7 @@ class PathContentsTableViewController: UITableViewController {
         var menu = UIMenu(title: "Go to..", image: UIImage(systemName: "arrow.right"))
         
         let commonLocations: [String: URL?] = [
-            "Home" : URL(fileURLWithPath: NSHomeDirectory()),
+            "Home" : .home,
             "Applications": FileManager.default.urls(for: .applicationDirectory, in: .userDomainMask).first,
             "Documents" : FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
             "Downloads": FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first,

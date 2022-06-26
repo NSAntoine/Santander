@@ -70,6 +70,10 @@ extension URL {
     static var root: URL {
         return URL(fileURLWithPath: "/")
     }
+    
+    static var home: URL {
+        return URL(fileURLWithPath: NSHomeDirectory())
+    }
 }
 
 extension UIViewController {

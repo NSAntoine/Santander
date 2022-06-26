@@ -13,7 +13,7 @@
 		3789B5E228622B7A00058688 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3789B5E128622B7A00058688 /* SceneDelegate.swift */; };
 		3789B5E928622B7C00058688 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3789B5E828622B7C00058688 /* Assets.xcassets */; };
 		3789B5EC28622B7C00058688 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 3789B5EA28622B7C00058688 /* LaunchScreen.storyboard */; };
-		3789B5F428622E0D00058688 /* PathTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3789B5F328622E0D00058688 /* PathTableViewController.swift */; };
+		3789B5F428622E0D00058688 /* PathContentsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3789B5F328622E0D00058688 /* PathContentsTableViewController.swift */; };
 		37932F052863205F00BF48C8 /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37932F042863205F00BF48C8 /* UserPreferences.swift */; };
 		37C6E0C52865CF7C00BDDA16 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C42865CF7C00BDDA16 /* SettingsTableViewController.swift */; };
 		37C6E0C828662C4100BDDA16 /* DragAndDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */; };
@@ -24,6 +24,19 @@
 		37DE0FA22864902400E5EBBC /* FilePreviewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		3765393B286920FC00D76430 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		3771D37A2862329D00E200B6 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		3771D37E2862493E00E200B6 /* PathInformationTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathInformationTableView.swift; sourceTree = "<group>"; };
@@ -33,7 +46,7 @@
 		3789B5E828622B7C00058688 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		3789B5EB28622B7C00058688 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		3789B5ED28622B7C00058688 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		3789B5F328622E0D00058688 /* PathTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathTableViewController.swift; sourceTree = "<group>"; };
+		3789B5F328622E0D00058688 /* PathContentsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathContentsTableViewController.swift; sourceTree = "<group>"; };
 		37932F042863205F00BF48C8 /* UserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferences.swift; sourceTree = "<group>"; };
 		37C6E0C42865CF7C00BDDA16 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragAndDrop.swift; sourceTree = "<group>"; };
@@ -109,7 +122,7 @@
 		37C6E0C628662C2900BDDA16 /* Path */ = {
 			isa = PBXGroup;
 			children = (
-				3789B5F328622E0D00058688 /* PathTableViewController.swift */,
+				3789B5F328622E0D00058688 /* PathContentsTableViewController.swift */,
 				37C6E0CF28673AFF00BDDA16 /* Search.swift */,
 				37C6E0D12867653A00BDDA16 /* PathsListSplitViewController.swift */,
 				37C6E0CD28665B2A00BDDA16 /* PathOperationViewController.swift */,
@@ -128,6 +141,7 @@
 				3789B5D828622B7A00058688 /* Sources */,
 				3789B5D928622B7A00058688 /* Frameworks */,
 				3789B5DA28622B7A00058688 /* Resources */,
+				3765393B286920FC00D76430 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
@@ -193,7 +207,7 @@
 				37C6E0CA28662C6800BDDA16 /* SortingWays.swift in Sources */,
 				37C6E0C828662C4100BDDA16 /* DragAndDrop.swift in Sources */,
 				37932F052863205F00BF48C8 /* UserPreferences.swift in Sources */,
-				3789B5F428622E0D00058688 /* PathTableViewController.swift in Sources */,
+				3789B5F428622E0D00058688 /* PathContentsTableViewController.swift in Sources */,
 				3789B5E028622B7A00058688 /* AppDelegate.swift in Sources */,
 				37DE0FA22864902400E5EBBC /* FilePreviewDataSource.swift in Sources */,
 				37C6E0D22867653A00BDDA16 /* PathsListSplitViewController.swift in Sources */,
