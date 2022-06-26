@@ -416,19 +416,14 @@ class PathContentsTableViewController: UITableViewController {
                 self.openInfoBottomSheet(path: item)
             }
             
-            // Seperate the children into an array
-            // So that we can choose if the share action should be allowed
-            var children: [UIMenuElement] = [informationAction]
-            if !item.isDirectory {
-                let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                    let vc = UIActivityViewController.init(activityItems: [item], applicationActivities: [])
-                    vc.popoverPresentationController?.sourceView = self.view
-                    vc.popoverPresentationController?.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
-                    self.present(vc, animated: true)
-                }
-                
-                children.append(shareAction)
+            let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+                let vc = UIActivityViewController.init(activityItems: [item], applicationActivities: [])
+                vc.popoverPresentationController?.sourceView = self.view
+                vc.popoverPresentationController?.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+                self.present(vc, animated: true)
             }
+            
+            var children: [UIMenuElement] = [informationAction, shareAction]
             
             if UIDevice.current.userInterfaceIdiom == .pad {
                 var menu = UIMenu(title: "Add to group..", image: UIImage(systemName: "sidebar.leading"), children: [])
