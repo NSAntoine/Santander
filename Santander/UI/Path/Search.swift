@@ -8,14 +8,16 @@
 
 import UIKit
 
-extension PathContentsTableViewController: UISearchResultsUpdating, UISearchBarDelegate {
+extension PathContentsTableViewController: UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate {
+    
     func updateSearchResults(for searchController: UISearchController) {
         updateResults(searchBar: searchController.searchBar)
     }
     
-    func cancelSearch() {
+    func cancelSearch(displaySuggestions: Bool = false) {
         self.filteredSearchContents = []
         self.isSearching = false
+        self.doDisplaySearchSuggestions = displaySuggestions
         tableView.reloadData()
     }
     
@@ -28,9 +30,11 @@ extension PathContentsTableViewController: UISearchResultsUpdating, UISearchBarD
     }
     
     func updateResults(searchBar: UISearchBar) {
-        guard let searchText = searchBar.text, !searchText.isEmpty else {
-            cancelSearch()
-            return
+        let searchText = searchBar.searchTextField.text ?? ""
+        if searchBar.searchTextField.tokens.isEmpty {
+            guard !searchText.isEmpty else {
+                return
+            }
         }
         
         self.isSearching = true
@@ -41,9 +45,45 @@ extension PathContentsTableViewController: UISearchResultsUpdating, UISearchBarD
             results = unfilteredContents
         }
         
+        
+        let conditions = searchBar.searchTextField.tokens.compactMap { token in
+            token.representedObject as? ((URL) -> Bool)
+        }
+        
         // Eventually, I want to make it so that the user can choose between if they want to search for the file name
         // and for the path
-        self.filteredSearchContents = results.filter { $0.lastPathComponent.localizedCaseInsensitiveContains(searchText) }
+        self.filteredSearchContents = results.filter { url in
+            let allConditionsMet = conditions.map { condition in
+                condition(url)
+            }.allSatisfy { isCondtionTrue in
+                return isCondtionTrue
+            }
+            
+            if !searchText.isEmpty {
+                return allConditionsMet && url.lastPathComponent.localizedCaseInsensitiveContains(searchText)
+            }
+            
+            return allConditionsMet
+        }
+        
+        self.doDisplaySearchSuggestions = false
         tableView.reloadData()
+    }
+    
+    func presentSearchController(_ searchController: UISearchController) {
+        self.doDisplaySearchSuggestions = true
+        tableView.reloadData()
+    }
+}
+
+struct SearchSuggestion {
+    let name: String
+    let image: UIImage?
+    var condition: ((URL) -> Bool)
+    
+    var searchToken: UISearchToken {
+        let token = UISearchToken(icon: image, text: name)
+        token.representedObject = condition
+        return token
     }
 }

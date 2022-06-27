@@ -45,6 +45,21 @@ class PathContentsTableViewController: UITableViewController {
     /// The directory monitor, assigned and used only when currentPath is not nil
     var directoryMonitor: DirectoryMonitor? = nil
     
+    /// Whether or not to display the search suggestions
+    var doDisplaySearchSuggestions: Bool = false
+    
+    lazy var searchSuggestions: [SearchSuggestion] = [
+        SearchSuggestion(name: "Symbolic Link", image: nil) { url in
+            return url.isSymlink
+        },
+        
+        SearchSuggestion(name: "File", image: nil, condition: { url in
+            return !url.isDirectory
+        })
+        
+        
+    ]
+    
     /// Initialize with a given path URL
     init(style: UITableView.Style = .automatic, path: URL, isFavouritePathsSheet: Bool = false) {
         self.unfilteredContents = path.contents.sorted { firstURL, secondURL in
@@ -119,6 +134,7 @@ class PathContentsTableViewController: UITableViewController {
             searchController.searchBar.delegate = self
             searchController.obscuresBackgroundDuringPresentation = false
             searchController.searchResultsUpdater = self
+            searchController.delegate = self
             self.navigationItem.hidesSearchBarWhenScrolling = !UserPreferences.alwaysShowSearchBar
             if let currentPath = currentPath {
                 searchController.searchBar.scopeButtonTitles = [currentPath.lastPathComponent, "Subdirectories"]
@@ -147,6 +163,10 @@ class PathContentsTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if self.doDisplaySearchSuggestions {
+            return self.searchSuggestions.count
+        }
+        
         return self.contents.count
     }
     
@@ -161,12 +181,30 @@ class PathContentsTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedItem = contents[indexPath.row]
-        goToPath(path: selectedItem)
+        if doDisplaySearchSuggestions {
+            let searchTextField = self.navigationItem.searchController?.searchBar.searchTextField
+            let tokensCount = searchTextField?.tokens.count
+            searchTextField?.insertToken(searchSuggestions[indexPath.row].searchToken, at: tokensCount ?? 0)
+        } else {
+            let selectedItem = contents[indexPath.row]
+            goToPath(path: selectedItem)
+        }
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        return self.cellRow(forURL: contents[indexPath.row], displayFullPathAsSubtitle: self.isSearching || self.isFavouritePathsSheet)
+        if doDisplaySearchSuggestions {
+            let cell = UITableViewCell()
+            var conf = cell.defaultContentConfiguration()
+            conf.text = searchSuggestions[indexPath.row].name
+            conf.image = searchSuggestions[indexPath.row].image
+            cell.contentConfiguration = conf
+            return cell
+        } else {
+            return self.cellRow(
+                forURL: contents[indexPath.row],
+                displayFullPathAsSubtitle: self.isSearching || self.isFavouritePathsSheet
+            )
+        }
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -414,6 +452,11 @@ class PathContentsTableViewController: UITableViewController {
     }
         
     override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        
+        if doDisplaySearchSuggestions {
+            return nil // No context menu for search suggestions
+        }
+        
         let item = contents[indexPath.row]
         return UIContextMenuConfiguration(identifier: nil) {
             return nil

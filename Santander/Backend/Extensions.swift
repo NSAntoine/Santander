@@ -74,6 +74,10 @@ extension URL {
     static var home: URL {
         return URL(fileURLWithPath: NSHomeDirectory())
     }
+    
+    var isSymlink: Bool {
+        return (try? FileManager.default.destinationOfSymbolicLink(atPath: self.path)) != nil
+    }
 }
 
 extension UIViewController {
