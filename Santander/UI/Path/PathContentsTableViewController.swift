@@ -72,13 +72,6 @@ class PathContentsTableViewController: UITableViewController {
         
         self.title = self.pathName
         
-        if let currentPath = currentPath, currentPath.lastPathComponent != "/" {
-            self.navigationItem.backBarButtonItem = UIBarButtonItem(
-                title: currentPath.lastPathComponent,
-                image: nil, primaryAction: nil, menu: nil
-            )
-        }
-        
         let seeFavouritesAction = UIAction(title: "Favourites", image: UIImage(systemName: "star.fill")) { _ in
             let newVC = UINavigationController(rootViewController: PathContentsTableViewController(
                 contents: UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) },
@@ -100,6 +93,7 @@ class PathContentsTableViewController: UITableViewController {
                 self.openInfoBottomSheet(path: currentPath)
             }
             
+            menuActions.insert(makeNewItemMenu(forURL: currentPath), at: 2)
             menuActions.append(showInfoAction)
         }
         
@@ -217,6 +211,19 @@ class PathContentsTableViewController: UITableViewController {
         return menu.replacingChildren(actions)
     }
     
+    func makeNewItemMenu(forURL url: URL) -> UIMenu {
+        let newFile = UIAction(title: "File", image: UIImage(systemName: "doc")) { _ in
+            self.presentAlertAndCreate(type: .file, forURL: url)
+        }
+        
+        let newFolder = UIAction(title: "Folder", image: UIImage(systemName: "folder")) { _ in
+            self.presentAlertAndCreate(type: .directory, forURL: url)
+        }
+        
+        return UIMenu(title: "New..", image: UIImage(systemName: "plus"), children: [newFile, newFolder])
+    }
+    
+    
     // A UIMenu containing different, common, locations to go to, as well as an option
     // to go to a specified URL
     func makeGoToMenu() -> UIMenu {
@@ -227,7 +234,7 @@ class PathContentsTableViewController: UITableViewController {
             "Applications": FileManager.default.urls(for: .applicationDirectory, in: .userDomainMask).first,
             "Documents" : FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
             "Downloads": FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first,
-            "/ (Root)" : URL(fileURLWithPath: "/"),
+            "/ (Root)" : .root,
             "var": URL(fileURLWithPath: "/var")
         ]
         
