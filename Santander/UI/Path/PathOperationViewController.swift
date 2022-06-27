@@ -51,13 +51,14 @@ class PathOperationViewController: PathContentsTableViewController {
         }
         
         let destinationPath = currentPath.appendingPathComponent(movingPath.lastPathComponent)
-        print("Importing \(movingPath) to \(destinationPath)")
         do {
             switch operationType {
             case .move:
                 try FileManager.default.moveItem(at: movingPath, to: destinationPath)
             case .copy, .import:
                 try FileManager.default.copyItem(at: movingPath, to: destinationPath)
+            case .symlink:
+                try FileManager.default.createSymbolicLink(at: destinationPath, withDestinationURL: movingPath)
             }
             
             self.dismiss(animated: true)
@@ -88,6 +89,9 @@ enum PathSelectionOperation: CustomStringConvertible {
     /// To import the path
     case `import`
     
+    /// To create a symbolic link to the path
+    case symlink
+    
     var description: String {
         switch self {
         case .move:
@@ -96,6 +100,8 @@ enum PathSelectionOperation: CustomStringConvertible {
             return "copy"
         case .import:
             return "import"
+        case .symlink:
+            return "symlink"
         }
     }
     
@@ -107,6 +113,8 @@ enum PathSelectionOperation: CustomStringConvertible {
             return "Copying to.."
         case .import:
             return "Importing to.."
+        case .symlink:
+            return "Aliasing to.."
         }
     }
 }

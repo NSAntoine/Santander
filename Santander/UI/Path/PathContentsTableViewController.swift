@@ -417,8 +417,13 @@ class PathContentsTableViewController: UITableViewController {
                 self.present(UINavigationController(rootViewController: vc), animated: true)
             }
             
+            let createSymlink = UIAction(title: "Create symbolic link to..") { _ in
+                let vc = PathOperationViewController(movingPath: item, sourceContentsVC: self, operationType: .symlink, startingPath: self.currentPath ?? .root)
+                self.present(UINavigationController(rootViewController: vc), animated: true)
+            }
+            
             let pasteboardOptions = UIMenu(options: .displayInline, children: self.makePasteboardMenuElements(for: item))
-            let operationItemsMenu = UIMenu(options: .displayInline, children: [movePath, copyPath])
+            let operationItemsMenu = UIMenu(options: .displayInline, children: [movePath, copyPath, createSymlink])
             let informationAction = UIAction(title: "Info", image: UIImage(systemName: "info.circle")) { _ in
                 self.openInfoBottomSheet(path: item)
             }
