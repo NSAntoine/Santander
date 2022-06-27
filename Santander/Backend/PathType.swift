@@ -8,7 +8,7 @@
 
 import UIKit
 
-extension PathContentsTableViewController {
+extension UITableViewController {
     /// Presents an alert to create a new path based on the path type
     func presentAlertAndCreate(type: PathType, forURL url: URL) {
         let alert = UIAlertController(title: "New \(type.description)", message: nil, preferredStyle: .alert)
@@ -25,6 +25,7 @@ extension PathContentsTableViewController {
             let urlToCreate = url.appendingPathComponent(name)
             do {
                 try type.create(to: urlToCreate)
+                self.tableView.reloadData()
             } catch {
                 self.errorAlert(error, title: "Unable to create \(name)")
             }

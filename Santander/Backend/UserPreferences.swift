@@ -91,3 +91,9 @@ struct PathGroup: Codable, Hashable {
         ]
     }
 }
+
+extension Collection {
+    subscript(safe safeIndex: Index) -> Element? {
+        return self.indices.contains(safeIndex) ? self[safeIndex] : nil
+    }
+}

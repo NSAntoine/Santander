@@ -42,14 +42,14 @@ class PathListsSplitViewController: PathContentsTableViewController {
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let pathGroups = UserPreferences.pathGroups[indexPath.section]
-        guard pathGroups.paths[indexPath.row] != .root && pathGroups.name != "Defaults" else {
+        guard !(pathGroups.paths[indexPath.row] == .root && pathGroups.name == "Defaults") else {
             return nil
         }
         
         let removeAction = UIContextualAction(style: .destructive, title: nil) { _, _, completion in
             UserPreferences.pathGroups[indexPath.section].paths.remove(at: indexPath.row)
             
-            if UserPreferences.pathGroups[indexPath.section].paths.isEmpty {
+            if UserPreferences.pathGroups[safe: indexPath.section]?.paths.isEmpty ?? false {
                 // if the group is now empty, completely remove it
                 UserPreferences.pathGroups.remove(at: indexPath.section)
             }

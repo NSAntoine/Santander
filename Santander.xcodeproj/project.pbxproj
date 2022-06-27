@@ -16,6 +16,7 @@
 		3789B5F428622E0D00058688 /* PathContentsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3789B5F328622E0D00058688 /* PathContentsTableViewController.swift */; };
 		37932F052863205F00BF48C8 /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37932F042863205F00BF48C8 /* UserPreferences.swift */; };
 		37963F132869C96C00C4B72A /* PathType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37963F122869C96C00C4B72A /* PathType.swift */; };
+		37963F17286A0F0B00C4B72A /* DirectoryMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37963F16286A0F0B00C4B72A /* DirectoryMonitor.swift */; };
 		37C6E0C52865CF7C00BDDA16 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C42865CF7C00BDDA16 /* SettingsTableViewController.swift */; };
 		37C6E0C828662C4100BDDA16 /* DragAndDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */; };
 		37C6E0CA28662C6800BDDA16 /* SortingWays.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C928662C6800BDDA16 /* SortingWays.swift */; };
@@ -50,6 +51,7 @@
 		3789B5F328622E0D00058688 /* PathContentsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathContentsTableViewController.swift; sourceTree = "<group>"; };
 		37932F042863205F00BF48C8 /* UserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferences.swift; sourceTree = "<group>"; };
 		37963F122869C96C00C4B72A /* PathType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathType.swift; sourceTree = "<group>"; };
+		37963F16286A0F0B00C4B72A /* DirectoryMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectoryMonitor.swift; sourceTree = "<group>"; };
 		37C6E0C42865CF7C00BDDA16 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragAndDrop.swift; sourceTree = "<group>"; };
 		37C6E0C928662C6800BDDA16 /* SortingWays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortingWays.swift; sourceTree = "<group>"; };
@@ -77,6 +79,7 @@
 				37963F122869C96C00C4B72A /* PathType.swift */,
 				37932F042863205F00BF48C8 /* UserPreferences.swift */,
 				37C6E0C928662C6800BDDA16 /* SortingWays.swift */,
+				37963F16286A0F0B00C4B72A /* DirectoryMonitor.swift */,
 			);
 			path = Backend;
 			sourceTree = "<group>";
@@ -214,6 +217,7 @@
 				3789B5F428622E0D00058688 /* PathContentsTableViewController.swift in Sources */,
 				3789B5E028622B7A00058688 /* AppDelegate.swift in Sources */,
 				37DE0FA22864902400E5EBBC /* FilePreviewDataSource.swift in Sources */,
+				37963F17286A0F0B00C4B72A /* DirectoryMonitor.swift in Sources */,
 				37C6E0D22867653A00BDDA16 /* PathsListSplitViewController.swift in Sources */,
 				37C6E0D028673AFF00BDDA16 /* Search.swift in Sources */,
 				3771D37F2862493E00E200B6 /* PathInformationTableView.swift in Sources */,

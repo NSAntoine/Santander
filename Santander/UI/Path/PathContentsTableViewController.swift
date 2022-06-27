@@ -42,6 +42,9 @@ class PathContentsTableViewController: UITableViewController {
     
     let showInfoButton: Bool = UserPreferences.showInfoButton
     
+    /// The directory monitor, assigned and used only when currentPath is not nil
+    var directoryMonitor: DirectoryMonitor? = nil
+    
     /// Initialize with a given path URL
     init(style: UITableView.Style = .automatic, path: URL, isFavouritePathsSheet: Bool = false) {
         self.unfilteredContents = path.contents.sorted { firstURL, secondURL in
@@ -95,6 +98,9 @@ class PathContentsTableViewController: UITableViewController {
             
             menuActions.insert(makeNewItemMenu(forURL: currentPath), at: 2)
             menuActions.append(showInfoAction)
+            self.directoryMonitor = DirectoryMonitor(url: currentPath)
+            self.directoryMonitor?.delegate = self
+            directoryMonitor?.startMonitoring()
         }
         
         let settingsAction = UIAction(title: "Settings", image: UIImage(systemName: "gear")) { _ in
@@ -142,6 +148,12 @@ class PathContentsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return self.contents.count
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        // Stop monitoring for directory changes once the view will disappear
+        directoryMonitor?.stopMonitoring()
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -498,5 +510,16 @@ class PathContentsTableViewController: UITableViewController {
         }
         
         return [copyName, copyPath]
+    }
+}
+
+extension PathContentsTableViewController: DirectoryMonitorDelegate {
+    func directoryMonitorDidObserveChange(directoryMonitor: DirectoryMonitor) {
+        if self.unfilteredContents != directoryMonitor.url.contents {
+            DispatchQueue.main.async {
+                self.unfilteredContents = directoryMonitor.url.contents
+                self.tableView.reloadData()
+            }
+        }
     }
 }
