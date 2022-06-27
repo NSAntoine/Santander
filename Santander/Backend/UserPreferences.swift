@@ -65,8 +65,8 @@ enum UserPreferences {
                   let decoded = try? JSONDecoder().decode([PathGroup].self, from: data), !decoded.isEmpty else {
                 return PathGroup.defaults
             }
-
-            return decoded
+            
+            return decoded.removingDuplicates()
         }
         
         set {
