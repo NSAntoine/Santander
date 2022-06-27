@@ -423,7 +423,28 @@ class PathContentsTableViewController: UITableViewController {
                 self.present(vc, animated: true)
             }
             
-            var children: [UIMenuElement] = [informationAction, shareAction]
+            let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "rectangle.and.pencil.and.ellipsis")) { _ in
+                let alert = UIAlertController(title: "Rename", message: nil, preferredStyle: .alert)
+                let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+                let renameAction = UIAlertAction(title: "Rename", style: .default) { _ in
+                    guard let name = alert.textFields?.first?.text else {
+                        return
+                    }
+                    
+                    do {
+                        let newPath = item.deletingLastPathComponent().appendingPathComponent(name)
+                        try FileManager.default.moveItem(at: item, to: newPath)
+                    } catch {
+                        self.errorAlert(error, title: "Unable to rename \(item.lastPathComponent)")
+                    }
+                }
+                alert.addTextField()
+                alert.addAction(cancelAction)
+                alert.addAction(renameAction)
+                self.present(alert, animated: true)
+            }
+            
+            var children: [UIMenuElement] = [informationAction, renameAction, shareAction]
             
             if UIDevice.current.userInterfaceIdiom == .pad {
                 var menu = UIMenu(title: "Add to group..", image: UIImage(systemName: "sidebar.leading"), children: [])
