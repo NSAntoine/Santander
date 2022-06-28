@@ -50,8 +50,6 @@ extension PathContentsTableViewController: UISearchResultsUpdating, UISearchCont
             token.representedObject as? ((URL) -> Bool)
         }
         
-        // Eventually, I want to make it so that the user can choose between if they want to search for the file name
-        // and for the path
         self.filteredSearchContents = results.filter { url in
             let allConditionsMet = conditions.map { condition in
                 condition(url)
@@ -85,5 +83,36 @@ struct SearchSuggestion {
         let token = UISearchToken(icon: image, text: name)
         token.representedObject = condition
         return token
+    }
+    
+    /// The search suggestion to display in the UI, based on the indexPath given
+    static func displaySearchSuggestions(for indexPath: IndexPath) -> SearchSuggestion {
+        switch (indexPath.section, indexPath.row) {
+        case (0, 0):
+            return SearchSuggestion(name: "File", image: UIImage(systemName: "doc")) { url in
+                return !url.isDirectory
+            }
+        case (0, 1):
+            return SearchSuggestion(name: "Directory", image: UIImage(systemName: "folder")) { url in
+                return url.isDirectory
+            }
+        case (0, 2):
+            return SearchSuggestion(name: "Symbolic Link", image: UIImage(systemName: "link")) { url in
+                return url.isSymlink
+            }
+        case (1, 0):
+            return SearchSuggestion(name: "Executable", image: UIImage(systemName: "terminal")) { url in
+                return !url.isDirectory && FileManager.default.isExecutableFile(atPath: url.path)
+            }
+        case (1, 1):
+            return SearchSuggestion(name: "Readable", image: UIImage(systemName: "book")) { url in
+                return FileManager.default.isReadableFile(atPath: url.path)
+            }
+        case (1, 2):
+            return SearchSuggestion(name: "Writable", image: UIImage(systemName: "pencil")) { url in
+                return FileManager.default.isWritableFile(atPath: url.path)
+            }
+        default: fatalError()
+        }
     }
 }

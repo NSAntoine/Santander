@@ -42,23 +42,8 @@ class PathContentsTableViewController: UITableViewController {
     
     let showInfoButton: Bool = UserPreferences.showInfoButton
     
-    /// The directory monitor, assigned and used only when currentPath is not nil
-    var directoryMonitor: DirectoryMonitor? = nil
-    
     /// Whether or not to display the search suggestions
     var doDisplaySearchSuggestions: Bool = false
-    
-    lazy var searchSuggestions: [SearchSuggestion] = [
-        SearchSuggestion(name: "Symbolic Link", image: nil) { url in
-            return url.isSymlink
-        },
-        
-        SearchSuggestion(name: "File", image: nil, condition: { url in
-            return !url.isDirectory
-        })
-        
-        
-    ]
     
     /// Initialize with a given path URL
     init(style: UITableView.Style = .automatic, path: URL, isFavouritePathsSheet: Bool = false) {
@@ -113,9 +98,6 @@ class PathContentsTableViewController: UITableViewController {
             
             menuActions.insert(makeNewItemMenu(forURL: currentPath), at: 2)
             menuActions.append(showInfoAction)
-            self.directoryMonitor = DirectoryMonitor(url: currentPath)
-            self.directoryMonitor?.delegate = self
-            directoryMonitor?.startMonitoring()
         }
         
         let settingsAction = UIAction(title: "Settings", image: UIImage(systemName: "gear")) { _ in
@@ -135,6 +117,7 @@ class PathContentsTableViewController: UITableViewController {
             searchController.obscuresBackgroundDuringPresentation = false
             searchController.searchResultsUpdater = self
             searchController.delegate = self
+            self.tableView.keyboardDismissMode = .onDrag
             self.navigationItem.hidesSearchBarWhenScrolling = !UserPreferences.alwaysShowSearchBar
             if let currentPath = currentPath {
                 searchController.searchBar.scopeButtonTitles = [currentPath.lastPathComponent, "Subdirectories"]
@@ -164,7 +147,11 @@ class PathContentsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if self.doDisplaySearchSuggestions {
-            return self.searchSuggestions.count
+            switch section {
+            case 0: return 3
+            case 1: return 3
+            default: break
+            }
         }
         
         return self.contents.count
@@ -172,11 +159,12 @@ class PathContentsTableViewController: UITableViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        // Stop monitoring for directory changes once the view will disappear
-        directoryMonitor?.stopMonitoring()
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
+        if doDisplaySearchSuggestions {
+            return 2
+        }
         return 1
     }
     
@@ -184,7 +172,7 @@ class PathContentsTableViewController: UITableViewController {
         if doDisplaySearchSuggestions {
             let searchTextField = self.navigationItem.searchController?.searchBar.searchTextField
             let tokensCount = searchTextField?.tokens.count
-            searchTextField?.insertToken(searchSuggestions[indexPath.row].searchToken, at: tokensCount ?? 0)
+            searchTextField?.insertToken(SearchSuggestion.displaySearchSuggestions(for: indexPath).searchToken, at: tokensCount ?? 0)
         } else {
             let selectedItem = contents[indexPath.row]
             goToPath(path: selectedItem)
@@ -195,8 +183,9 @@ class PathContentsTableViewController: UITableViewController {
         if doDisplaySearchSuggestions {
             let cell = UITableViewCell()
             var conf = cell.defaultContentConfiguration()
-            conf.text = searchSuggestions[indexPath.row].name
-            conf.image = searchSuggestions[indexPath.row].image
+            let suggestion = SearchSuggestion.displaySearchSuggestions(for: indexPath)
+            conf.text = suggestion.name
+            conf.image = suggestion.image
             cell.contentConfiguration = conf
             return cell
         } else {
@@ -338,7 +327,7 @@ class PathContentsTableViewController: UITableViewController {
     func goToPath(path: URL) {
         // if we're going to a directory, or a search result,
         // go to the directory path
-        if path.isDirectory || self.isSearching {
+        if path.isDirectory || (self.isSearching && doDisplaySearchSuggestions) {
             // Make sure we're opening a directory,
             // or the parent directory of the file selected
             let dirToOpen = path.isDirectory ? path : path.deletingLastPathComponent()
@@ -556,13 +545,3 @@ class PathContentsTableViewController: UITableViewController {
     }
 }
 
-extension PathContentsTableViewController: DirectoryMonitorDelegate {
-    func directoryMonitorDidObserveChange(directoryMonitor: DirectoryMonitor) {
-        if self.unfilteredContents != directoryMonitor.url.contents {
-            DispatchQueue.main.async {
-                self.unfilteredContents = directoryMonitor.url.contents
-                self.tableView.reloadData()
-            }
-        }
-    }
-}

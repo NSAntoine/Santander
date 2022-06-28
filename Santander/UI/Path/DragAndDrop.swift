@@ -48,6 +48,11 @@ extension PathContentsTableViewController: UITableViewDropDelegate, UITableViewD
     }
     
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
+        // if doDisplaySearchSuggestions is true, that means a search suggestion is being dragged
+        guard !doDisplaySearchSuggestions else {
+            return []
+        }
+        
         let selectedItem = contents[indexPath.row]
         let itemProvider = NSItemProvider()
         
