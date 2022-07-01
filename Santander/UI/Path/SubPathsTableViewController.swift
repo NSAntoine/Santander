@@ -1,5 +1,5 @@
 //
-//  PathContentsTableViewController.swift
+//  SubPathsTableViewController.swift
 //  Santander
 //
 //  Created by Serena on 21/06/2022
@@ -8,9 +8,10 @@
 
 import UIKit
 import QuickLook
+import UniformTypeIdentifiers
 
-/// Represents the subpaths under a Directory
-class PathContentsTableViewController: UITableViewController {
+/// A table view controller showing the subpaths under a Directory, or a group
+class SubPathsTableViewController: UITableViewController {
     
     /// The contents of the path, unfiltered
     var unfilteredContents: [URL]
@@ -28,8 +29,8 @@ class PathContentsTableViewController: UITableViewController {
         }
     }
     
-    /// The path name to be used as the ViewController's title
-    let pathName: String
+    /// The display name to be used as the ViewController's title
+    let displayName: String
     
     /// The method of sorting
     var sortWay: SortingWays = .alphabetically
@@ -45,13 +46,22 @@ class PathContentsTableViewController: UITableViewController {
     /// Whether or not to display the search suggestions
     var doDisplaySearchSuggestions: Bool = false
     
+    /// the Directory Monitor, used to observe changes
+    /// if the path is a directory
+    var directoryMonitor: DirectoryMonitor?
+    
+    /// The label which displays that the user doesn't have permission to view a directory,
+    /// or that the directory / group is empty
+    /// (if those conditions apply)
+    var noContentsLabel: UILabel!
+    
     /// Initialize with a given path URL
     init(style: UITableView.Style = .automatic, path: URL, isFavouritePathsSheet: Bool = false) {
         self.unfilteredContents = path.contents.sorted { firstURL, secondURL in
             firstURL.lastPathComponent < secondURL.lastPathComponent
         }
         
-        self.pathName = path.lastPathComponent
+        self.displayName = path.lastPathComponent
         self.currentPath = path
         self.isFavouritePathsSheet = isFavouritePathsSheet
         super.init(style: style)
@@ -60,7 +70,7 @@ class PathContentsTableViewController: UITableViewController {
     /// Initialize with the given specified URLs
     init(style: UITableView.Style = .automatic, contents: [URL], title: String, isFavouritePathsSheet: Bool = false) {
         self.unfilteredContents = contents
-        self.pathName = title
+        self.displayName = title
         self.isFavouritePathsSheet = isFavouritePathsSheet
         
         super.init(style: style)
@@ -73,10 +83,10 @@ class PathContentsTableViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.title = self.pathName
+        self.title = self.displayName
         
         let seeFavouritesAction = UIAction(title: "Favourites", image: UIImage(systemName: "star.fill")) { _ in
-            let newVC = UINavigationController(rootViewController: PathContentsTableViewController(
+            let newVC = UINavigationController(rootViewController: SubPathsTableViewController(
                 contents: UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) },
                 title: "Favourites",
                 isFavouritePathsSheet: true)
@@ -98,6 +108,9 @@ class PathContentsTableViewController: UITableViewController {
             
             menuActions.insert(makeNewItemMenu(forURL: currentPath), at: 2)
             menuActions.append(showInfoAction)
+            self.directoryMonitor = DirectoryMonitor(url: currentPath)
+            self.directoryMonitor?.delegate = self
+            directoryMonitor?.startMonitoring()
         }
         
         let settingsAction = UIAction(title: "Settings", image: UIImage(systemName: "gear")) { _ in
@@ -130,26 +143,15 @@ class PathContentsTableViewController: UITableViewController {
         tableView.dragDelegate = self
         
         if self.contents.isEmpty {
-            let label = UILabel()
-            label.text = "No items found."
-            label.font = .systemFont(ofSize: 20, weight: .medium)
-            label.textColor = .systemGray
-            label.textAlignment = .center
-            
-            self.view.addSubview(label)
-            label.translatesAutoresizingMaskIntoConstraints = false
-            NSLayoutConstraint.activate([
-                label.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-                label.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
-            ])
+            setupNoContentsLabel()
         }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if self.doDisplaySearchSuggestions {
             switch section {
-            case 0: return 3
-            case 1: return 3
+            case 0: return 1
+            case 1, 2: return 3
             default: break
             }
         }
@@ -159,11 +161,13 @@ class PathContentsTableViewController: UITableViewController {
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        
+        self.directoryMonitor?.stopMonitoring()
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
         if doDisplaySearchSuggestions {
-            return 2
+            return 3
         }
         return 1
     }
@@ -172,7 +176,34 @@ class PathContentsTableViewController: UITableViewController {
         if doDisplaySearchSuggestions {
             let searchTextField = self.navigationItem.searchController?.searchBar.searchTextField
             let tokensCount = searchTextField?.tokens.count
-            searchTextField?.insertToken(SearchSuggestion.displaySearchSuggestions(for: indexPath).searchToken, at: tokensCount ?? 0)
+            
+            if (indexPath.section, indexPath.row) == (0, 0) {
+                // The user wants to filter by type,
+                // prompt the viewController for doing so
+                let vc = TypesSelectionViewController { types in
+                    // Make sure the user selected a type before we insert the search token
+                    if !types.isEmpty {
+                        var searchSuggestion = SearchSuggestion.displaySearchSuggestions(for: indexPath, typesToCheck: types)
+                        // Set the name to the types
+                        searchSuggestion.name = types.compactMap(\.localizedDescription).joined(separator: ", ")
+                        searchTextField?.insertToken(searchSuggestion.searchToken, at: tokensCount ?? 0)
+                    }
+                }
+                
+                let navVC = UINavigationController(rootViewController: vc)
+                
+                if #available(iOS 15.0, *), let sheet = navVC.sheetPresentationController {
+                    //TODO: - Check if we can just do
+                    // `navVC.sheetPresentationController?.detents = [.medium(), .large()]`
+                    sheet.detents = [.medium(), .large()]
+                }
+                
+                self.present(navVC, animated: true)
+                
+            } else {
+                searchTextField?.insertToken(SearchSuggestion.displaySearchSuggestions(for: indexPath).searchToken, at: tokensCount ?? 0)
+            }
+            
         } else {
             let selectedItem = contents[indexPath.row]
             goToPath(path: selectedItem)
@@ -207,7 +238,9 @@ class PathContentsTableViewController: UITableViewController {
                 
                 // if we're in the favourites sheet, reload the table
                 if self.isFavouritePathsSheet {
-                    self.unfilteredContents = UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) }
+                    self.unfilteredContents = UserPreferences.favouritePaths.map {
+                        URL(fileURLWithPath: $0)
+                    }
                     self.tableView.deleteRows(at: [indexPath], with: .automatic)
                 }
             } else {
@@ -224,8 +257,6 @@ class PathContentsTableViewController: UITableViewController {
         let deleteAction = UIContextualAction(style: .destructive, title: nil) { _, _, completion in
             do {
                 try FileManager.default.removeItem(at: selectedItem)
-                self.unfilteredContents.removeAll { $0 == selectedItem }
-                self.tableView.deleteRows(at: [indexPath], with: .automatic)
                 completion(true)
             } catch {
                 self.errorAlert(error, title: "Couldn't remove item \(selectedItem.lastPathComponent)")
@@ -236,7 +267,6 @@ class PathContentsTableViewController: UITableViewController {
         deleteAction.image = UIImage(systemName: "trash")
         
         let config = UISwipeActionsConfiguration(actions: [deleteAction, favouriteAction])
-        config.performsFirstActionWithFullSwipe = false
         return config
     }
     
@@ -327,14 +357,37 @@ class PathContentsTableViewController: UITableViewController {
     func goToPath(path: URL) {
         // if we're going to a directory, or a search result,
         // go to the directory path
-        if path.isDirectory || (self.isSearching && doDisplaySearchSuggestions) {
+        if path.isDirectory || self.isSearching {
             // Make sure we're opening a directory,
             // or the parent directory of the file selected
             let dirToOpen = path.isDirectory ? path : path.deletingLastPathComponent()
-            self.navigationController?.pushViewController(PathContentsTableViewController(path: dirToOpen), animated: true)
+            
+            // if this is encountered, then the file selected (has to be a file in this case),
+            // is in the same directory
+            if dirToOpen == self.currentPath {
+                self.goToFile(path: path)
+            } else {
+                setPaths(forPath: dirToOpen)
+            }
+            
         } else {
             self.goToFile(path: path)
         }
+    }
+    
+    func setPaths(forPath path: URL) {
+        
+        let pathComponents = path.pathComponents
+        var arr: [UIViewController] = []
+        for (indx, _) in pathComponents.enumerated() {
+            var joined = pathComponents[pathComponents.startIndex...indx].joined(separator: "/")
+            if joined.hasPrefix("//") {
+                joined.removeFirst()
+            }
+            arr.append(SubPathsTableViewController(path: URL(fileURLWithPath: joined)))
+        }
+        
+        self.navigationController?.setViewControllers(arr, animated: true)
     }
     
     func sortContents(with filter: SortingWays) {
@@ -461,7 +514,7 @@ class PathContentsTableViewController: UITableViewController {
                 self.present(UINavigationController(rootViewController: vc), animated: true)
             }
             
-            let createSymlink = UIAction(title: "Create symbolic link to..") { _ in
+            let createSymlink = UIAction(title: "Create symbolic link to..", image: UIImage(systemName: "link")) { _ in
                 let vc = PathOperationViewController(movingPath: item, sourceContentsVC: self, operationType: .symlink, startingPath: self.currentPath ?? .root)
                 self.present(UINavigationController(rootViewController: vc), animated: true)
             }
@@ -494,7 +547,11 @@ class PathContentsTableViewController: UITableViewController {
                         self.errorAlert(error, title: "Unable to rename \(item.lastPathComponent)")
                     }
                 }
-                alert.addTextField()
+                
+                alert.addTextField { textField in
+                    textField.text = item.lastPathComponent
+                }
+                
                 alert.addAction(cancelAction)
                 alert.addAction(renameAction)
                 self.present(alert, animated: true)
@@ -505,7 +562,7 @@ class PathContentsTableViewController: UITableViewController {
             if UIDevice.current.userInterfaceIdiom == .pad {
                 var menu = UIMenu(title: "Add to group..", image: UIImage(systemName: "sidebar.leading"), children: [])
                 
-                for (index, var group) in UserPreferences.pathGroups.enumerated() {
+                for (index, var group) in UserPreferences.pathGroups.enumerated() where group != .default {
                     let addAction = UIAction(title: group.name) { _ in
                         UserPreferences.pathGroups.remove(at: index)
                         group.paths.append(item)
@@ -543,5 +600,53 @@ class PathContentsTableViewController: UITableViewController {
         
         return [copyName, copyPath]
     }
+    
+    func setupNoContentsLabel() {
+        noContentsLabel = UILabel()
+        
+        // if we can't read the contents of the path,
+        // then let the user know that we don't have permission to
+        // otherwise, just say that no items were found
+        if let currentPath = currentPath, !currentPath.isReadable {
+            noContentsLabel.text = "Don't have permission to read directory."
+        } else {
+            noContentsLabel.text = "No items found."
+        }
+        
+        noContentsLabel.font = .systemFont(ofSize: 20, weight: .medium)
+        noContentsLabel.textColor = .systemGray
+        noContentsLabel.textAlignment = .center
+        
+        self.view.addSubview(noContentsLabel)
+        noContentsLabel.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            noContentsLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            noContentsLabel.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
+        ])
+    }
 }
 
+extension SubPathsTableViewController: DirectoryMonitorDelegate {
+    func directoryMonitorDidObserveChange(directoryMonitor: DirectoryMonitor) {
+        DispatchQueue.main.async {
+            self.unfilteredContents = directoryMonitor.url.contents
+            self.sortContents(with: self.sortWay)
+            
+            if self.isSearching, let searchBar = self.navigationItem.searchController?.searchBar {
+                // If we're searching,
+                // update the search bar
+                self.updateResults(searchBar: searchBar)
+            }
+            
+            // if the 'No items found' or 'dont have permission to display' label isn't shown
+            // and the contents are empty, setup the label
+            if self.contents.isEmpty && self.noContentsLabel == nil {
+                self.setupNoContentsLabel()
+            } else if !self.contents.isEmpty && self.noContentsLabel != nil {
+                self.noContentsLabel.removeFromSuperview()
+                self.noContentsLabel = nil
+            }
+            
+        }
+    }
+}

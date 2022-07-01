@@ -8,7 +8,7 @@
 
 import Foundation
 
-/// The ways to sort the
+/// The ways to sort given subpaths
 enum SortingWays: CaseIterable, CustomStringConvertible {
     case alphabetically
     case size

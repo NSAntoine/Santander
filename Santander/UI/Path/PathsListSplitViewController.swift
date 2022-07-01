@@ -8,8 +8,8 @@
 
 import UIKit
 
-/// Represents the split view to be used
-class PathListsSplitViewController: PathContentsTableViewController {
+/// Represents the split view to be used on iPads
+class PathListsSplitViewController: SubPathsTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -29,20 +29,31 @@ class PathListsSplitViewController: PathContentsTableViewController {
             return
         }
         
-        if path.isDirectory || self.isSearching {
-            // Make sure we're opening a directory,
-            // or the parent directory of the file selected
-            let dirToOpen = path.isDirectory ? path : path.deletingLastPathComponent()
-            self.splitViewController?.setViewController(
-                UINavigationController(rootViewController: PathContentsTableViewController(path: dirToOpen)), for: .secondary)
-        } else {
-            self.goToFile(path: path)
+        super.goToPath(path: path)
+    }
+    
+    var collapsedSections: Set<Int> = []
+    
+    override func setPaths(forPath path: URL) {
+        let pathComponents = path.pathComponents
+        var arr: [UIViewController] = []
+        for (indx, _) in pathComponents.enumerated() {
+            var joined = pathComponents[pathComponents.startIndex...indx].joined(separator: "/")
+            if joined.hasPrefix("//") {
+                joined.removeFirst()
+            }
+            arr.append(SubPathsTableViewController(path: URL(fileURLWithPath: joined)))
         }
+        
+        let navVC = UINavigationController()
+        navVC.setViewControllers(arr, animated: true)
+        self.splitViewController?.setViewController(navVC, for: .secondary)
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let pathGroups = UserPreferences.pathGroups[indexPath.section]
-        guard !(pathGroups.paths[indexPath.row] == .root && pathGroups.name == "Defaults") else {
+        let group = UserPreferences.pathGroups[indexPath.section]
+        // Make sure the default group can't be removed
+        guard group != .default else {
             return nil
         }
         
@@ -57,6 +68,7 @@ class PathListsSplitViewController: PathContentsTableViewController {
             completion(true)
         }
         
+        removeAction.image = UIImage.remove
         return UISwipeActionsConfiguration(actions: [removeAction])
     }
 
@@ -75,15 +87,15 @@ class PathListsSplitViewController: PathContentsTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        if collapsedSections.contains(section) {
+            return 0
+        }
+        
         return UserPreferences.pathGroups[section].paths.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         cellRow(forURL: UserPreferences.pathGroups[indexPath.section].paths[indexPath.row], displayFullPathAsSubtitle: true)
-    }
-    
-    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        UserPreferences.pathGroups[section].name
     }
     
     @objc func newGroup() {
@@ -105,12 +117,55 @@ class PathListsSplitViewController: PathContentsTableViewController {
                 return
             }
             
-            UserPreferences.pathGroups.append(.init(name: name, paths: []))
-            self.tableView.reloadData()
+            UserPreferences.pathGroups.append(PathGroup(name: name, paths: []))
         }
         
         alert.addAction(.init(title: "Cancel", style: .cancel))
         alert.addAction(addAction)
         self.present(alert, animated: true)
+    }
+    
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        // if we're in the first section,
+        // which has no name, then don't return a header view
+        guard section != 0 else {
+            return nil
+        }
+        
+        return titleWithChevronView(
+            action: #selector(chevronButtonClicked(_:)),
+            sectionTag: section,
+            titleText: UserPreferences.pathGroups[section].name)
+    }
+    
+    @objc
+    func chevronButtonClicked(_ sender: UIButton) {
+        let section = sender.tag
+        let isCollapsing: Bool = !(self.collapsedSections.contains(section))
+        let newImageToSet = isCollapsing ? "chevron.forward" : "chevron.down"
+        let animationOptions: UIView.AnimationOptions = isCollapsing ? .transitionFlipFromLeft : .transitionFlipFromRight
+
+        UIView.transition(with: sender, duration: 0.3, options: animationOptions) {
+            sender.setImage(UIImage(systemName: newImageToSet), for: .normal)
+        }
+
+        if isCollapsing {
+            // Need to capture the index paths *before inserting* when collapsing
+            let indexPaths: [IndexPath] = self.indexPaths(forSection: section)
+            collapsedSections.insert(section)
+            tableView.deleteRows(at: indexPaths, with: .fade)
+        } else {
+            collapsedSections.remove(section)
+            tableView.insertRows(at: self.indexPaths(forSection: section), with: .fade)
+        }
+    }
+    
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        // we just want the normal height for the first section (which is the nameless section)
+        guard section != 0 else {
+            return super.tableView(tableView, heightForHeaderInSection: section)
+        }
+        
+        return 40
     }
 }

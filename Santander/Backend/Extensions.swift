@@ -5,6 +5,9 @@
 //  Created by Serena on 21/06/2022
 //
 
+// TODO: - Move all of this to other files, with separate files for each extension
+
+
 import UIKit
 import UniformTypeIdentifiers
 
@@ -48,7 +51,7 @@ extension URL {
     
     var size: Int? {
         if self.isDirectory {
-            return try? Int(FileManager.default.allocatedSizeOfDirectory(at: self))
+            return nil // TODO: - Good dir support, async for UI
         }
         
         return try? resourceValues(forKeys: [.fileSizeKey]).fileSize
@@ -77,6 +80,10 @@ extension URL {
     
     var isSymlink: Bool {
         return (try? FileManager.default.destinationOfSymbolicLink(atPath: self.path)) != nil
+    }
+    
+    var isReadable: Bool {
+        return FileManager.default.isReadableFile(atPath: self.path)
     }
 }
 
@@ -160,16 +167,183 @@ extension NSNotification.Name {
     }
 }
 
-extension Array where Element: Hashable {
-    func removingDuplicates() -> [Element] {
-        var addedDict = [Element: Bool]()
-
-        return filter {
-            addedDict.updateValue(true, forKey: $0) == nil
+extension Date {
+    func listFormatted() -> String {
+        if #available(iOS 15.0, *) {
+            return self.formatted(date: .long, time: .shortened)
+        } else {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateStyle = .long
+            dateFormatter.timeStyle = .short
+            return dateFormatter.string(from: self)
         }
     }
+}
 
-    mutating func removeDuplicates() {
-        self = self.removingDuplicates()
+extension Collection {
+    subscript(safe safeIndex: Index) -> Element? {
+        return self.indices.contains(safeIndex) ? self[safeIndex] : nil
+    }
+}
+
+extension UTType {
+    
+    public static func generictypes() -> [UTType] {
+        return [
+            .content,
+            .image,
+            .video,
+            .text,
+            .audio,
+            .movie,
+            .sourceCode,
+            .executable
+        ]
+    }
+    
+    public static func audioTypes() -> [UTType] {
+        return [
+            .audio,
+            .mp3,
+            .aiff,
+            .wav,
+            .midi
+        ]
+    }
+    
+    public static func programmingTypes() -> [UTType] {
+        var arr: [UTType] = [
+            .swiftSource,
+            .sourceCode,
+            .assemblyLanguageSource,
+            
+            .cSource,
+            .objectiveCSource,
+            .objectiveCPlusPlusSource,
+            .cPlusPlusSource,
+            
+            .cHeader,
+            .cPlusPlusHeader,
+            
+            .script,
+            .shellScript,
+            .javaScript,
+            .pythonScript,
+            .rubyScript,
+            .perlScript,
+            .phpScript
+        ]
+        
+        // UTType.makefile is 15+
+        if #available(iOS 15.0, *) {
+            arr.append(.makefile)
+        }
+        
+        return arr
+    }
+    
+    public static func compressedFormatTypes() -> [UTType] {
+        return [
+            .archive,
+            .zip,
+            .gzip,
+            .bz2
+        ]
+    }
+    
+    public static func imageTypes() -> [UTType] {
+        return [
+            .image,
+            .png,
+            .gif,
+            .jpeg,
+            .webP,
+            .tiff,
+            .bmp,
+            .svg,
+            .heif
+        ]
+    }
+    
+    public static func documentTypes() -> [UTType] {
+        return [
+            .json,
+            .yaml,
+            .rtf,
+            .xml,
+            .propertyList,
+            .pdf
+        ]
+    }
+    
+    public static func systemTypes() -> [UTType] {
+        return [
+            .bundle,
+            .application,
+            .framework,
+            .log,
+            .database,
+            .diskImage,
+            .package
+        ]
+    }
+    
+    public static func executableTypes() -> [UTType] {
+        return [
+            .executable,
+            UTType(filenameExtension: "dylib")
+        ]
+            .compactMap { $0 }
+    }
+    
+    public static func allTypes() -> [[UTType]] {
+        return [
+            generictypes(),
+            audioTypes(),
+            programmingTypes(),
+            compressedFormatTypes(),
+            imageTypes(),
+            documentTypes(),
+            executableTypes(),
+            systemTypes(),
+        ]
+    }
+}
+
+extension UITableViewController {
+    func indexPaths(forSection section: Int) -> [IndexPath] {
+        let allRows = self.tableView(tableView, numberOfRowsInSection: section)
+        return (0..<allRows).map { row in
+            return IndexPath(row: row, section: section)
+        }
+    }
+    
+    /// A title view for a header, containing a chevron
+    func titleWithChevronView(action: Selector, sectionTag: Int, titleText: String?) -> UIView {
+        let view = UIView()
+        let label = UILabel()
+        let button = UIButton()
+        button.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+        button.addTarget(self, action: action, for: .touchUpInside)
+        
+        button.tag = sectionTag
+        
+        label.text = titleText
+        label.font = UIFont.systemFont(ofSize: 25, weight: .bold)
+        
+        label.translatesAutoresizingMaskIntoConstraints = false
+        button.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(label)
+        view.addSubview(button)
+        
+        NSLayoutConstraint.activate([
+            label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
+            label.topAnchor.constraint(equalTo: view.topAnchor, constant: -3),
+            
+            button.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5),
+            button.topAnchor.constraint(equalTo: view.topAnchor, constant: 5),
+        ])
+        
+        return view
     }
 }

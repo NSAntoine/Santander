@@ -25,7 +25,6 @@ extension UITableViewController {
             let urlToCreate = url.appendingPathComponent(name)
             do {
                 try type.create(to: urlToCreate)
-                self.tableView.reloadData()
             } catch {
                 self.errorAlert(error, title: "Unable to create \(name)")
             }

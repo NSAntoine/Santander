@@ -10,7 +10,7 @@ import UIKit
 import QuickLook
 
 /// A View Controller which presents a path to be selected, and then executes a specified operation
-class PathOperationViewController: PathContentsTableViewController {
+class PathOperationViewController: SubPathsTableViewController {
     
     /// The path being moved
     let movingPath: URL
@@ -19,9 +19,9 @@ class PathOperationViewController: PathContentsTableViewController {
     let operationType: PathSelectionOperation
     
     /// The original Path Contents View Controller to reload if moving / copying succeeds
-    let sourceContentsVC: PathContentsTableViewController?
+    let sourceContentsVC: SubPathsTableViewController?
     
-    init(movingPath: URL, sourceContentsVC: PathContentsTableViewController?, operationType: PathSelectionOperation, startingPath: URL) {
+    init(movingPath: URL, sourceContentsVC: SubPathsTableViewController?, operationType: PathSelectionOperation, startingPath: URL) {
         self.movingPath = movingPath
         self.sourceContentsVC = sourceContentsVC
         self.operationType = operationType
@@ -42,6 +42,7 @@ class PathOperationViewController: PathContentsTableViewController {
             self.navigationItem.backBarButtonItem = UIBarButtonItem(title: currentPath.lastPathComponent, style: .plain, target: nil, action: nil)
         }
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(done))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancel))
     }
     
     @objc func done() {
@@ -71,11 +72,13 @@ class PathOperationViewController: PathContentsTableViewController {
         if path.isDirectory {
             self.navigationController?.pushViewController(PathOperationViewController(movingPath: movingPath, sourceContentsVC: self.sourceContentsVC, operationType: self.operationType, startingPath: path), animated: true)
         } else {
-            let controller = QLPreviewController()
-            let shared = FilePreviewDataSource(fileURL: path)
-            controller.dataSource = shared
-            self.present(controller, animated: true)
+            self.goToFile(path: path)
         }
+    }
+    
+    @objc
+    func cancel() {
+        self.dismiss(animated: true)
     }
 }
 

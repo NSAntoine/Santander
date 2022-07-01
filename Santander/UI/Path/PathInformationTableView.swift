@@ -84,7 +84,11 @@ class PathInformationTableView: UITableViewController {
         case (0, 2):
             conf.text = "Size"
             if let size = self.path.size {
-                conf.secondaryText = ByteCountFormatStyle(style: .file, allowedUnits: .all, spellsOutZero: false, includesActualByteCount: showByteCount).format(Int64(size))
+                let formatter = ByteCountFormatter()
+                formatter.countStyle = .file
+                formatter.allowedUnits = .useAll
+                formatter.includesActualByteCount = showByteCount
+                conf.secondaryText = formatter.string(fromByteCount: Int64(size))
             } else {
                 conf.secondaryText = "N/A"
             }
@@ -100,36 +104,24 @@ class PathInformationTableView: UITableViewController {
         case (2, 0):
             conf.text = "Created"
             
-            conf.secondaryText = self.path.creationDate?
-                .formatted(
-                date: .long,
-                time: .shortened
-            ) ?? "N/A"
+            conf.secondaryText = self.path.creationDate?.listFormatted() ?? "N/A"
             
         case (2, 1):
             conf.text = "Last modified"
             
-            conf.secondaryText = path.lastModifiedDate?
-                .formatted(
-                date: .long,
-                time: .shortened
-            ) ?? "N/A"
+            conf.secondaryText = path.lastModifiedDate?.listFormatted() ?? "N/A"
             
         case (2, 2):
             conf.text = "Last accessed"
             
-            conf.secondaryText = path.lastAccessedDate?
-                .formatted(
-                date: .long,
-                time: .shortened
-            ) ?? "N/A"
+            conf.secondaryText = path.lastAccessedDate?.listFormatted() ?? "N/A"
             
         case (3, 0):
             conf.text = "Deletable"
             conf.secondaryText = FileManager.default.isDeletableFile(atPath: self.path.path) ? "Yes" : "No"
         case (3, 1):
             conf.text = "Readable"
-            conf.secondaryText = FileManager.default.isReadableFile(atPath: self.path.path) ? "Yes" : "No"
+            conf.secondaryText = self.path.isReadable ? "Yes" : "No"
         case (3, 2):
             conf.text = "Writable"
             conf.secondaryText = FileManager.default.isWritableFile(atPath: self.path.path) ? "Yes" : "No"

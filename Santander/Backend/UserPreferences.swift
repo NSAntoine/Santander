@@ -41,7 +41,7 @@ enum UserPreferences {
     
     static var usePlainStyleTableView: Bool {
         get {
-            UserDefaults.standard.object(forKey: "usePlainStyleTableView") as? Bool ?? true
+            UserDefaults.standard.object(forKey: "usePlainStyleTableView") as? Bool ?? false
         }
         
         set {
@@ -62,11 +62,14 @@ enum UserPreferences {
     static var pathGroups: [PathGroup] {
         get {
             guard let data = UserDefaults.standard.data(forKey: "UserPathGroups"),
-                  let decoded = try? JSONDecoder().decode([PathGroup].self, from: data), !decoded.isEmpty else {
-                return PathGroup.defaults
+                  let decoded = try? JSONDecoder().decode([PathGroup].self, from: data),
+                    !decoded.isEmpty else {
+                // if we can't get the saved path groups - or if they're empty,
+                // return the only defaut one
+                return [PathGroup.default]
             }
             
-            return decoded.removingDuplicates()
+            return decoded
         }
         
         set {
@@ -85,15 +88,7 @@ struct PathGroup: Codable, Hashable {
     let name: String
     var paths: [URL]
     
-    static var defaults: [PathGroup] {
-        return [
-            PathGroup(name: "Default", paths: [.root])
-        ]
-    }
-}
-
-extension Collection {
-    subscript(safe safeIndex: Index) -> Element? {
-        return self.indices.contains(safeIndex) ? self[safeIndex] : nil
+    static var `default`: PathGroup {
+        return PathGroup(name: "", paths: [.root])
     }
 }

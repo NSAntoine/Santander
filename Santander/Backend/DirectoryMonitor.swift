@@ -4,7 +4,7 @@
 //
 //  Created by Serena on 27/06/2022
 //
-	
+//  Code originally written by Apple, modified for use by Serena A.
 
 import Foundation
 
@@ -44,8 +44,12 @@ class DirectoryMonitor {
             // Open the directory referenced by URL for monitoring only.
             monitoredDirectoryFileDescriptor = open((url as NSURL).fileSystemRepresentation, O_EVTONLY)
 
-            // Define a dispatch source monitoring the directory for additions, deletions, and renamings.
-            directoryMonitorSource = DispatchSource.makeFileSystemObjectSource(fileDescriptor: monitoredDirectoryFileDescriptor, eventMask: DispatchSource.FileSystemEvent.write, queue: directoryMonitorQueue) as? DispatchSource
+            // We initialize directoryMonitorSource only if the path is readable
+            // otherwise, we'd encounter a crash
+            if url.isReadable {
+                // Define a dispatch source monitoring the directory for additions, deletions, and renamings.
+                directoryMonitorSource = DispatchSource.makeFileSystemObjectSource(fileDescriptor: monitoredDirectoryFileDescriptor, eventMask: .all, queue: directoryMonitorQueue) as? DispatchSource
+            }
 
             // Define the block to call when a file change is detected.
             directoryMonitorSource?.setEventHandler{

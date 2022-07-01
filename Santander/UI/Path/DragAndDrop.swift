@@ -9,7 +9,7 @@
 import UIKit
 import UniformTypeIdentifiers
 
-extension PathContentsTableViewController: UITableViewDropDelegate, UITableViewDragDelegate {
+extension SubPathsTableViewController: UITableViewDropDelegate, UITableViewDragDelegate {
     
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
         
@@ -30,10 +30,6 @@ extension PathContentsTableViewController: UITableViewDropDelegate, UITableViewD
             
             do {
                 try FileManager.default.copyItem(at: url, to: newPath)
-                DispatchQueue.main.async {
-                    self.unfilteredContents.append(url)
-                    tableView.reloadData()
-                }
             } catch {
                 DispatchQueue.main.async {
                     self.errorAlert("Error: \(error.localizedDescription)", title: "Failed to copy item")
@@ -56,11 +52,8 @@ extension PathContentsTableViewController: UITableViewDropDelegate, UITableViewD
         let selectedItem = contents[indexPath.row]
         let itemProvider = NSItemProvider()
         
-        let typeID: String
-        if selectedItem.isDirectory {
-            typeID = UTType.folder.identifier
-        } else {
-            typeID = UTType(filenameExtension: selectedItem.pathExtension)?.identifier ?? "public.content"
+        guard let typeID = selectedItem.contentType?.identifier else {
+            return [] // if we can't get the identifier, bail
         }
         
         itemProvider.registerFileRepresentation(

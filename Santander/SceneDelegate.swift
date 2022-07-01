@@ -24,7 +24,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             splitVC.setViewController(PathListsSplitViewController(contents: [], title: "Santander"), for: .primary)
             window.rootViewController = splitVC
         } else {
-            window.rootViewController = UINavigationController(rootViewController: PathContentsTableViewController(style: .automatic, path: URL(fileURLWithPath: FileManager.default.currentDirectoryPath)))
+            window.rootViewController = UINavigationController(rootViewController: SubPathsTableViewController(style: .automatic, path: URL(fileURLWithPath: FileManager.default.currentDirectoryPath)))
         }
         window.makeKeyAndVisible()
         self.window = window
@@ -59,6 +59,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     
+    // Path is being imported
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
         guard let first = URLContexts.first else {
             return

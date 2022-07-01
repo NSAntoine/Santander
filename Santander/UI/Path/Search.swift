@@ -7,8 +7,9 @@
 	
 
 import UIKit
+import UniformTypeIdentifiers
 
-extension PathContentsTableViewController: UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate {
+extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate {
     
     func updateSearchResults(for searchController: UISearchController) {
         updateResults(searchBar: searchController.searchBar)
@@ -31,10 +32,10 @@ extension PathContentsTableViewController: UISearchResultsUpdating, UISearchCont
     
     func updateResults(searchBar: UISearchBar) {
         let searchText = searchBar.searchTextField.text ?? ""
-        if searchBar.searchTextField.tokens.isEmpty {
-            guard !searchText.isEmpty else {
-                return
-            }
+        
+        // Make sure that we have search conditions or that the search text isn't empty
+        guard !(searchText.isEmpty && searchBar.searchTextField.tokens.isEmpty) else {
+            return
         }
         
         self.isSearching = true
@@ -45,7 +46,7 @@ extension PathContentsTableViewController: UISearchResultsUpdating, UISearchCont
             results = unfilteredContents
         }
         
-        
+        // Get the conditions that were set (if any)
         let conditions = searchBar.searchTextField.tokens.compactMap { token in
             token.representedObject as? ((URL) -> Bool)
         }
@@ -74,9 +75,19 @@ extension PathContentsTableViewController: UISearchResultsUpdating, UISearchCont
     }
 }
 
+
+/// Represents a search suggestion to be displayed in the UI,
+/// with a given condition for the search results.
+@available(iOS 14.0, *)
 struct SearchSuggestion {
-    let name: String
+    
+    /// The name to be displayed in the search suggestion
+    var name: String
+    
+    /// The image to be displayed in the search suggestion
     let image: UIImage?
+    
+    /// The condition to which the given URL should abide to
     var condition: ((URL) -> Bool)
     
     var searchToken: UISearchToken {
@@ -86,29 +97,42 @@ struct SearchSuggestion {
     }
     
     /// The search suggestion to display in the UI, based on the indexPath given
-    static func displaySearchSuggestions(for indexPath: IndexPath) -> SearchSuggestion {
+    static func displaySearchSuggestions(for indexPath: IndexPath, typesToCheck: [UTType]? = nil) -> SearchSuggestion {
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
+            return SearchSuggestion(name: "Type", image: UIImage(systemName: "menucard")) { url in
+                guard let typesToCheck = typesToCheck, let urlType = url.contentType else {
+                    return false
+                }
+                
+                let isSubtype = typesToCheck.contains { type in
+                    urlType.isSubtype(of: type)
+                }
+                
+                return typesToCheck.contains(urlType) || isSubtype
+            }
+            
+        case (1, 0):
             return SearchSuggestion(name: "File", image: UIImage(systemName: "doc")) { url in
                 return !url.isDirectory
             }
-        case (0, 1):
+        case (1, 1):
             return SearchSuggestion(name: "Directory", image: UIImage(systemName: "folder")) { url in
                 return url.isDirectory
             }
-        case (0, 2):
+        case (1, 2):
             return SearchSuggestion(name: "Symbolic Link", image: UIImage(systemName: "link")) { url in
                 return url.isSymlink
             }
-        case (1, 0):
+        case (2, 0):
             return SearchSuggestion(name: "Executable", image: UIImage(systemName: "terminal")) { url in
                 return !url.isDirectory && FileManager.default.isExecutableFile(atPath: url.path)
             }
-        case (1, 1):
+        case (2, 1):
             return SearchSuggestion(name: "Readable", image: UIImage(systemName: "book")) { url in
-                return FileManager.default.isReadableFile(atPath: url.path)
+                return url.isReadable
             }
-        case (1, 2):
+        case (2, 2):
             return SearchSuggestion(name: "Writable", image: UIImage(systemName: "pencil")) { url in
                 return FileManager.default.isWritableFile(atPath: url.path)
             }
