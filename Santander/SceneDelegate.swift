@@ -70,7 +70,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         defer {
             first.url.stopAccessingSecurityScopedResource()
         }
-        let operationsVC = PathOperationViewController(movingPath: first.url, sourceContentsVC: nil, operationType: .import, startingPath: .home)
+        let operationsVC = PathOperationViewController(movingPath: first.url, sourceContentsVC: nil, operationType: .import)
         self.window?.rootViewController?.present(UINavigationController(rootViewController: operationsVC), animated: true)
     }
 }

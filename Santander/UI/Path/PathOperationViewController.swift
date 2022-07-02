@@ -21,12 +21,12 @@ class PathOperationViewController: SubPathsTableViewController {
     /// The original Path Contents View Controller to reload if moving / copying succeeds
     let sourceContentsVC: SubPathsTableViewController?
     
-    init(movingPath: URL, sourceContentsVC: SubPathsTableViewController?, operationType: PathSelectionOperation, startingPath: URL) {
+    init(movingPath: URL, sourceContentsVC: SubPathsTableViewController?, operationType: PathSelectionOperation, startingPath: URL = .root) {
         self.movingPath = movingPath
         self.sourceContentsVC = sourceContentsVC
         self.operationType = operationType
         
-        super.init(path: startingPath)
+        super.init(path: startingPath) // Start from root
     }
     
     required init?(coder: NSCoder) {
@@ -41,8 +41,8 @@ class PathOperationViewController: SubPathsTableViewController {
         if let currentPath = self.currentPath {
             self.navigationItem.backBarButtonItem = UIBarButtonItem(title: currentPath.lastPathComponent, style: .plain, target: nil, action: nil)
         }
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(done))
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancel))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(cancel))
     }
     
     @objc func done() {

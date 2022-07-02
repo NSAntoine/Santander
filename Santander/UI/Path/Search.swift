@@ -35,6 +35,9 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
         
         // Make sure that we have search conditions or that the search text isn't empty
         guard !(searchText.isEmpty && searchBar.searchTextField.tokens.isEmpty) else {
+            self.filteredSearchContents = []
+            self.isSearching = false
+            self.tableView.reloadData()
             return
         }
         

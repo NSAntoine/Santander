@@ -24,7 +24,13 @@ class TypesSelectionViewController: UITableViewController, UISearchBarDelegate {
         }
     }
     
-    var selectedTypes: [UTType] = []
+    var selectedTypes: [UTType] = [] {
+        didSet {
+            // if the types are empty
+            // disable the 'Done' button
+            self.navigationItem.rightBarButtonItem?.isEnabled = !selectedTypes.isEmpty
+        }
+    }
     
     var collapsedSections: Set<Int> = []
     var isSearching: Bool = false
@@ -48,8 +54,11 @@ class TypesSelectionViewController: UITableViewController, UISearchBarDelegate {
         searchController.searchBar.delegate = self
         self.navigationItem.searchController = searchController
         self.navigationItem.hidesSearchBarWhenScrolling = false
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneDismiss))
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(cancel))
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneDismiss))
+        self.navigationItem.rightBarButtonItem?.isEnabled = !selectedTypes.isEmpty
+        
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
     }
     
     

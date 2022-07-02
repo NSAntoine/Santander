@@ -505,17 +505,17 @@ class SubPathsTableViewController: UITableViewController {
         } actionProvider: { _ in
             
             let movePath = UIAction(title: "Move to..", image: UIImage(systemName: "arrow.right")) { _ in
-                let vc = PathOperationViewController(movingPath: item, sourceContentsVC: self, operationType: .move, startingPath: self.currentPath ?? .root)
+                let vc = PathOperationViewController(movingPath: item, sourceContentsVC: self, operationType: .move)
                 self.present(UINavigationController(rootViewController: vc), animated: true)
             }
             
             let copyPath = UIAction(title: "Copy to..", image: UIImage(systemName: "doc.on.doc")) { _ in
-                let vc = PathOperationViewController(movingPath: item, sourceContentsVC: self, operationType: .copy, startingPath: self.currentPath ?? .root)
+                let vc = PathOperationViewController(movingPath: item, sourceContentsVC: self, operationType: .copy)
                 self.present(UINavigationController(rootViewController: vc), animated: true)
             }
             
             let createSymlink = UIAction(title: "Create symbolic link to..", image: UIImage(systemName: "link")) { _ in
-                let vc = PathOperationViewController(movingPath: item, sourceContentsVC: self, operationType: .symlink, startingPath: self.currentPath ?? .root)
+                let vc = PathOperationViewController(movingPath: item, sourceContentsVC: self, operationType: .symlink)
                 self.present(UINavigationController(rootViewController: vc), animated: true)
             }
             
