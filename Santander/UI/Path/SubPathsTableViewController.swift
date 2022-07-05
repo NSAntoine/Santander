@@ -85,39 +85,7 @@ class SubPathsTableViewController: UITableViewController {
         
         self.title = self.displayName
         
-        let seeFavouritesAction = UIAction(title: "Favourites", image: UIImage(systemName: "star.fill")) { _ in
-            let newVC = UINavigationController(rootViewController: SubPathsTableViewController(
-                contents: UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) },
-                title: "Favourites",
-                isFavouritePathsSheet: true)
-            )
-            self.present(newVC, animated: true)
-        }
-        
-        var menuActions: [UIMenuElement] = [makeGoToMenu(), makeSortMenu()]
-        
-        // if we're in the "Favourites" sheet, don't display the favourites button
-        if !isFavouritePathsSheet {
-            menuActions.append(seeFavouritesAction)
-        }
-        
-        if let currentPath = currentPath {
-            let showInfoAction = UIAction(title: "Info", image: .init(systemName: "info.circle")) { _ in
-                self.openInfoBottomSheet(path: currentPath)
-            }
-            
-            menuActions.insert(makeNewItemMenu(forURL: currentPath), at: 2)
-            menuActions.append(showInfoAction)
-            self.directoryMonitor = DirectoryMonitor(url: currentPath)
-            self.directoryMonitor?.delegate = self
-            directoryMonitor?.startMonitoring()
-        }
-        
-        let settingsAction = UIAction(title: "Settings", image: UIImage(systemName: "gear")) { _ in
-            self.present(UINavigationController(rootViewController: SettingsTableViewController(style: .insetGrouped)), animated: true)
-        }
-        menuActions.append(settingsAction)
-        
+        let menuActions = makeRightBarMenuActions()
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: .init(systemName: "ellipsis.circle"),
             menu: .init(children: menuActions)
@@ -192,10 +160,8 @@ class SubPathsTableViewController: UITableViewController {
                 
                 let navVC = UINavigationController(rootViewController: vc)
                 
-                if #available(iOS 15.0, *), let sheet = navVC.sheetPresentationController {
-                    //TODO: - Check if we can just do
-                    // `navVC.sheetPresentationController?.detents = [.medium(), .large()]`
-                    sheet.detents = [.medium(), .large()]
+                if #available(iOS 15.0, *) {
+                    navVC.sheetPresentationController?.detents = [.medium(), .large()]
                 }
                 
                 self.present(navVC, animated: true)
@@ -347,35 +313,48 @@ class SubPathsTableViewController: UITableViewController {
     
     
     func goToFile(path: URL) {
+        // if we can get the string contents,
+        // open the Text Editor
+        if let stringContents = try? String(contentsOf: path) {
+            let vc = UINavigationController(rootViewController: TextFileEditorViewController(fileURL: path, contents: stringContents))
+            
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: true)
+        } else {
+            openQuickLookPreview(forURL: path)
+        }
+    }
+    
+    func openQuickLookPreview(forURL url: URL) {
         let controller = QLPreviewController()
-        let shared = FilePreviewDataSource(fileURL: path)
+        let shared = FilePreviewDataSource(fileURL: url)
         controller.dataSource = shared
         self.present(controller, animated: true)
     }
     
     /// Opens a path in the UI
     func goToPath(path: URL) {
+        // Make sure we're opening a directory,
+        // or the parent directory of the file selected (if searching)
+        let dirResult = path.isDirectory ? path : path.deletingLastPathComponent()
+        
         // if we're going to a directory, or a search result,
         // go to the directory path
-        if path.isDirectory || self.isSearching {
-            // Make sure we're opening a directory,
-            // or the parent directory of the file selected
-            let dirToOpen = path.isDirectory ? path : path.deletingLastPathComponent()
-            
-            // if this is encountered, then the file selected (has to be a file in this case),
-            // is in the same directory
-            if dirToOpen == self.currentPath {
-                self.goToFile(path: path)
-            } else {
-                setPaths(forPath: dirToOpen)
-            }
-            
+        if path.isDirectory || (self.isSearching && dirResult != self.currentPath) {
+            setPaths(forPath: dirResult)
         } else {
             self.goToFile(path: path)
         }
     }
     
     func setPaths(forPath path: URL) {
+        if self.isFavouritePathsSheet {
+            // if we're in the favourites sheet, just push
+            // because if we set the view controllers,
+            // it will go back to the previous directory
+            self.navigationController?.pushViewController(SubPathsTableViewController(path: path, isFavouritePathsSheet: true), animated: true)
+            return
+        }
         
         let pathComponents = path.pathComponents
         var arr: [UIViewController] = []
@@ -434,11 +413,7 @@ class SubPathsTableViewController: UITableViewController {
         )
         
         if #available(iOS 15.0, *) {
-            navController.modalPresentationStyle = .pageSheet
-            
-            if let sheetController = navController.sheetPresentationController {
-                sheetController.detents = [.medium(), .large()]
-            }
+            navController.sheetPresentationController?.detents = [.medium(), .large()]
         }
         
         self.present(navController, animated: true)
@@ -601,6 +576,42 @@ class SubPathsTableViewController: UITableViewController {
         return [copyName, copyPath]
     }
     
+    func makeRightBarMenuActions() -> [UIMenuElement] {
+        let seeFavouritesAction = UIAction(title: "Favourites", image: UIImage(systemName: "star.fill")) { _ in
+            let newVC = UINavigationController(rootViewController: SubPathsTableViewController(
+                contents: UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) },
+                title: "Favourites",
+                isFavouritePathsSheet: true)
+            )
+            self.present(newVC, animated: true)
+        }
+        
+        var menuActions: [UIMenuElement] = [makeGoToMenu(), makeSortMenu()]
+        
+        // if we're in the "Favourites" sheet, don't display the favourites button
+        if !isFavouritePathsSheet {
+            menuActions.append(seeFavouritesAction)
+        }
+        
+        if let currentPath = currentPath {
+            let showInfoAction = UIAction(title: "Info", image: .init(systemName: "info.circle")) { _ in
+                self.openInfoBottomSheet(path: currentPath)
+            }
+            
+            menuActions.insert(makeNewItemMenu(forURL: currentPath), at: 2)
+            menuActions.append(showInfoAction)
+            self.directoryMonitor = DirectoryMonitor(url: currentPath)
+            self.directoryMonitor?.delegate = self
+            directoryMonitor?.startMonitoring()
+        }
+        
+        let settingsAction = UIAction(title: "Settings", image: UIImage(systemName: "gear")) { _ in
+            self.present(UINavigationController(rootViewController: SettingsTableViewController(style: .insetGrouped)), animated: true)
+        }
+        menuActions.append(settingsAction)
+        return menuActions
+    }
+    
     func setupNoContentsLabel() {
         noContentsLabel = UILabel()
         
@@ -646,7 +657,6 @@ extension SubPathsTableViewController: DirectoryMonitorDelegate {
                 self.noContentsLabel.removeFromSuperview()
                 self.noContentsLabel = nil
             }
-            
         }
     }
 }

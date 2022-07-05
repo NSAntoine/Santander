@@ -329,7 +329,7 @@ extension UITableViewController {
         button.tag = sectionTag
         
         label.text = titleText
-        label.font = UIFont.systemFont(ofSize: 25, weight: .bold)
+        label.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         
         label.translatesAutoresizingMaskIntoConstraints = false
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -338,12 +338,29 @@ extension UITableViewController {
         
         NSLayoutConstraint.activate([
             label.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 10),
-            label.topAnchor.constraint(equalTo: view.topAnchor, constant: -3),
+            label.topAnchor.constraint(equalTo: view.topAnchor, constant: 10),
             
             button.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -5),
             button.topAnchor.constraint(equalTo: view.topAnchor, constant: 5),
         ])
         
         return view
+    }
+    
+    /// Returns a UIView of a footer view of the tableView's seperator color
+    func seperatorFooterView() -> UIView {
+        let result = UIView()
+        // recreate insets from existing ones in the table view
+        let insets = tableView.separatorInset
+        let width = tableView.bounds.width - insets.left - insets.right
+        let sepFrame = CGRect(x: insets.left, y: -0.5, width: width, height: 0.5)
+        
+        // create layer with separator, setting color
+        let sep = CALayer()
+        sep.frame = sepFrame
+        sep.backgroundColor = tableView.separatorColor?.cgColor
+        result.layer.addSublayer(sep)
+        
+        return result
     }
 }

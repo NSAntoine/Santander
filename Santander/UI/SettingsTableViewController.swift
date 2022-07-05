@@ -79,12 +79,15 @@ class SettingsSwitchTableViewCell: UITableViewCell {
     
     public var control: UISwitch = UISwitch()
     public var label: UILabel = UILabel()
-    var viewControllerForPresentation: UIViewController?
     var fallback = false
+    var callback: ((Bool) -> Void)? = nil
+    
     
     var defaultKey: String? {
         didSet {
-            if let key = defaultKey { control.isOn = UserDefaults.standard.object(forKey: key) as? Bool ?? fallback }
+            if let key = defaultKey {
+                control.isOn = UserDefaults.standard.object(forKey: key) as? Bool ?? fallback
+            }
         }
     }
     
@@ -119,5 +122,6 @@ class SettingsSwitchTableViewCell: UITableViewCell {
         if let defaultKey = defaultKey {
             UserDefaults.standard.set(sender.isOn, forKey: defaultKey)
         }
+        callback?(sender.isOn)
     }
 }

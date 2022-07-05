@@ -8,56 +8,46 @@
 
 import Foundation
 
+@propertyWrapper
+struct Storage<T> {
+    private let key: String
+    private let defaultValue: T
+
+    init(key: String, defaultValue: T) {
+        self.key = key
+        self.defaultValue = defaultValue
+    }
+
+    var wrappedValue: T {
+        get {
+            return UserDefaults.standard.object(forKey: key) as? T ?? defaultValue
+        }
+        
+        set {
+            UserDefaults.standard.set(newValue, forKey: key)
+        }
+    }
+}
+
+/// Contains user preferences used in the Application
 enum UserPreferences {
-    static var useLargeNavigationTitles: Bool {
-        get {
-            UserDefaults.standard.object(forKey: "UseLargeNavTitles") as? Bool ?? true
-        }
-        
-        set {
-            UserDefaults.standard.set(newValue, forKey: "UseLargeNavTitles")
-        }
-    }
+    @Storage(key: "UseLargeNavTitles", defaultValue: true)
+    static var useLargeNavigationTitles: Bool
     
-    static var favouritePaths: [String] {
-        get {
-            UserDefaults.standard.stringArray(forKey: "FavPaths") ?? []
-        }
-        
-        set {
-            UserDefaults.standard.set(newValue, forKey: "FavPaths")
-        }
-    }
+    @Storage(key: "FavPaths", defaultValue: [])
+    static var favouritePaths: [String]
     
-    static var alwaysShowSearchBar: Bool {
-        get {
-            UserDefaults.standard.bool(forKey: "AlwaysShowSearchBar")
-        }
-        
-        set {
-            UserDefaults.standard.set(newValue, forKey: "AlwaysShowSearchBar")
-        }
-    }
+    @Storage(key: "AlwaysShowSearchBar", defaultValue: true)
+    static var alwaysShowSearchBar: Bool
     
-    static var usePlainStyleTableView: Bool {
-        get {
-            UserDefaults.standard.object(forKey: "usePlainStyleTableView") as? Bool ?? false
-        }
-        
-        set {
-            UserDefaults.standard.set(newValue, forKey: "usePlainStyleTableView")
-        }
-    }
+    @Storage(key: "usePlainStyleTableView", defaultValue: false)
+    static var usePlainStyleTableView: Bool
     
-    static var showInfoButton: Bool {
-        get {
-            return UserDefaults.standard.bool(forKey: "ShowInfoButton")
-        }
-        
-        set {
-            UserDefaults.standard.set(newValue, forKey: "ShowInfoButton")
-        }
-    }
+    @Storage(key: "ShowInfoButton", defaultValue: false)
+    static var showInfoButton: Bool
+    
+    @Storage(key: "LastOpenedPath", defaultValue: nil)
+    static var lastOpenedPath: String?
     
     static var pathGroups: [PathGroup] {
         get {
@@ -79,6 +69,24 @@ enum UserPreferences {
             
             UserDefaults.standard.set(encoded, forKey: "UserPathGroups")
             NotificationCenter.default.post(name: .pathGroupsDidChange, object: nil)
+        }
+    }
+    
+    static var textEditorTheme: CodableTheme {
+        get {
+            guard let data = UserDefaults.standard.data(forKey: "TextEditorTheme"), let decoded = try? JSONDecoder().decode(CodableTheme.self, from: data) else {
+                return CodableTheme()
+            }
+            
+            return decoded
+        }
+        
+        set {
+            guard let data = try? JSONEncoder().encode(newValue) else {
+                return
+            }
+            
+            UserDefaults.standard.set(data, forKey: "TextEditorTheme")
         }
     }
 }
