@@ -134,4 +134,3 @@ private extension KeyboardToolsView {
         redoButton.isEnabled = undoManager?.canRedo ?? false
     }
 }
-

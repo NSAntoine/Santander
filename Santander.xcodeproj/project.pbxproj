@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		3712D319286F7F2E00BCD034 /* TypeSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3712D318286F7F2E00BCD034 /* TypeSelectionViewController.swift */; };
 		37198B9A28721069000C8CDF /* EditorThemeSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37198B9928721069000C8CDF /* EditorThemeSettingsViewController.swift */; };
-		37198B9C28721275000C8CDF /* UserTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37198B9B28721275000C8CDF /* UserTheme.swift */; };
+		37198B9C28721275000C8CDF /* Themes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37198B9B28721275000C8CDF /* Themes.swift */; };
 		37198B9F2872DDA6000C8CDF /* KeyboardToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37198B9E2872DDA6000C8CDF /* KeyboardToolsView.swift */; };
 		3771D37B2862329D00E200B6 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771D37A2862329D00E200B6 /* Extensions.swift */; };
 		3771D37F2862493E00E200B6 /* PathInformationTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771D37E2862493E00E200B6 /* PathInformationTableView.swift */; };
@@ -48,7 +48,7 @@
 /* Begin PBXFileReference section */
 		3712D318286F7F2E00BCD034 /* TypeSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeSelectionViewController.swift; sourceTree = "<group>"; };
 		37198B9928721069000C8CDF /* EditorThemeSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorThemeSettingsViewController.swift; sourceTree = "<group>"; };
-		37198B9B28721275000C8CDF /* UserTheme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserTheme.swift; sourceTree = "<group>"; };
+		37198B9B28721275000C8CDF /* Themes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Themes.swift; sourceTree = "<group>"; };
 		37198B9E2872DDA6000C8CDF /* KeyboardToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardToolsView.swift; sourceTree = "<group>"; };
 		3771D37A2862329D00E200B6 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		3771D37E2862493E00E200B6 /* PathInformationTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathInformationTableView.swift; sourceTree = "<group>"; };
@@ -141,9 +141,9 @@
 		37934DB528707F3200D1248A /* Editors */ = {
 			isa = PBXGroup;
 			children = (
-				37934DB628707F4500D1248A /* TextFileEditorViewController.swift */,
 				37198B9928721069000C8CDF /* EditorThemeSettingsViewController.swift */,
-				37198B9B28721275000C8CDF /* UserTheme.swift */,
+				37934DB628707F4500D1248A /* TextFileEditorViewController.swift */,
+				37198B9B28721275000C8CDF /* Themes.swift */,
 				37198B9E2872DDA6000C8CDF /* KeyboardToolsView.swift */,
 			);
 			path = Editors;
@@ -253,7 +253,7 @@
 				37DE0FA22864902400E5EBBC /* FilePreviewDataSource.swift in Sources */,
 				37963F17286A0F0B00C4B72A /* DirectoryMonitor.swift in Sources */,
 				37C6E0D22867653A00BDDA16 /* PathsListSplitViewController.swift in Sources */,
-				37198B9C28721275000C8CDF /* UserTheme.swift in Sources */,
+				37198B9C28721275000C8CDF /* Themes.swift in Sources */,
 				37C6E0D028673AFF00BDDA16 /* Search.swift in Sources */,
 				3771D37F2862493E00E200B6 /* PathInformationTableView.swift in Sources */,
 				37198B9A28721069000C8CDF /* EditorThemeSettingsViewController.swift in Sources */,

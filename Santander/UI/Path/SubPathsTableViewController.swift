@@ -33,7 +33,7 @@ class SubPathsTableViewController: UITableViewController {
     let displayName: String
     
     /// The method of sorting
-    var sortWay: SortingWays = .alphabetically
+    var sortMethod: SortingWays = .alphabetically
     
     /// is this ViewController being presented as the `Favourite` paths?
     let isFavouritePathsSheet: Bool
@@ -85,11 +85,7 @@ class SubPathsTableViewController: UITableViewController {
         
         self.title = self.displayName
         
-        let menuActions = makeRightBarMenuActions()
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-            image: .init(systemName: "ellipsis.circle"),
-            menu: .init(children: menuActions)
-        )
+        setRightBarButton()
         
         self.navigationController?.navigationBar.prefersLargeTitles = UserPreferences.useLargeNavigationTitles
         if !contents.isEmpty {
@@ -238,8 +234,11 @@ class SubPathsTableViewController: UITableViewController {
     
     func makeSortMenu() -> UIMenu {
         let actions = SortingWays.allCases.map { type in
-            UIAction(title: type.description) { _ in
+            UIAction(title: type.description, state: self.sortMethod == type ? .on : .off) { _ in
                 self.sortContents(with: type)
+                
+                // Reload the right bar button menu after setting the type
+                self.setRightBarButton()
         }}
         
         let menu = UIMenu(title: "Sort by..", image: UIImage(systemName: "filemenu.and.selection"))
@@ -370,6 +369,7 @@ class SubPathsTableViewController: UITableViewController {
     }
     
     func sortContents(with filter: SortingWays) {
+        self.sortMethod = filter
         self.unfilteredContents = self.contents.sorted { firstURL, secondURL in
             switch filter {
             case .alphabetically:
@@ -450,13 +450,7 @@ class SubPathsTableViewController: UITableViewController {
             cellConf.secondaryText = fsItem.path // Display full path as the subtitle text if we should
         }
         
-        if fsItem.isDirectory {
-            // Display the disclosureIndicator only for directories
-            cellConf.image = UIImage(systemName: "folder.fill")
-        } else {
-            // TODO: we should display the icon for files with https://indiestack.com/2018/05/icon-for-file-with-uikit/
-            cellConf.image = UIImage(systemName: "doc.fill")
-        }
+        cellConf.image = fsItem.displayImage
         
         if showInfoButton {
             cell.accessoryType = .detailDisclosureButton
@@ -476,7 +470,15 @@ class SubPathsTableViewController: UITableViewController {
         
         let item = contents[indexPath.row]
         return UIContextMenuConfiguration(identifier: nil) {
-            return nil
+            // The following is the preview provider for the item
+            // Being the cell row, but manually made for 2 reasons:
+            // 1) Display the full path as a subtitle
+            // 2) Rounded corners, which we wouldn't have if we returned previewProvider as `nil`
+            let vc = UIViewController()
+            vc.view = self.cellRow(forURL: item, displayFullPathAsSubtitle: true)
+            let sizeFrame = vc.view.frame
+            vc.preferredContentSize = CGSize(width: sizeFrame.width, height: sizeFrame.height)
+            return vc
         } actionProvider: { _ in
             
             let movePath = UIAction(title: "Move to..", image: UIImage(systemName: "arrow.right")) { _ in
@@ -576,7 +578,7 @@ class SubPathsTableViewController: UITableViewController {
         return [copyName, copyPath]
     }
     
-    func makeRightBarMenuActions() -> [UIMenuElement] {
+    func setRightBarButton() {
         let seeFavouritesAction = UIAction(title: "Favourites", image: UIImage(systemName: "star.fill")) { _ in
             let newVC = UINavigationController(rootViewController: SubPathsTableViewController(
                 contents: UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) },
@@ -609,7 +611,11 @@ class SubPathsTableViewController: UITableViewController {
             self.present(UINavigationController(rootViewController: SettingsTableViewController(style: .insetGrouped)), animated: true)
         }
         menuActions.append(settingsAction)
-        return menuActions
+        
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+            image: .init(systemName: "ellipsis.circle"),
+            menu: .init(children: menuActions)
+        )
     }
     
     func setupNoContentsLabel() {
@@ -641,7 +647,7 @@ extension SubPathsTableViewController: DirectoryMonitorDelegate {
     func directoryMonitorDidObserveChange(directoryMonitor: DirectoryMonitor) {
         DispatchQueue.main.async {
             self.unfilteredContents = directoryMonitor.url.contents
-            self.sortContents(with: self.sortWay)
+            self.sortContents(with: self.sortMethod)
             
             if self.isSearching, let searchBar = self.navigationItem.searchController?.searchBar {
                 // If we're searching,

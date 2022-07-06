@@ -45,9 +45,9 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
         super.viewDidLoad()
         
         self.title = fileURL.lastPathComponent
-        textView.text = originalContents
-        textView.theme = theme.theme
-        textView.showLineNumbers = true
+        textView.showLineNumbers = UserPreferences.showLineCount
+        textView.isLineWrappingEnabled = UserPreferences.wrapLines
+        textView.setState(TextViewState(text: originalContents, theme: theme.theme))
         
         textView.autocorrectionType = .no
         textView.autocapitalizationType = .none

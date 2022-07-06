@@ -85,6 +85,11 @@ extension URL {
     var isReadable: Bool {
         return FileManager.default.isReadableFile(atPath: self.path)
     }
+    
+    /// The image to represent this URL in the UI.
+    var displayImage: UIImage? {
+        return self.isDirectory ? UIImage(systemName: "folder.fill") : UIImage(systemName: "doc.fill")
+    }
 }
 
 extension UIViewController {

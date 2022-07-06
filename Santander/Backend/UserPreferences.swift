@@ -49,6 +49,12 @@ enum UserPreferences {
     @Storage(key: "LastOpenedPath", defaultValue: nil)
     static var lastOpenedPath: String?
     
+    @Storage(key: "TextEditorWrapLines", defaultValue: true)
+    static var wrapLines: Bool 
+    
+    @Storage(key: "TextEditorShowLineCount", defaultValue: true)
+    static var showLineCount: Bool 
+    
     static var pathGroups: [PathGroup] {
         get {
             guard let data = UserDefaults.standard.data(forKey: "UserPathGroups"),

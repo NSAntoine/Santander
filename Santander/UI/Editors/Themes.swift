@@ -1,5 +1,5 @@
 //
-//  UserTheme.swift
+//  Themes.swift
 //  Santander
 //
 //  Created by Serena on 03/07/2022
@@ -8,7 +8,6 @@
 
 import UIKit
 import Runestone
-
 
 /// A Generic theme instance.
 class AnyTheme: Theme {

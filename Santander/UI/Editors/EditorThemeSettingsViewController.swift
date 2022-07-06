@@ -60,7 +60,7 @@ class EditorThemeSettingsViewController: UITableViewController {
             let cell = tableView.dequeueReusableCell(withIdentifier: SettingsSwitchTableViewCell.identifier) as! SettingsSwitchTableViewCell
             cell.label.text = "Show line count"
             cell.defaultKey = "TextEditorShowLineCount"
-            cell.fallback = true
+            cell.fallback = UserPreferences.showLineCount
             cell.callback = { isOn in
                 self.delegate?.showLineCountConfigurationDidChange(showLineCount: isOn)
             }
@@ -69,7 +69,7 @@ class EditorThemeSettingsViewController: UITableViewController {
             let cell = tableView.dequeueReusableCell(withIdentifier: SettingsSwitchTableViewCell.identifier) as! SettingsSwitchTableViewCell
             cell.label.text = "Wrap lines"
             cell.defaultKey = "TextEditorWrapLines"
-            cell.fallback = true
+            cell.fallback = UserPreferences.wrapLines
             cell.callback = { isOn in
                 self.delegate?.wrapLinesConfigurationDidChange(wrapLines: isOn)
             }
