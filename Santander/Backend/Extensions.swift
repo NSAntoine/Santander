@@ -49,6 +49,11 @@ extension URL {
         try? resourceValues(forKeys: [.contentAccessDateKey]).contentAccessDate
     }
     
+    /// The date to which the item was added to it's parent directory
+    var addedToDirectoryDate: Date? {
+        try? resourceValues(forKeys: [.addedToDirectoryDateKey]).addedToDirectoryDate
+    }
+    
     var size: Int? {
         if self.isDirectory {
             return nil // TODO: - Good dir support, async for UI

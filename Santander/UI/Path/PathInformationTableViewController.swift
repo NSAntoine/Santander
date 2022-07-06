@@ -1,5 +1,5 @@
 //
-//  PathInformationTableView.swift
+//  PathInformationTableViewController.swift
 //  Santander
 //
 //  Created by Serena on 21/06/2022
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class PathInformationTableView: UITableViewController {
+class PathInformationTableViewController: UITableViewController {
     let path: URL
     
     var showByteCount: Bool = false
@@ -42,7 +42,7 @@ class PathInformationTableView: UITableViewController {
         case 1:
             return self.path.contentType?.preferredMIMEType != nil ? 2 : 1
         case 2:
-            return 3
+            return 4
         case 3:
             return self.path.isDirectory ? 3 : 4
         default:
@@ -103,19 +103,16 @@ class PathInformationTableView: UITableViewController {
             conf.secondaryText = self.path.contentType?.preferredMIMEType ?? "N/A"
         case (2, 0):
             conf.text = "Created"
-            
             conf.secondaryText = self.path.creationDate?.listFormatted() ?? "N/A"
-            
         case (2, 1):
-            conf.text = "Last modified"
-            
-            conf.secondaryText = path.lastModifiedDate?.listFormatted() ?? "N/A"
-            
+            conf.text = "Added"
+            conf.secondaryText = path.addedToDirectoryDate?.listFormatted() ?? "N/A"
         case (2, 2):
+            conf.text = "Last modified"
+            conf.secondaryText = path.lastModifiedDate?.listFormatted() ?? "N/A"
+        case (2, 3):
             conf.text = "Last accessed"
-            
             conf.secondaryText = path.lastAccessedDate?.listFormatted() ?? "N/A"
-            
         case (3, 0):
             conf.text = "Deletable"
             conf.secondaryText = FileManager.default.isDeletableFile(atPath: self.path.path) ? "Yes" : "No"

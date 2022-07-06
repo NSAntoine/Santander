@@ -409,7 +409,7 @@ class SubPathsTableViewController: UITableViewController {
     /// Opens the information bottom sheet for a specified path
     func openInfoBottomSheet(path: URL) {
         let navController = UINavigationController(
-            rootViewController: PathInformationTableView(style: .insetGrouped, path: path)
+            rootViewController: PathInformationTableViewController(style: .insetGrouped, path: path)
         )
         
         if #available(iOS 15.0, *) {

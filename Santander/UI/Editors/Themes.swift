@@ -134,6 +134,7 @@ struct CodableTheme: Codable {
             pageGuideBackgroundColor: pageGuideBackgroundColor.uiColor,
             pageGuideHairlineColor: pageGuideHairlineColor.uiColor,
             markedTextBackgroundColor: markedTextBackgroundColor.uiColor,
-            markedTextBackgroundBorderColor: markedTextBackgroundBorderColor.uiColor)
+            markedTextBackgroundBorderColor: markedTextBackgroundBorderColor.uiColor
+        )
     }
 }

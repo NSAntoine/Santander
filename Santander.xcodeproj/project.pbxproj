@@ -12,7 +12,7 @@
 		37198B9C28721275000C8CDF /* Themes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37198B9B28721275000C8CDF /* Themes.swift */; };
 		37198B9F2872DDA6000C8CDF /* KeyboardToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37198B9E2872DDA6000C8CDF /* KeyboardToolsView.swift */; };
 		3771D37B2862329D00E200B6 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771D37A2862329D00E200B6 /* Extensions.swift */; };
-		3771D37F2862493E00E200B6 /* PathInformationTableView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771D37E2862493E00E200B6 /* PathInformationTableView.swift */; };
+		3771D37F2862493E00E200B6 /* PathInformationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771D37E2862493E00E200B6 /* PathInformationTableViewController.swift */; };
 		3789B5E028622B7A00058688 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3789B5DF28622B7A00058688 /* AppDelegate.swift */; };
 		3789B5E228622B7A00058688 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3789B5E128622B7A00058688 /* SceneDelegate.swift */; };
 		3789B5E928622B7C00058688 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3789B5E828622B7C00058688 /* Assets.xcassets */; };
@@ -51,7 +51,7 @@
 		37198B9B28721275000C8CDF /* Themes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Themes.swift; sourceTree = "<group>"; };
 		37198B9E2872DDA6000C8CDF /* KeyboardToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardToolsView.swift; sourceTree = "<group>"; };
 		3771D37A2862329D00E200B6 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		3771D37E2862493E00E200B6 /* PathInformationTableView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathInformationTableView.swift; sourceTree = "<group>"; };
+		3771D37E2862493E00E200B6 /* PathInformationTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathInformationTableViewController.swift; sourceTree = "<group>"; };
 		3789B5DC28622B7A00058688 /* Santander.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Santander.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3789B5DF28622B7A00058688 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3789B5E128622B7A00058688 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -156,7 +156,7 @@
 				37C6E0CF28673AFF00BDDA16 /* Search.swift */,
 				37C6E0D12867653A00BDDA16 /* PathsListSplitViewController.swift */,
 				37C6E0CD28665B2A00BDDA16 /* PathOperationViewController.swift */,
-				3771D37E2862493E00E200B6 /* PathInformationTableView.swift */,
+				3771D37E2862493E00E200B6 /* PathInformationTableViewController.swift */,
 				37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */,
 			);
 			path = Path;
@@ -255,7 +255,7 @@
 				37C6E0D22867653A00BDDA16 /* PathsListSplitViewController.swift in Sources */,
 				37198B9C28721275000C8CDF /* Themes.swift in Sources */,
 				37C6E0D028673AFF00BDDA16 /* Search.swift in Sources */,
-				3771D37F2862493E00E200B6 /* PathInformationTableView.swift in Sources */,
+				3771D37F2862493E00E200B6 /* PathInformationTableViewController.swift in Sources */,
 				37198B9A28721069000C8CDF /* EditorThemeSettingsViewController.swift in Sources */,
 				3789B5E228622B7A00058688 /* SceneDelegate.swift in Sources */,
 			);
