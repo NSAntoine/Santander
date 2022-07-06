@@ -11,6 +11,7 @@
 		37198B9A28721069000C8CDF /* EditorThemeSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37198B9928721069000C8CDF /* EditorThemeSettingsViewController.swift */; };
 		37198B9C28721275000C8CDF /* Themes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37198B9B28721275000C8CDF /* Themes.swift */; };
 		37198B9F2872DDA6000C8CDF /* KeyboardToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37198B9E2872DDA6000C8CDF /* KeyboardToolsView.swift */; };
+		374ECDC82875A3940066E9DD /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374ECDC72875A3940066E9DD /* Storage.swift */; };
 		3771D37B2862329D00E200B6 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771D37A2862329D00E200B6 /* Extensions.swift */; };
 		3771D37F2862493E00E200B6 /* PathInformationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771D37E2862493E00E200B6 /* PathInformationTableViewController.swift */; };
 		3789B5E028622B7A00058688 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3789B5DF28622B7A00058688 /* AppDelegate.swift */; };
@@ -50,6 +51,7 @@
 		37198B9928721069000C8CDF /* EditorThemeSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditorThemeSettingsViewController.swift; sourceTree = "<group>"; };
 		37198B9B28721275000C8CDF /* Themes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Themes.swift; sourceTree = "<group>"; };
 		37198B9E2872DDA6000C8CDF /* KeyboardToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardToolsView.swift; sourceTree = "<group>"; };
+		374ECDC72875A3940066E9DD /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
 		3771D37A2862329D00E200B6 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		3771D37E2862493E00E200B6 /* PathInformationTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathInformationTableViewController.swift; sourceTree = "<group>"; };
 		3789B5DC28622B7A00058688 /* Santander.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Santander.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -84,12 +86,21 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		374ECDC62875A3710066E9DD /* Preferences */ = {
+			isa = PBXGroup;
+			children = (
+				37932F042863205F00BF48C8 /* UserPreferences.swift */,
+				374ECDC72875A3940066E9DD /* Storage.swift */,
+			);
+			path = Preferences;
+			sourceTree = "<group>";
+		};
 		3771D3782862328400E200B6 /* Backend */ = {
 			isa = PBXGroup;
 			children = (
 				3771D37A2862329D00E200B6 /* Extensions.swift */,
 				37963F122869C96C00C4B72A /* PathType.swift */,
-				37932F042863205F00BF48C8 /* UserPreferences.swift */,
+				374ECDC62875A3710066E9DD /* Preferences */,
 				37C6E0C928662C6800BDDA16 /* SortingWays.swift */,
 				37963F16286A0F0B00C4B72A /* DirectoryMonitor.swift */,
 			);
@@ -246,6 +257,7 @@
 				37C6E0C828662C4100BDDA16 /* DragAndDrop.swift in Sources */,
 				37932F052863205F00BF48C8 /* UserPreferences.swift in Sources */,
 				37963F132869C96C00C4B72A /* PathType.swift in Sources */,
+				374ECDC82875A3940066E9DD /* Storage.swift in Sources */,
 				3789B5F428622E0D00058688 /* SubPathsTableViewController.swift in Sources */,
 				3789B5E028622B7A00058688 /* AppDelegate.swift in Sources */,
 				3712D319286F7F2E00BCD034 /* TypeSelectionViewController.swift in Sources */,
