@@ -314,7 +314,11 @@ class SubPathsTableViewController: UITableViewController {
     func goToFile(path: URL) {
         // if we can get the string contents,
         // open the Text Editor
-        if let stringContents = try? String(contentsOf: path) {
+        if let audioVC = try? AudioPlayerViewController(fileURL: path) {
+            let navVC = UINavigationController(rootViewController: audioVC)
+            navVC.modalPresentationStyle = .fullScreen
+            self.present(navVC, animated: true)
+        } else if let stringContents = try? String(contentsOf: path) {
             let vc = UINavigationController(rootViewController: TextFileEditorViewController(fileURL: path, contents: stringContents))
             
             vc.modalPresentationStyle = .overFullScreen
@@ -340,32 +344,10 @@ class SubPathsTableViewController: UITableViewController {
         // if we're going to a directory, or a search result,
         // go to the directory path
         if path.isDirectory || (self.isSearching && dirResult != self.currentPath) {
-            setPaths(forPath: dirResult)
+            self.navigationController?.pushViewController(SubPathsTableViewController(path: path, isFavouritePathsSheet: self.isFavouritePathsSheet), animated: true)
         } else {
             self.goToFile(path: path)
         }
-    }
-    
-    func setPaths(forPath path: URL) {
-        if self.isFavouritePathsSheet {
-            // if we're in the favourites sheet, just push
-            // because if we set the view controllers,
-            // it will go back to the previous directory
-            self.navigationController?.pushViewController(SubPathsTableViewController(path: path, isFavouritePathsSheet: true), animated: true)
-            return
-        }
-        
-        let pathComponents = path.pathComponents
-        var arr: [UIViewController] = []
-        for (indx, _) in pathComponents.enumerated() {
-            var joined = pathComponents[pathComponents.startIndex...indx].joined(separator: "/")
-            if joined.hasPrefix("//") {
-                joined.removeFirst()
-            }
-            arr.append(SubPathsTableViewController(path: URL(fileURLWithPath: joined)))
-        }
-        
-        self.navigationController?.setViewControllers(arr, animated: true)
     }
     
     func sortContents(with filter: SortingWays) {
@@ -561,7 +543,7 @@ class SubPathsTableViewController: UITableViewController {
             }
             
             children.append(contentsOf: [operationItemsMenu, pasteboardOptions])
-            children.append(contentsOf: [UIMenu(options: .displayInline, children: [deleteAction])])
+            children.append(UIMenu(options: .displayInline, children: [deleteAction]))
             return UIMenu(children: children)
         }
     }

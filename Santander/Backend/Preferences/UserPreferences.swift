@@ -34,6 +34,14 @@ enum UserPreferences {
     @Storage(key: "TextEditorShowLineCount", defaultValue: true)
     static var showLineCount: Bool 
     
+    /// The amount of seconds in the go forward / go backward buttons in the `AudioPlayerViewController`
+    @Storage(key: "AudioVCSkipDuration", defaultValue: 15)
+    static var skipDuration: Int
+    
+    /// The speed of the audio in the `AudioPlayerViewController`
+    @Storage(key: "AudioVCSpeed", defaultValue: 1)
+    static var audioVCSpeed: Float
+    
     static var pathGroups: [PathGroup] {
         get {
             guard let data = UserDefaults.standard.data(forKey: "UserPathGroups"),

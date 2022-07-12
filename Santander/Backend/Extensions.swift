@@ -374,3 +374,30 @@ extension UITableViewController {
         return result
     }
 }
+
+extension UIImage {
+    func imageWith(newSize: CGSize) -> UIImage {
+        let image = UIGraphicsImageRenderer(size: newSize).image { _ in
+            draw(in: CGRect(origin: .zero, size: newSize))
+        }
+        
+        return image.withRenderingMode(renderingMode)
+    }
+}
+
+extension UIView {
+    func applyingBlur(_ alpha: CGFloat = 0.5) -> UIView {
+        // create effect
+        let effect = UIBlurEffect(style: .dark)
+        let effectView = UIVisualEffectView(effect: effect)
+        
+        // set boundry and alpha
+        effectView.frame = self.bounds
+        effectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+        effectView.alpha = alpha
+        
+        let new = self
+        new.addSubview(effectView)
+        return new
+    }
+}

@@ -34,22 +34,6 @@ class PathListsSplitViewController: SubPathsTableViewController {
     
     var collapsedSections: Set<Int> = []
     
-    override func setPaths(forPath path: URL) {
-        let pathComponents = path.pathComponents
-        var arr: [UIViewController] = []
-        for (indx, _) in pathComponents.enumerated() {
-            var joined = pathComponents[pathComponents.startIndex...indx].joined(separator: "/")
-            if joined.hasPrefix("//") {
-                joined.removeFirst()
-            }
-            arr.append(SubPathsTableViewController(path: URL(fileURLWithPath: joined)))
-        }
-        
-        let navVC = UINavigationController()
-        navVC.setViewControllers(arr, animated: true)
-        self.splitViewController?.setViewController(navVC, for: .secondary)
-    }
-    
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         let group = UserPreferences.pathGroups[indexPath.section]
         // Make sure the default group can't be removed

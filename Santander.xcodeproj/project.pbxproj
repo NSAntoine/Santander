@@ -12,6 +12,7 @@
 		37198B9C28721275000C8CDF /* Themes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37198B9B28721275000C8CDF /* Themes.swift */; };
 		37198B9F2872DDA6000C8CDF /* KeyboardToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37198B9E2872DDA6000C8CDF /* KeyboardToolsView.swift */; };
 		374ECDC82875A3940066E9DD /* Storage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374ECDC72875A3940066E9DD /* Storage.swift */; };
+		374ECDCA2875F5350066E9DD /* AudioPlayerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 374ECDC92875F5350066E9DD /* AudioPlayerViewController.swift */; };
 		3771D37B2862329D00E200B6 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771D37A2862329D00E200B6 /* Extensions.swift */; };
 		3771D37F2862493E00E200B6 /* PathInformationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771D37E2862493E00E200B6 /* PathInformationTableViewController.swift */; };
 		3789B5E028622B7A00058688 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3789B5DF28622B7A00058688 /* AppDelegate.swift */; };
@@ -52,6 +53,7 @@
 		37198B9B28721275000C8CDF /* Themes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Themes.swift; sourceTree = "<group>"; };
 		37198B9E2872DDA6000C8CDF /* KeyboardToolsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardToolsView.swift; sourceTree = "<group>"; };
 		374ECDC72875A3940066E9DD /* Storage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Storage.swift; sourceTree = "<group>"; };
+		374ECDC92875F5350066E9DD /* AudioPlayerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerViewController.swift; sourceTree = "<group>"; };
 		3771D37A2862329D00E200B6 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		3771D37E2862493E00E200B6 /* PathInformationTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathInformationTableViewController.swift; sourceTree = "<group>"; };
 		3789B5DC28622B7A00058688 /* Santander.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Santander.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -154,6 +156,7 @@
 			children = (
 				37198B9928721069000C8CDF /* EditorThemeSettingsViewController.swift */,
 				37934DB628707F4500D1248A /* TextFileEditorViewController.swift */,
+				374ECDC92875F5350066E9DD /* AudioPlayerViewController.swift */,
 				37198B9B28721275000C8CDF /* Themes.swift */,
 				37198B9E2872DDA6000C8CDF /* KeyboardToolsView.swift */,
 			);
@@ -251,6 +254,7 @@
 			files = (
 				37C6E0CE28665B2A00BDDA16 /* PathOperationViewController.swift in Sources */,
 				3771D37B2862329D00E200B6 /* Extensions.swift in Sources */,
+				374ECDCA2875F5350066E9DD /* AudioPlayerViewController.swift in Sources */,
 				37C6E0C52865CF7C00BDDA16 /* SettingsTableViewController.swift in Sources */,
 				37C6E0CA28662C6800BDDA16 /* SortingWays.swift in Sources */,
 				37934DB728707F4500D1248A /* TextFileEditorViewController.swift in Sources */,
@@ -411,6 +415,7 @@
 				DEVELOPMENT_TEAM = L9735M962H;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Santander/Info.plist;
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
@@ -439,6 +444,7 @@
 				DEVELOPMENT_TEAM = L9735M962H;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Santander/Info.plist;
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
