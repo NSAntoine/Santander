@@ -17,7 +17,11 @@ class SubPathsTableViewController: UITableViewController {
     var unfilteredContents: [URL]
     
     /// The contents of the path, filtered by the search
-    var filteredSearchContents: [URL] = []
+    var filteredSearchContents: [URL] = [] {
+        didSet {
+            tableView.reloadData()
+        }
+    }
     
     /// A Boolean representing if the user is currently searching
     var isSearching: Bool = false
@@ -25,7 +29,7 @@ class SubPathsTableViewController: UITableViewController {
     /// The contents of the path to show in UI
     var contents: [URL] {
         get {
-            return isSearching ? filteredSearchContents : unfilteredContents
+            return filteredSearchContents.isEmpty ? unfilteredContents : filteredSearchContents
         }
     }
     
@@ -54,6 +58,15 @@ class SubPathsTableViewController: UITableViewController {
     /// or that the directory / group is empty
     /// (if those conditions apply)
     var noContentsLabel: UILabel!
+    
+    /// Whether or not to display files beginning with a dot in their names
+    var displayHiddenFiles: Bool = UserPreferences.displayHiddenFiles {
+        didSet {
+            showOrHideHiddenFiles()
+            
+            UserPreferences.displayHiddenFiles = self.displayHiddenFiles
+        }
+    }
     
     /// Initialize with a given path URL
     init(style: UITableView.Style = .automatic, path: URL, isFavouritePathsSheet: Bool = false) {
@@ -86,6 +99,13 @@ class SubPathsTableViewController: UITableViewController {
         self.title = self.displayName
         
         setRightBarButton()
+        showOrHideHiddenFiles()
+        
+        if let currentPath = self.currentPath {
+            self.directoryMonitor = DirectoryMonitor(url: currentPath)
+            self.directoryMonitor?.delegate = self
+            directoryMonitor?.startMonitoring()
+        }
         
         self.navigationController?.navigationBar.prefersLargeTitles = UserPreferences.useLargeNavigationTitles
         if !contents.isEmpty {
@@ -584,9 +604,6 @@ class SubPathsTableViewController: UITableViewController {
             
             menuActions.insert(makeNewItemMenu(forURL: currentPath), at: 2)
             menuActions.append(showInfoAction)
-            self.directoryMonitor = DirectoryMonitor(url: currentPath)
-            self.directoryMonitor?.delegate = self
-            directoryMonitor?.startMonitoring()
         }
         
         let settingsAction = UIAction(title: "Settings", image: UIImage(systemName: "gear")) { _ in
@@ -594,10 +611,28 @@ class SubPathsTableViewController: UITableViewController {
         }
         menuActions.append(settingsAction)
         
+        let showOrHideHiddenFilesAction = UIAction(
+            title: "Display hidden files",
+            state: displayHiddenFiles ? .on : .off
+        ) { _ in
+            self.displayHiddenFiles.toggle()
+            self.setRightBarButton()
+        }
+        
+        menuActions.append(showOrHideHiddenFilesAction)
+        
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: .init(systemName: "ellipsis.circle"),
             menu: .init(children: menuActions)
         )
+    }
+    
+    func showOrHideHiddenFiles() {
+        if !displayHiddenFiles {
+            self.filteredSearchContents = self.unfilteredContents.filter { !$0.lastPathComponent.starts(with: ".") }
+        } else {
+            self.filteredSearchContents = []
+        }
     }
     
     func setupNoContentsLabel() {

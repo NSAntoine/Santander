@@ -42,6 +42,9 @@ enum UserPreferences {
     @Storage(key: "AudioVCSpeed", defaultValue: 1)
     static var audioVCSpeed: Float
     
+    @Storage(key: "displayHiddenFiles", defaultValue: true)
+    static var displayHiddenFiles: Bool
+    
     static var pathGroups: [PathGroup] {
         get {
             guard let data = UserDefaults.standard.data(forKey: "UserPathGroups"),
