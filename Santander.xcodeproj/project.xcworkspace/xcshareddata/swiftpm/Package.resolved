@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/simonbs/Runestone",
       "state" : {
-        "revision" : "cfedaa892d79935c0d6c2e599c60e2af6e5ceaf0",
-        "version" : "0.1.2"
+        "branch" : "main",
+        "revision" : "c7326e25aea667c3b604e03bfb40916436bb981e"
       }
     }
   ],

@@ -9,7 +9,7 @@
 import UIKit
 import QuickLook
 
-/// A View Controller which presents a path to be selected, and then executes a specified operation
+/// A View Controller which presents a path to be selected, and then executes a specified operation, such as moving or copying the path
 class PathOperationViewController: SubPathsTableViewController {
     
     /// The path being moved
@@ -41,7 +41,7 @@ class PathOperationViewController: SubPathsTableViewController {
         if let currentPath = self.currentPath {
             self.navigationItem.backBarButtonItem = UIBarButtonItem(title: currentPath.lastPathComponent, style: .plain, target: nil, action: nil)
         }
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
+        
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
     }
     
@@ -79,6 +79,12 @@ class PathOperationViewController: SubPathsTableViewController {
     @objc
     func cancel() {
         self.dismiss(animated: true)
+    }
+    
+    override func setRightBarButton() {
+        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
+        let options = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: makeRightBarButton())
+        self.navigationItem.rightBarButtonItems = [doneButton, options]
     }
 }
 

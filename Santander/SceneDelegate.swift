@@ -11,6 +11,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
+    var shortcutToProcess: UIApplicationShortcutItem? = nil
     
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
@@ -68,9 +69,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let url = first.url
         _ = url.startAccessingSecurityScopedResource()
         defer {
-            first.url.stopAccessingSecurityScopedResource()
+            url.stopAccessingSecurityScopedResource()
         }
-        let operationsVC = PathOperationViewController(movingPath: first.url, sourceContentsVC: nil, operationType: .import)
+        let operationsVC = PathOperationViewController(movingPath: url, sourceContentsVC: nil, operationType: .import)
         self.window?.rootViewController?.present(UINavigationController(rootViewController: operationsVC), animated: true)
     }
 }

@@ -37,7 +37,12 @@ class SubPathsTableViewController: UITableViewController {
     let displayName: String
     
     /// The method of sorting
-    var sortMethod: SortingWays = .alphabetically
+    var sortMethod: PathsSortMethods = .userPrefered ?? .alphabetically {
+        willSet {
+            UserDefaults.standard.set(newValue.rawValue, forKey: "SubPathsSortMode")
+            sortContents(with: newValue)
+        }
+    }
     
     /// is this ViewController being presented as the `Favourite` paths?
     let isFavouritePathsSheet: Bool
@@ -68,11 +73,17 @@ class SubPathsTableViewController: UITableViewController {
         }
     }
     
+    /// Returns the SubPathsTableViewController for favourite paths
+    class func favourites() -> SubPathsTableViewController {
+        return SubPathsTableViewController(
+            contents: UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) },
+            title: "Favourites",
+            isFavouritePathsSheet: true)
+    }
+    
     /// Initialize with a given path URL
     init(style: UITableView.Style = .automatic, path: URL, isFavouritePathsSheet: Bool = false) {
-        self.unfilteredContents = path.contents.sorted { firstURL, secondURL in
-            firstURL.lastPathComponent < secondURL.lastPathComponent
-        }
+        self.unfilteredContents = self.sortMethod.sorting(URLs: path.contents)
         
         self.displayName = path.lastPathComponent
         self.currentPath = path
@@ -108,19 +119,17 @@ class SubPathsTableViewController: UITableViewController {
         }
         
         self.navigationController?.navigationBar.prefersLargeTitles = UserPreferences.useLargeNavigationTitles
-        if !contents.isEmpty {
-            let searchController = UISearchController(searchResultsController: nil)
-            searchController.searchBar.delegate = self
-            searchController.obscuresBackgroundDuringPresentation = false
-            searchController.searchResultsUpdater = self
-            searchController.delegate = self
-            self.tableView.keyboardDismissMode = .onDrag
-            self.navigationItem.hidesSearchBarWhenScrolling = !UserPreferences.alwaysShowSearchBar
-            if let currentPath = currentPath {
-                searchController.searchBar.scopeButtonTitles = [currentPath.lastPathComponent, "Subdirectories"]
-            }
-            self.navigationItem.searchController = searchController
+        let searchController = UISearchController(searchResultsController: nil)
+        searchController.searchBar.delegate = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchResultsUpdater = self
+        searchController.delegate = self
+        self.tableView.keyboardDismissMode = .onDrag
+        self.navigationItem.hidesSearchBarWhenScrolling = !UserPreferences.alwaysShowSearchBar
+        if let currentPath = currentPath {
+            searchController.searchBar.scopeButtonTitles = [currentPath.lastPathComponent, "Subdirectories"]
         }
+        self.navigationItem.searchController = searchController
         
         tableView.dragInteractionEnabled = true
         tableView.dropDelegate = self
@@ -136,7 +145,7 @@ class SubPathsTableViewController: UITableViewController {
             switch section {
             case 0: return 1
             case 1, 2: return 3
-            default: break
+            default: fatalError("Should NOT have gotten here!")
             }
         }
         
@@ -237,12 +246,8 @@ class SubPathsTableViewController: UITableViewController {
         favouriteAction.image = itemAlreadyFavourited ? UIImage(systemName: "star.fill") : UIImage(systemName: "star")
 
         let deleteAction = UIContextualAction(style: .destructive, title: nil) { _, _, completion in
-            do {
-                try FileManager.default.removeItem(at: selectedItem)
-                completion(true)
-            } catch {
-                self.errorAlert(error, title: "Couldn't remove item \(selectedItem.lastPathComponent)")
-                completion(false)
+            self.deleteURL(selectedItem) { didSucceed in
+                completion(didSucceed)
             }
         }
         
@@ -253,15 +258,19 @@ class SubPathsTableViewController: UITableViewController {
     }
     
     func makeSortMenu() -> UIMenu {
-        let actions = SortingWays.allCases.map { type in
+        let actions = PathsSortMethods.allCases.map { type in
             UIAction(title: type.description, state: self.sortMethod == type ? .on : .off) { _ in
-                self.sortContents(with: type)
+                self.sortMethod = type
                 
                 // Reload the right bar button menu after setting the type
                 self.setRightBarButton()
         }}
         
-        let menu = UIMenu(title: "Sort by..", image: UIImage(systemName: "filemenu.and.selection"))
+        let menu = UIMenu(title: "Sort by..", image: UIImage(systemName: "arrow.up.arrow.down"))
+        if #available(iOS 15.0, *) {
+            menu.subtitle = self.sortMethod.description
+        }
+        
         return menu.replacingChildren(actions)
     }
     
@@ -370,40 +379,8 @@ class SubPathsTableViewController: UITableViewController {
         }
     }
     
-    func sortContents(with filter: SortingWays) {
-        self.sortMethod = filter
-        self.unfilteredContents = self.contents.sorted { firstURL, secondURL in
-            switch filter {
-            case .alphabetically:
-                return firstURL.lastPathComponent < secondURL.lastPathComponent
-            case .size:
-                guard let firstSize = firstURL.size, let secondSize = secondURL.size else {
-                    return false
-                }
-                
-                return firstSize > secondSize
-            case .type:
-                return firstURL.contentType == secondURL.contentType
-            case .dateCreated:
-                guard let firstDate = firstURL.creationDate, let secondDate = secondURL.creationDate else {
-                    return false
-                }
-                
-                return firstDate < secondDate
-            case .dateModified:
-                guard let firstDate = firstURL.lastModifiedDate, let secondDate = secondURL.lastModifiedDate else {
-                    return false
-                }
-                
-                return firstDate < secondDate
-            case .dateAccessed:
-                guard let firstDate = firstURL.lastAccessedDate, let secondDate = secondURL.lastAccessedDate else {
-                    return false
-                }
-                
-                return firstDate < secondDate
-            }
-        }
+    func sortContents(with filter: PathsSortMethods) {
+        self.unfilteredContents = sortMethod.sorting(URLs: self.contents)
         
         self.tableView.reloadData()
     }
@@ -463,7 +440,7 @@ class SubPathsTableViewController: UITableViewController {
         cell.contentConfiguration = cellConf
         return cell
     }
-        
+    
     override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         
         if doDisplaySearchSuggestions {
@@ -555,11 +532,7 @@ class SubPathsTableViewController: UITableViewController {
             }
             
             let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-                do {
-                    try FileManager.default.removeItem(at: item)
-                } catch {
-                    self.errorAlert(error, title: "Unable to delete item")
-                }
+                self.deleteURL(item) { _ in }
             }
             
             children.append(contentsOf: [operationItemsMenu, pasteboardOptions])
@@ -579,14 +552,10 @@ class SubPathsTableViewController: UITableViewController {
         
         return [copyName, copyPath]
     }
-    
-    func setRightBarButton() {
+    /// Returns the UIMenu to be used as the (primary) right bar button
+    func makeRightBarButton() -> UIMenu {
         let seeFavouritesAction = UIAction(title: "Favourites", image: UIImage(systemName: "star.fill")) { _ in
-            let newVC = UINavigationController(rootViewController: SubPathsTableViewController(
-                contents: UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) },
-                title: "Favourites",
-                isFavouritePathsSheet: true)
-            )
+            let newVC = UINavigationController(rootViewController: SubPathsTableViewController.favourites())
             self.present(newVC, animated: true)
         }
         
@@ -620,10 +589,13 @@ class SubPathsTableViewController: UITableViewController {
         }
         
         menuActions.append(showOrHideHiddenFilesAction)
-        
+        return UIMenu(children: menuActions)
+    }
+    
+    func setRightBarButton() {
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(
             image: .init(systemName: "ellipsis.circle"),
-            menu: .init(children: menuActions)
+            menu: makeRightBarButton()
         )
     }
     

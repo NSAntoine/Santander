@@ -24,10 +24,10 @@
 		37934DB728707F4500D1248A /* TextFileEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37934DB628707F4500D1248A /* TextFileEditorViewController.swift */; };
 		37963F132869C96C00C4B72A /* PathType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37963F122869C96C00C4B72A /* PathType.swift */; };
 		37963F17286A0F0B00C4B72A /* DirectoryMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37963F16286A0F0B00C4B72A /* DirectoryMonitor.swift */; };
-		379732FB287198AD00E11ED9 /* Runestone in Frameworks */ = {isa = PBXBuildFile; productRef = 379732FA287198AD00E11ED9 /* Runestone */; };
+		37BB871428932E9600ADA5E3 /* Runestone in Frameworks */ = {isa = PBXBuildFile; productRef = 37BB871328932E9600ADA5E3 /* Runestone */; };
 		37C6E0C52865CF7C00BDDA16 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C42865CF7C00BDDA16 /* SettingsTableViewController.swift */; };
 		37C6E0C828662C4100BDDA16 /* DragAndDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */; };
-		37C6E0CA28662C6800BDDA16 /* SortingWays.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C928662C6800BDDA16 /* SortingWays.swift */; };
+		37C6E0CA28662C6800BDDA16 /* PathsSortMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C928662C6800BDDA16 /* PathsSortMethods.swift */; };
 		37C6E0CE28665B2A00BDDA16 /* PathOperationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0CD28665B2A00BDDA16 /* PathOperationViewController.swift */; };
 		37C6E0D028673AFF00BDDA16 /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0CF28673AFF00BDDA16 /* Search.swift */; };
 		37C6E0D22867653A00BDDA16 /* PathsListSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0D12867653A00BDDA16 /* PathsListSplitViewController.swift */; };
@@ -69,7 +69,7 @@
 		37963F16286A0F0B00C4B72A /* DirectoryMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DirectoryMonitor.swift; sourceTree = "<group>"; };
 		37C6E0C42865CF7C00BDDA16 /* SettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsTableViewController.swift; sourceTree = "<group>"; };
 		37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DragAndDrop.swift; sourceTree = "<group>"; };
-		37C6E0C928662C6800BDDA16 /* SortingWays.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SortingWays.swift; sourceTree = "<group>"; };
+		37C6E0C928662C6800BDDA16 /* PathsSortMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathsSortMethods.swift; sourceTree = "<group>"; };
 		37C6E0CD28665B2A00BDDA16 /* PathOperationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathOperationViewController.swift; sourceTree = "<group>"; };
 		37C6E0CF28673AFF00BDDA16 /* Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		37C6E0D12867653A00BDDA16 /* PathsListSplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathsListSplitViewController.swift; sourceTree = "<group>"; };
@@ -81,7 +81,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				379732FB287198AD00E11ED9 /* Runestone in Frameworks */,
+				37BB871428932E9600ADA5E3 /* Runestone in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -103,7 +103,7 @@
 				3771D37A2862329D00E200B6 /* Extensions.swift */,
 				37963F122869C96C00C4B72A /* PathType.swift */,
 				374ECDC62875A3710066E9DD /* Preferences */,
-				37C6E0C928662C6800BDDA16 /* SortingWays.swift */,
+				37C6E0C928662C6800BDDA16 /* PathsSortMethods.swift */,
 				37963F16286A0F0B00C4B72A /* DirectoryMonitor.swift */,
 			);
 			path = Backend;
@@ -194,7 +194,7 @@
 			);
 			name = Santander;
 			packageProductDependencies = (
-				379732FA287198AD00E11ED9 /* Runestone */,
+				37BB871328932E9600ADA5E3 /* Runestone */,
 			);
 			productName = Santander;
 			productReference = 3789B5DC28622B7A00058688 /* Santander.app */;
@@ -224,7 +224,7 @@
 			);
 			mainGroup = 3789B5D328622B7A00058688;
 			packageReferences = (
-				379732F9287198AC00E11ED9 /* XCRemoteSwiftPackageReference "Runestone" */,
+				37BB871228932E9600ADA5E3 /* XCRemoteSwiftPackageReference "Runestone" */,
 			);
 			productRefGroup = 3789B5DD28622B7A00058688 /* Products */;
 			projectDirPath = "";
@@ -256,7 +256,7 @@
 				3771D37B2862329D00E200B6 /* Extensions.swift in Sources */,
 				374ECDCA2875F5350066E9DD /* AudioPlayerViewController.swift in Sources */,
 				37C6E0C52865CF7C00BDDA16 /* SettingsTableViewController.swift in Sources */,
-				37C6E0CA28662C6800BDDA16 /* SortingWays.swift in Sources */,
+				37C6E0CA28662C6800BDDA16 /* PathsSortMethods.swift in Sources */,
 				37934DB728707F4500D1248A /* TextFileEditorViewController.swift in Sources */,
 				37C6E0C828662C4100BDDA16 /* DragAndDrop.swift in Sources */,
 				37932F052863205F00BF48C8 /* UserPreferences.swift in Sources */,
@@ -341,7 +341,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -395,7 +395,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -487,20 +487,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		379732F9287198AC00E11ED9 /* XCRemoteSwiftPackageReference "Runestone" */ = {
+		37BB871228932E9600ADA5E3 /* XCRemoteSwiftPackageReference "Runestone" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/simonbs/Runestone";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.1.2;
+				branch = main;
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		379732FA287198AD00E11ED9 /* Runestone */ = {
+		37BB871328932E9600ADA5E3 /* Runestone */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 379732F9287198AC00E11ED9 /* XCRemoteSwiftPackageReference "Runestone" */;
+			package = 37BB871228932E9600ADA5E3 /* XCRemoteSwiftPackageReference "Runestone" */;
 			productName = Runestone;
 		};
 /* End XCSwiftPackageProductDependency section */

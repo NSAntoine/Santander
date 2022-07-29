@@ -373,6 +373,25 @@ extension UITableViewController {
         
         return result
     }
+    
+    func deleteURL(_ url: URL, completionHandler: @escaping (Bool) -> Void) {
+        let confirmationController = UIAlertController(title: "Are you sure you want to delete \"\(url.lastPathComponent)\"?", message: nil, preferredStyle: .alert)
+        let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { _ in
+            do {
+                try FileManager.default.removeItem(at: url)
+                completionHandler(true)
+            } catch {
+                let failedController = UIAlertController(title: "Failed to delete \"\(url.lastPathComponent)\"", message: error.localizedDescription, preferredStyle: .alert)
+                failedController.addAction(UIAlertAction(title: "OK", style: .cancel))
+                self.present(failedController, animated: true)
+                completionHandler(false)
+            }
+        }
+        
+        confirmationController.addAction(deleteAction)
+        confirmationController.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        self.present(confirmationController, animated: true)
+    }
 }
 
 extension UIImage {
@@ -382,22 +401,5 @@ extension UIImage {
         }
         
         return image.withRenderingMode(renderingMode)
-    }
-}
-
-extension UIView {
-    func applyingBlur(_ alpha: CGFloat = 0.5) -> UIView {
-        // create effect
-        let effect = UIBlurEffect(style: .dark)
-        let effectView = UIVisualEffectView(effect: effect)
-        
-        // set boundry and alpha
-        effectView.frame = self.bounds
-        effectView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        effectView.alpha = alpha
-        
-        let new = self
-        new.addSubview(effectView)
-        return new
     }
 }
