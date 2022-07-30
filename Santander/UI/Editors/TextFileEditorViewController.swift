@@ -88,7 +88,32 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
             self.presentTextEditorSettings()
         }
         
-        return UIMenu(image: UIImage(systemName: "ellipsis.circle"), children: [settingsAction])
+        let goToLineAction = UIAction(title: "Go to line")) { _ in
+            self.showGoToLine()
+        }
+        
+        return UIMenu(image: UIImage(systemName: "ellipsis.circle"), children: [settingsAction, goToLineAction])
+    }
+    
+    func showGoToLine() {
+        let alert = UIAlertController(title: "Go to line", message: nil, preferredStyle: .alert)
+        alert.addTextField { textField in
+            textField.keyboardType = .numberPad
+        }
+        
+        let goToLineAction = UIAlertAction(title: "Go to line", style: .default) { _ in
+            guard let text = alert.textFields?.first?.text, let line = Int(text) else {
+                print("\(#function) should not have reached here!")
+                return
+            }
+            
+            
+            self.textView.goToLine(line - 1)
+        }
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(goToLineAction)
+        self.present(alert, animated: true)
     }
     
     func textViewDidChange(_ textView: TextView) {
