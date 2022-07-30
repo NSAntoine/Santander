@@ -68,7 +68,7 @@ class PathOperationViewController: SubPathsTableViewController {
         }
     }
     
-    override func goToPath(path: URL) {
+    override func goToPath(path: URL, pushingToSplitViewVC: Bool = false) {
         if path.isDirectory {
             self.navigationController?.pushViewController(PathOperationViewController(movingPath: movingPath, sourceContentsVC: self.sourceContentsVC, operationType: self.operationType, startingPath: path), animated: true)
         } else {

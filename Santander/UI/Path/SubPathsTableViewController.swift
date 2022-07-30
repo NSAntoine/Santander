@@ -73,6 +73,12 @@ class SubPathsTableViewController: UITableViewController {
         }
     }
     
+    lazy var dataSource: UITableViewDiffableDataSource = {
+        return UITableViewDiffableDataSource<Int, URL>(tableView: self.tableView) { tableView, indexPath, itemIdentifier in
+            return self.cellRow(forURL: self.contents[indexPath.row])
+        }
+    }()
+    
     /// Returns the SubPathsTableViewController for favourite paths
     class func favourites() -> SubPathsTableViewController {
         return SubPathsTableViewController(
@@ -365,7 +371,7 @@ class SubPathsTableViewController: UITableViewController {
     }
     
     /// Opens a path in the UI
-    func goToPath(path: URL) {
+    func goToPath(path: URL, pushingToSplitViewVC: Bool = false) {
         // Make sure we're opening a directory,
         // or the parent directory of the file selected (if searching)
         let dirResult = path.isDirectory ? path : path.deletingLastPathComponent()
@@ -373,7 +379,12 @@ class SubPathsTableViewController: UITableViewController {
         // if we're going to a directory, or a search result,
         // go to the directory path
         if path.isDirectory || (self.isSearching && dirResult != self.currentPath) {
-            self.navigationController?.pushViewController(SubPathsTableViewController(path: path, isFavouritePathsSheet: self.isFavouritePathsSheet), animated: true)
+            let vc = SubPathsTableViewController(path: path, isFavouritePathsSheet: self.isFavouritePathsSheet)
+            if pushingToSplitViewVC {
+                self.splitViewController?.setViewController(vc, for: .secondary)
+            } else {
+                self.navigationController?.pushViewController(vc, animated: true)
+            }
         } else {
             self.goToFile(path: path)
         }

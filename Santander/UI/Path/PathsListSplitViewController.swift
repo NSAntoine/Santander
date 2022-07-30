@@ -24,12 +24,12 @@ class PathListsSplitViewController: SubPathsTableViewController {
         self.navigationController?.setToolbarHidden(false, animated: false)
     }
     
-    override func goToPath(path: URL) {
+    override func goToPath(path: URL, pushingToSplitViewVC: Bool = false) {
         guard path != currentPath else {
             return
         }
         
-        super.goToPath(path: path)
+        super.goToPath(path: path, pushingToSplitViewVC: true)
     }
     
     var collapsedSections: Set<Int> = []
