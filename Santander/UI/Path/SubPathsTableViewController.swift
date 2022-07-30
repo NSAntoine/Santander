@@ -29,12 +29,9 @@ class SubPathsTableViewController: UITableViewController {
     /// The contents of the path to show in UI
     var contents: [URL] {
         get {
-            return filteredSearchContents.isEmpty ? unfilteredContents : filteredSearchContents
+            return filteredSearchContents.isEmpty && !self.isSearching ? unfilteredContents : filteredSearchContents
         }
     }
-    
-    /// The display name to be used as the ViewController's title
-    let displayName: String
     
     /// The method of sorting
     var sortMethod: PathsSortMethods = .userPrefered ?? .alphabetically {
@@ -84,20 +81,20 @@ class SubPathsTableViewController: UITableViewController {
     /// Initialize with a given path URL
     init(style: UITableView.Style = .automatic, path: URL, isFavouritePathsSheet: Bool = false) {
         self.unfilteredContents = self.sortMethod.sorting(URLs: path.contents)
-        
-        self.displayName = path.lastPathComponent
         self.currentPath = path
         self.isFavouritePathsSheet = isFavouritePathsSheet
+        
         super.init(style: style)
+        self.title = path.lastPathComponent
     }
     
     /// Initialize with the given specified URLs
     init(style: UITableView.Style = .automatic, contents: [URL], title: String, isFavouritePathsSheet: Bool = false) {
         self.unfilteredContents = contents
-        self.displayName = title
         self.isFavouritePathsSheet = isFavouritePathsSheet
         
         super.init(style: style)
+        self.title = title
     }
     
     required init?(coder: NSCoder) {
@@ -106,8 +103,6 @@ class SubPathsTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        self.title = self.displayName
         
         setRightBarButton()
         showOrHideHiddenFiles()

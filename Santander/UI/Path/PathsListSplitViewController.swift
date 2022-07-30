@@ -10,6 +10,12 @@ import UIKit
 
 /// Represents the split view to be used on iPads
 class PathListsSplitViewController: SubPathsTableViewController {
+    
+    /// The action for editing the path groups
+    lazy var editAction = UIAction { _ in
+        self.setEditing(!self.isEditing, animated: true)
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -17,7 +23,12 @@ class PathListsSplitViewController: SubPathsTableViewController {
         tableView(self.tableView, didSelectRowAt: [0, 0])
         self.navigationItem.rightBarButtonItem = nil
         self.navigationItem.searchController = nil
-        self.toolbarItems = [UIBarButtonItem(title: "New group..", style: .plain, target: self, action: #selector(newGroup))]
+        
+        self.toolbarItems = [
+            UIBarButtonItem(systemItem: .add, primaryAction: UIAction(withClosure: newGroup)),
+            UIBarButtonItem(systemItem: .edit, primaryAction: editAction)
+        ]
+        
         NotificationCenter.default.addObserver(forName: .pathGroupsDidChange, object: nil, queue: nil) { _ in
             self.tableView.reloadData()
         }
@@ -43,16 +54,10 @@ class PathListsSplitViewController: SubPathsTableViewController {
         
         let removeAction = UIContextualAction(style: .destructive, title: nil) { _, _, completion in
             UserPreferences.pathGroups[indexPath.section].paths.remove(at: indexPath.row)
-            
-            if UserPreferences.pathGroups[safe: indexPath.section]?.paths.isEmpty ?? false {
-                // if the group is now empty, completely remove it
-                UserPreferences.pathGroups.remove(at: indexPath.section)
-            }
-            
             completion(true)
         }
         
-        removeAction.image = UIImage.remove
+        removeAction.image = .remove
         return UISwipeActionsConfiguration(actions: [removeAction])
     }
 
@@ -68,6 +73,12 @@ class PathListsSplitViewController: SubPathsTableViewController {
     
     override func numberOfSections(in tableView: UITableView) -> Int {
         return UserPreferences.pathGroups.count
+    }
+    
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        self.toolbarItems?[1] = UIBarButtonItem(systemItem: editing ? .done : .edit, primaryAction: editAction)
+        self.tableView.reloadData()
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -116,15 +127,28 @@ class PathListsSplitViewController: SubPathsTableViewController {
             return nil
         }
         
-        return titleWithChevronView(
-            action: #selector(chevronButtonClicked(_:)),
+        return sectionHeaderWithButton(
+            action: #selector(sectionButtonClicked(_:)),
             sectionTag: section,
-            titleText: UserPreferences.pathGroups[section].name)
+            titleText: UserPreferences.pathGroups[section].name) { button in
+                button.setImage(UIImage(systemName: isEditing ? "trash" : "chevron.down"), for: .normal)
+                if self.isEditing {
+                    button.tintColor = .systemRed
+                }
+            }
     }
     
     @objc
-    func chevronButtonClicked(_ sender: UIButton) {
+    func sectionButtonClicked(_ sender: UIButton) {
         let section = sender.tag
+        
+        if isEditing {
+            // we're deleting the section
+            UserPreferences.pathGroups.remove(at: section)
+            tableView.reloadData()
+            return
+        }
+        
         let isCollapsing: Bool = !(self.collapsedSections.contains(section))
         let newImageToSet = isCollapsing ? "chevron.forward" : "chevron.down"
         let animationOptions: UIView.AnimationOptions = isCollapsing ? .transitionFlipFromLeft : .transitionFlipFromRight
@@ -152,4 +176,15 @@ class PathListsSplitViewController: SubPathsTableViewController {
         
         return 40
     }
+    
+    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        // we don't want the item in the default section to be deletable
+        return indexPath.section == 0 ? .none : .delete
+    }
+    
+    override func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
+        // don't indent the item in the default section
+        return indexPath.section != 0
+    }
+    
 }

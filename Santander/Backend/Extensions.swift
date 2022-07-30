@@ -30,11 +30,8 @@ extension URL {
     }
     
     var isDirectory: Bool {
-        // Resolve symlinks
-        let resolved = (try? FileManager.default.destinationOfSymbolicLink(atPath: self.path)) ?? self.path
-        let newURL = URL(fileURLWithPath: resolved)
-        // Check for if path is a directory
-        return (try? newURL.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
+        let resolvedURL = URL(fileURLWithPath: self.realPath ?? self.path)
+        return (try? resolvedURL.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
     }
     
     var creationDate: Date? {
@@ -71,6 +68,7 @@ extension URL {
         return FileManager.default.displayName(atPath: self.path)
     }
     
+    /// The path, resolved if a symbolic link
     var realPath: String? {
         return try? FileManager.default.destinationOfSymbolicLink(atPath: self.path)
     }
@@ -328,12 +326,17 @@ extension UITableViewController {
         }
     }
     
-    /// A title view for a header, containing a chevron
-    func titleWithChevronView(action: Selector, sectionTag: Int, titleText: String?) -> UIView {
+    /// A title view for a header, containing a button and a title
+    func sectionHeaderWithButton(
+        action: Selector,
+        sectionTag: Int,
+        titleText: String?,
+        buttonCustomization: (UIButton) -> Void
+    ) -> UIView {
         let view = UIView()
         let label = UILabel()
         let button = UIButton()
-        button.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+        buttonCustomization(button)
         button.addTarget(self, action: action, for: .touchUpInside)
         
         button.tag = sectionTag
@@ -401,5 +404,13 @@ extension UIImage {
         }
         
         return image.withRenderingMode(renderingMode)
+    }
+}
+
+extension UIAction {
+    convenience init(withClosure closure: @escaping () -> Void) {
+        self.init { _ in
+            closure()
+        }
     }
 }

@@ -9,6 +9,7 @@
 import UIKit
 import UniformTypeIdentifiers
 
+/// A View Controller to select a UTT Type
 class TypesSelectionViewController: UITableViewController, UISearchBarDelegate {
     let allTypes: [[UTType]] = UTType.allTypes()
     
@@ -54,6 +55,11 @@ class TypesSelectionViewController: UITableViewController, UISearchBarDelegate {
         searchController.searchBar.delegate = self
         self.navigationItem.searchController = searchController
         self.navigationItem.hidesSearchBarWhenScrolling = false
+        
+        if #available(iOS 16.0, *) {
+            // .inline looks frustrating on iPad
+            self.navigationItem.preferredSearchBarPlacement = .stacked
+        }
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneDismiss))
         self.navigationItem.rightBarButtonItem?.isEnabled = !selectedTypes.isEmpty
@@ -124,11 +130,13 @@ class TypesSelectionViewController: UITableViewController, UISearchBarDelegate {
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return titleWithChevronView(action: #selector(chevronButtonClicked(_:)), sectionTag: section, titleText: headerTitle(forSection: section))
+        return sectionHeaderWithButton(action: #selector(sectionButtonClicked(_:)), sectionTag: section, titleText: headerTitle(forSection: section)) { button in
+            button.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+        }
     }
     
     @objc
-    func chevronButtonClicked(_ sender: UIButton) {
+    func sectionButtonClicked(_ sender: UIButton) {
         let section = sender.tag
         let isCollapsing: Bool = !(self.collapsedSections.contains(section))
         let newImageToSet = isCollapsing ? "chevron.forward" : "chevron.down"

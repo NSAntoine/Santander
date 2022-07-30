@@ -48,13 +48,17 @@ enum UserPreferences {
     static var pathGroups: [PathGroup] {
         get {
             guard let data = UserDefaults.standard.data(forKey: "UserPathGroups"),
-                  let decoded = try? JSONDecoder().decode([PathGroup].self, from: data),
+                  var decoded = try? JSONDecoder().decode([PathGroup].self, from: data),
                     !decoded.isEmpty else {
                 // if we can't get the saved path groups - or if they're empty,
                 // return the only defaut one
-                return [PathGroup.default]
+                return [.default]
             }
             
+            // Make sure we always have the default group
+            if !decoded.contains(.default) {
+                decoded.insert(.default, at: 0)
+            }
             return decoded
         }
         

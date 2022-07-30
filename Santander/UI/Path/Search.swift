@@ -54,6 +54,7 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
             token.representedObject as? ((URL) -> Bool)
         }
         
+        self.doDisplaySearchSuggestions = false
         self.filteredSearchContents = results.filter { url in
             let allConditionsMet = conditions.map { condition in
                 condition(url)
@@ -68,8 +69,6 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
             return allConditionsMet
         }
         
-        self.doDisplaySearchSuggestions = false
-        tableView.reloadData()
     }
     
     func presentSearchController(_ searchController: UISearchController) {
