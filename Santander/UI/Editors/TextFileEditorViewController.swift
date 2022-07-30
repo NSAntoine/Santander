@@ -88,7 +88,7 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
             self.presentTextEditorSettings()
         }
         
-        let goToLineAction = UIAction(title: "Go to line")) { _ in
+        let goToLineAction = UIAction(title: "Go to line") { _ in
             self.showGoToLine()
         }
         
