@@ -73,12 +73,6 @@ class SubPathsTableViewController: UITableViewController {
         }
     }
     
-    lazy var dataSource: UITableViewDiffableDataSource = {
-        return UITableViewDiffableDataSource<Int, URL>(tableView: self.tableView) { tableView, indexPath, itemIdentifier in
-            return self.cellRow(forURL: self.contents[indexPath.row])
-        }
-    }()
-    
     /// Returns the SubPathsTableViewController for favourite paths
     class func favourites() -> SubPathsTableViewController {
         return SubPathsTableViewController(
@@ -353,9 +347,8 @@ class SubPathsTableViewController: UITableViewController {
             let navVC = UINavigationController(rootViewController: audioVC)
             navVC.modalPresentationStyle = .fullScreen
             self.present(navVC, animated: true)
-        } else if let stringContents = try? String(contentsOf: path) {
-            let vc = UINavigationController(rootViewController: TextFileEditorViewController(fileURL: path, contents: stringContents))
-            
+        } else if let editorVC = try? TextFileEditorViewController(fileURL: path) {
+            let vc = UINavigationController(rootViewController: editorVC)
             vc.modalPresentationStyle = .overFullScreen
             self.present(vc, animated: true)
         } else {

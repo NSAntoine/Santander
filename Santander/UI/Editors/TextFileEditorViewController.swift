@@ -37,6 +37,10 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
         super.init(nibName: nil, bundle: nil)
     }
     
+    convenience init(fileURL: URL) throws {
+        self.init(fileURL: fileURL, contents: try String(contentsOf: fileURL))
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -113,7 +117,20 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
     
     @objc
     func cancel() {
-        self.dismiss(animated: true)
+        if !textIsSameAsOriginal {
+            let alert = UIAlertController(title: "Unsaved changes", message: "the file \"\(fileURL.lastPathComponent)\" has some unsaved changes, are you sure you want to close the file?", preferredStyle: .alert)
+            let saveAction = UIAlertAction(title: "Save", style: .default) { _ in
+                self.saveToFile()
+            }
+            let dontSaveAction = UIAlertAction(title: "Don't save", style: .destructive) { _ in
+                self.dismiss(animated: true)
+            }
+            alert.addAction(dontSaveAction)
+            alert.addAction(saveAction)
+            self.present(alert, animated: true)
+        } else {
+            self.dismiss(animated: true)
+        }
     }
     
     /// Whether or not the inputted text in the textView
