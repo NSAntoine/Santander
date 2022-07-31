@@ -70,6 +70,16 @@ class SubPathsTableViewController: UITableViewController {
         }
     }
     
+//    typealias DataSourceType = UITableViewDiffableDataSource<Int, SubPathsRowItem>
+//    lazy var dataSource: DataSourceType = DataSourceType(tableView: self.tableView) { tableView, indexPath, itemIdentifier in
+//        switch itemIdentifier {
+//        case .path(let url):
+//            return self.pathCellRow(forURL: url)
+//        case .searchSuggestion(let suggestion):
+//            return self.searchSuggestionCellRow(suggestion: suggestion)
+//        }
+//    }
+    
     /// Returns the SubPathsTableViewController for favourite paths
     class func favourites() -> SubPathsTableViewController {
         return SubPathsTableViewController(
@@ -198,15 +208,9 @@ class SubPathsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if doDisplaySearchSuggestions {
-            let cell = UITableViewCell()
-            var conf = cell.defaultContentConfiguration()
-            let suggestion = SearchSuggestion.displaySearchSuggestions(for: indexPath)
-            conf.text = suggestion.name
-            conf.image = suggestion.image
-            cell.contentConfiguration = conf
-            return cell
+            return searchSuggestionCellRow(suggestion: .displaySearchSuggestions(for: indexPath))
         } else {
-            return self.cellRow(
+            return self.pathCellRow(
                 forURL: contents[indexPath.row],
                 displayFullPathAsSubtitle: self.isSearching || self.isFavouritePathsSheet
             )
@@ -260,11 +264,12 @@ class SubPathsTableViewController: UITableViewController {
                 image: typeIsSelected ? UIImage(systemName: SortOrder.userPreferred.imageSymbolName) : nil,
                 state: typeIsSelected ? .on : .off) { _ in
                     // if the user selected the already selected type,
-                    // change from ascending to descending
+                    // change the sort order
                     if typeIsSelected {
                         UserDefaults.standard.set(SortOrder.userPreferred.toggling().rawValue, forKey: "SortOrder")
                         self.sortContents()
                     } else {
+                        // otherwise change the sort method itself
                         self.sortMethod = type
                     }
                     
@@ -413,8 +418,18 @@ class SubPathsTableViewController: UITableViewController {
         self.openInfoBottomSheet(path: contents[indexPath.row])
     }
     
-    /// Returns the cell row to be used
-    func cellRow(forURL fsItem: URL, displayFullPathAsSubtitle: Bool = false) -> UITableViewCell {
+    /// Returns the cell row to be used for a search suggestion
+    func searchSuggestionCellRow(suggestion: SearchSuggestion) -> UITableViewCell {
+        let cell = UITableViewCell()
+        var conf = cell.defaultContentConfiguration()
+        conf.text = suggestion.name
+        conf.image = suggestion.image
+        cell.contentConfiguration = conf
+        return cell
+    }
+    
+    /// Returns the cell row to be used to display a path
+    func pathCellRow(forURL fsItem: URL, displayFullPathAsSubtitle: Bool = false) -> UITableViewCell {
         let cell: UITableViewCell
         
         // If we should display the full path as a subtitle, init with the style as `subtitle`
@@ -465,7 +480,7 @@ class SubPathsTableViewController: UITableViewController {
             // 1) Display the full path as a subtitle
             // 2) Rounded corners, which we wouldn't have if we returned previewProvider as `nil`
             let vc = UIViewController()
-            vc.view = self.cellRow(forURL: item, displayFullPathAsSubtitle: true)
+            vc.view = self.pathCellRow(forURL: item, displayFullPathAsSubtitle: true)
             let sizeFrame = vc.view.frame
             vc.preferredContentSize = CGSize(width: sizeFrame.width, height: sizeFrame.height)
             return vc
@@ -665,4 +680,29 @@ extension SubPathsTableViewController: DirectoryMonitorDelegate {
             }
         }
     }
+}
+
+enum SubPathsRowItem: Hashable {
+    static func == (lhs: SubPathsRowItem, rhs: SubPathsRowItem) -> Bool {
+        switch (lhs, rhs) {
+        case (.path(let firstURL), .path(let secondURL)):
+            return firstURL == secondURL
+        case (.searchSuggestion(let firstSuggestion), .searchSuggestion(let secondSuggestion)):
+            return firstSuggestion == secondSuggestion
+        default:
+            return false
+        }
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        switch self {
+        case .searchSuggestion(let searchSuggestion):
+            hasher.combine(searchSuggestion)
+        case .path(let url):
+            hasher.combine(url)
+        }
+    }
+    
+    case searchSuggestion(SearchSuggestion)
+    case path(URL)
 }

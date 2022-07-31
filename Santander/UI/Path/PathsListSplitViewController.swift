@@ -90,7 +90,7 @@ class PathListsSplitViewController: SubPathsTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        cellRow(forURL: UserPreferences.pathGroups[indexPath.section].paths[indexPath.row], displayFullPathAsSubtitle: true)
+        pathCellRow(forURL: UserPreferences.pathGroups[indexPath.section].paths[indexPath.row], displayFullPathAsSubtitle: true)
     }
     
     @objc func newGroup() {

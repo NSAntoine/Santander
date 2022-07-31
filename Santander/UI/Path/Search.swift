@@ -81,8 +81,7 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
 /// Represents a search suggestion to be displayed in the UI,
 /// with a given condition for the search results.
 @available(iOS 14.0, *)
-struct SearchSuggestion {
-    
+struct SearchSuggestion: Hashable {
     /// The name to be displayed in the search suggestion
     var name: String
     
@@ -140,5 +139,14 @@ struct SearchSuggestion {
             }
         default: fatalError()
         }
+    }
+    
+    static func == (lhs: SearchSuggestion, rhs: SearchSuggestion) -> Bool {
+        return lhs.name == rhs.name && lhs.image == rhs.image
+    }
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(self.name)
+        hasher.combine(self.image)
     }
 }
