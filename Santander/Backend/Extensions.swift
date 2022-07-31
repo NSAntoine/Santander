@@ -414,3 +414,14 @@ extension UIAction {
         }
     }
 }
+ 
+// why the hell is this not built in already?
+extension Optional: Comparable where Wrapped: Comparable {
+    public static func < (lhs: Optional, rhs: Optional) -> Bool {
+        guard let lhs = lhs, let rhs = rhs else {
+            return false
+        }
+        
+        return lhs < rhs
+    }
+}

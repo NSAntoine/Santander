@@ -43,38 +43,80 @@ enum PathsSortMethods: String, CaseIterable, CustomStringConvertible {
     }
     
     /// Sorts an array of URLs with the current sort method
-    func sorting(URLs urls: [URL]) -> [URL] {
-        return urls.sorted { firstURL, secondURL in
+    func sorting(URLs urls: [URL], sortOrder: SortOrder) -> [URL] {
+        return urls.sorted { (firstURL: URL, secondURL: URL) in
+            let ascending: Bool
             switch self {
             case .alphabetically:
-                return firstURL.lastPathComponent < secondURL.lastPathComponent
+                ascending = firstURL.lastPathComponent < secondURL.lastPathComponent
             case .size:
-                guard let firstSize = firstURL.size, let secondSize = secondURL.size else {
-                    return false
-                }
-                
-                return firstSize > secondSize
+                ascending = firstURL.size > secondURL.size
             case .type:
                 return firstURL.contentType == secondURL.contentType
             case .dateCreated:
-                guard let firstDate = firstURL.creationDate, let secondDate = secondURL.creationDate else {
-                    return false
-                }
-                
-                return firstDate < secondDate
+                ascending = firstURL.creationDate > secondURL.creationDate
             case .dateModified:
-                guard let firstDate = firstURL.lastModifiedDate, let secondDate = secondURL.lastModifiedDate else {
-                    return false
-                }
-                
-                return firstDate < secondDate
+                ascending =  firstURL.lastModifiedDate > secondURL.lastModifiedDate
             case .dateAccessed:
-                guard let firstDate = firstURL.lastAccessedDate, let secondDate = secondURL.lastAccessedDate else {
-                    return false
-                }
-                
-                return firstDate < secondDate
+                ascending = firstURL.lastAccessedDate > secondURL.lastAccessedDate
             }
+            
+            if sortOrder == .descending {
+                return !ascending
+            }
+            
+            return ascending
+        }
+    }
+}
+
+enum SortOrder: String, CaseIterable, CustomStringConvertible {
+    case ascending, descending
+    
+    init(rawValue: String) {
+        switch rawValue.lowercased() {
+        case "ascending":
+            self = .ascending
+        case "descending":
+            self = .descending
+        default:
+            self = .ascending // Default to ascending
+        }
+    }
+    
+    static var userPreferred: SortOrder {
+        guard let rawValue = UserDefaults.standard.string(forKey: "SortOrder") else {
+            return .ascending
+        }
+        
+        return self.init(rawValue: rawValue)
+    }
+    
+    var description: String {
+        switch self {
+        case .ascending:
+            return "Ascending"
+        case .descending:
+            return "Descending"
+        }
+    }
+    
+    /// The SF Symbol name of the sort order
+    var imageSymbolName: String {
+        switch self {
+        case .ascending:
+            return "chevron.up"
+        case .descending:
+            return "chevron.down"
+        }
+    }
+    
+    func toggling() -> SortOrder {
+        switch self {
+        case .ascending:
+            return .descending
+        case .descending:
+            return .ascending
         }
     }
 }

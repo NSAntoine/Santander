@@ -12,34 +12,44 @@ import UniformTypeIdentifiers
 extension SubPathsTableViewController: UITableViewDropDelegate, UITableViewDragDelegate {
     
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
-        
-        guard let currentPath = self.currentPath else {
-            return
-        }
-        
-        coordinator.items.first?.dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: "public.item") { url, err in
-            guard let url = url, err == nil else {
-                DispatchQueue.main.async {
-                    self.errorAlert("Error: \(err?.localizedDescription ?? "Unknown")", title: "Failed to import file")
+        for item in coordinator.items {
+            item.dragItem.itemProvider.loadFileRepresentation(forTypeIdentifier: "public.item") { url, err in
+                guard let url = url, err == nil else {
+                    DispatchQueue.main.async {
+                        self.errorAlert("Error: \(err?.localizedDescription ?? "Unknown")", title: "Failed to import file")
+                    }
+                    return
                 }
-                return
-            }
-            
-            let newPath = currentPath.appendingPathComponent(url.lastPathComponent)
-            
-            do {
-                try FileManager.default.copyItem(at: url, to: newPath)
-            } catch {
-                DispatchQueue.main.async {
-                    self.errorAlert("Error: \(error.localizedDescription)", title: "Failed to copy item")
+                
+                if self.isFavouritePathsSheet {
+                    // importing to favourites
+                    UserPreferences.favouritePaths.append(url.path)
+                    self.unfilteredContents = UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) }
+                    DispatchQueue.main.async {
+                        tableView.reloadData()
+                    }
+                } else {
+                    // copying to the current path
+                    guard let currentPath = self.currentPath else {
+                        return
+                    }
+                    
+                    let newPath = currentPath.appendingPathComponent(url.lastPathComponent)
+                    
+                    do {
+                        try FileManager.default.copyItem(at: url, to: newPath)
+                    } catch {
+                        DispatchQueue.main.async {
+                            self.errorAlert("Error: \(error.localizedDescription)", title: "Failed to copy item")
+                        }
+                    }
                 }
             }
-            
         }
     }
     
     func tableView(_ tableView: UITableView, canHandle session: UIDropSession) -> Bool {
-        return currentPath != nil
+        return currentPath != nil || isFavouritePathsSheet
     }
     
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {

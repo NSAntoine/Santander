@@ -37,7 +37,7 @@ class SubPathsTableViewController: UITableViewController {
     var sortMethod: PathsSortMethods = .userPrefered ?? .alphabetically {
         willSet {
             UserDefaults.standard.set(newValue.rawValue, forKey: "SubPathsSortMode")
-            sortContents(with: newValue)
+            sortContents()
         }
     }
     
@@ -80,7 +80,7 @@ class SubPathsTableViewController: UITableViewController {
     
     /// Initialize with a given path URL
     init(style: UITableView.Style = .automatic, path: URL, isFavouritePathsSheet: Bool = false) {
-        self.unfilteredContents = self.sortMethod.sorting(URLs: path.contents)
+        self.unfilteredContents = self.sortMethod.sorting(URLs: path.contents, sortOrder: .userPreferred)
         self.currentPath = path
         self.isFavouritePathsSheet = isFavouritePathsSheet
         
@@ -90,7 +90,7 @@ class SubPathsTableViewController: UITableViewController {
     
     /// Initialize with the given specified URLs
     init(style: UITableView.Style = .automatic, contents: [URL], title: String, isFavouritePathsSheet: Bool = false) {
-        self.unfilteredContents = contents
+        self.unfilteredContents = self.sortMethod.sorting(URLs: contents, sortOrder: .userPreferred)
         self.isFavouritePathsSheet = isFavouritePathsSheet
         
         super.init(style: style)
@@ -253,20 +253,32 @@ class SubPathsTableViewController: UITableViewController {
     }
     
     func makeSortMenu() -> UIMenu {
-        let actions = PathsSortMethods.allCases.map { type in
-            UIAction(title: type.description, state: self.sortMethod == type ? .on : .off) { _ in
-                self.sortMethod = type
-                
-                // Reload the right bar button menu after setting the type
-                self.setRightBarButton()
-        }}
+        let actions: [UIMenuElement] = PathsSortMethods.allCases.map { type in
+            let typeIsSelected = self.sortMethod == type
+            return UIAction(
+                title: type.description,
+                image: typeIsSelected ? UIImage(systemName: SortOrder.userPreferred.imageSymbolName) : nil,
+                state: typeIsSelected ? .on : .off) { _ in
+                    // if the user selected the already selected type,
+                    // change from ascending to descending
+                    if typeIsSelected {
+                        UserDefaults.standard.set(SortOrder.userPreferred.toggling().rawValue, forKey: "SortOrder")
+                        self.sortContents()
+                    } else {
+                        self.sortMethod = type
+                    }
+                    
+                    // Reload the right bar button menu after setting the type
+                    self.setRightBarButton()
+                }
+        }
         
-        let menu = UIMenu(title: "Sort by..", image: UIImage(systemName: "arrow.up.arrow.down"))
+        let menu = UIMenu(title: "Sort by..", image: UIImage(systemName: "arrow.up.arrow.down"), children: actions)
         if #available(iOS 15.0, *) {
             menu.subtitle = self.sortMethod.description
         }
         
-        return menu.replacingChildren(actions)
+        return menu
     }
     
     func makeNewItemMenu(forURL url: URL) -> UIMenu {
@@ -378,10 +390,10 @@ class SubPathsTableViewController: UITableViewController {
         }
     }
     
-    func sortContents(with filter: PathsSortMethods) {
-        self.unfilteredContents = sortMethod.sorting(URLs: self.contents)
+    func sortContents() {
+        self.unfilteredContents = sortMethod.sorting(URLs: unfilteredContents, sortOrder: .userPreferred)
         
-        self.tableView.reloadData()
+        self.tableView.reloadRows(at: self.indexPaths(forSection: 0), with: .fade)
     }
     
     /// Opens the information bottom sheet for a specified path
@@ -635,7 +647,7 @@ extension SubPathsTableViewController: DirectoryMonitorDelegate {
     func directoryMonitorDidObserveChange(directoryMonitor: DirectoryMonitor) {
         DispatchQueue.main.async {
             self.unfilteredContents = directoryMonitor.url.contents
-            self.sortContents(with: self.sortMethod)
+            self.sortContents()
             
             if self.isSearching, let searchBar = self.navigationItem.searchController?.searchBar {
                 // If we're searching,

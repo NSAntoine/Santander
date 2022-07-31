@@ -8,6 +8,7 @@
 
 import UIKit
 
+/// A Table View Controller displaying information for a given path
 class PathInformationTableViewController: UITableViewController {
     let path: URL
     
