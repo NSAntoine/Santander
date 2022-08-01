@@ -384,9 +384,7 @@ extension UITableViewController {
                 try FileManager.default.removeItem(at: url)
                 completionHandler(true)
             } catch {
-                let failedController = UIAlertController(title: "Failed to delete \"\(url.lastPathComponent)\"", message: error.localizedDescription, preferredStyle: .alert)
-                failedController.addAction(UIAlertAction(title: "OK", style: .cancel))
-                self.present(failedController, animated: true)
+                self.errorAlert(error, title: "Failed to delete \"\(url.lastPathComponent)\"")
                 completionHandler(false)
             }
         }

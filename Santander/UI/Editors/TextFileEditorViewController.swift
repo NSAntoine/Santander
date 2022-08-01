@@ -13,7 +13,7 @@ import UIKit
 import Runestone
 
 class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorThemeSettingsDelegate {
-    let fileURL: URL
+    var fileURL: URL
     var originalContents: String
     
     var textView: TextView = TextView()
@@ -67,6 +67,11 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
         navigationItem.rightBarButtonItems = [saveBarButton, UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: makeRightBarMenuItemsMenu())]
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
+        
+        if #available(iOS 16.0, *) {
+            navigationItem.style = .editor
+            self.navigationItem.renameDelegate = self
+        }
         
         textView.keyboardDismissMode = .onDrag
         textView.translatesAutoresizingMaskIntoConstraints = false
@@ -185,5 +190,21 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
     
     func showLineCountConfigurationDidChange(showLineCount: Bool) {
         self.textView.showLineNumbers = showLineCount
+    }
+}
+
+extension TextFileEditorViewController: UINavigationItemRenameDelegate {
+    func navigationItem(_: UINavigationItem, didEndRenamingWith title: String) {
+        let newURL = self.fileURL.deletingLastPathComponent().appendingPathComponent(title)
+        do {
+            try FileManager.default.moveItem(at: self.fileURL, to: newURL)
+            self.fileURL = newURL
+        } catch {
+            self.errorAlert(error, title: "Uname to rename \(fileURL.lastPathComponent)")
+            // renaming automatically changes title
+            // so we need to change back the title to the original
+            // in case of a failure
+            self.title = fileURL.lastPathComponent
+        }
     }
 }

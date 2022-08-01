@@ -136,6 +136,11 @@ class SubPathsTableViewController: UITableViewController {
         }
         self.navigationItem.searchController = searchController
         
+        if #available(iOS 16.0, *) {
+            self.navigationItem.style = .browser
+            self.navigationItem.renameDelegate = self
+        }
+        
         tableView.dragInteractionEnabled = true
         tableView.dropDelegate = self
         tableView.dragDelegate = self
@@ -679,6 +684,30 @@ extension SubPathsTableViewController: DirectoryMonitorDelegate {
                 self.noContentsLabel = nil
             }
         }
+    }
+}
+
+extension SubPathsTableViewController: UINavigationItemRenameDelegate {
+    func navigationItem(_: UINavigationItem, didEndRenamingWith title: String) {
+        guard let currentPath = currentPath else {
+            return
+        }
+        
+        let newURL = currentPath.deletingLastPathComponent().appendingPathComponent(title)
+        do {
+            try FileManager.default.moveItem(at: currentPath, to: newURL)
+            self.currentPath = newURL
+        } catch {
+            self.errorAlert(error, title: "Uname to rename \(newURL.lastPathComponent)")
+            // renaming automatically changes title
+            // so we need to change back the title to the original
+            // in case of a failure
+            self.title = currentPath.lastPathComponent
+        }
+    }
+    
+    func navigationItemShouldBeginRenaming(_: UINavigationItem) -> Bool {
+        return currentPath != nil
     }
 }
 
