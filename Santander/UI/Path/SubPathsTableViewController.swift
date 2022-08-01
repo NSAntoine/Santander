@@ -136,7 +136,7 @@ class SubPathsTableViewController: UITableViewController {
         }
         self.navigationItem.searchController = searchController
         
-        if #available(iOS 16.0, *) {
+        if #available(iOS 16.0, *), UIDevice.current.userInterfaceIdiom == .pad {
             self.navigationItem.style = .browser
             self.navigationItem.renameDelegate = self
         }

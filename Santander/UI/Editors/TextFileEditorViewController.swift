@@ -71,6 +71,7 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
         if #available(iOS 16.0, *) {
             navigationItem.style = .editor
             self.navigationItem.renameDelegate = self
+            self.navigationItem.documentProperties = UIDocumentProperties(url: self.fileURL)
         }
         
         textView.keyboardDismissMode = .onDrag
