@@ -30,9 +30,21 @@ class PathListsSplitViewController: SubPathsTableViewController {
         ]
         
         NotificationCenter.default.addObserver(forName: .pathGroupsDidChange, object: nil, queue: nil) { _ in
-            self.tableView.reloadData()
+            self.showPaths()
         }
+        
         self.navigationController?.setToolbarHidden(false, animated: false)
+    }
+    
+    override func showPaths() {
+        var snapshot = self.dataSource.snapshot()
+        snapshot.deleteAllItems()
+        for num in 0..<UserPreferences.pathGroups.count {
+            snapshot.appendSections([num])
+            snapshot.appendItems(SubPathsRowItem.fromPaths(UserPreferences.pathGroups[num].paths), toSection: num)
+        }
+        
+        dataSource.apply(snapshot)
     }
     
     override func goToPath(path: URL, pushingToSplitViewVC: Bool = false) {
@@ -71,26 +83,10 @@ class PathListsSplitViewController: SubPathsTableViewController {
         self.currentPath = UserPreferences.pathGroups[indexPath.section].paths[indexPath.row] // Set the current path
     }
     
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return UserPreferences.pathGroups.count
-    }
-    
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
         self.toolbarItems?[1] = UIBarButtonItem(systemItem: editing ? .done : .edit, primaryAction: editAction)
         self.tableView.reloadData()
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if collapsedSections.contains(section) {
-            return 0
-        }
-        
-        return UserPreferences.pathGroups[section].paths.count
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        pathCellRow(forURL: UserPreferences.pathGroups[indexPath.section].paths[indexPath.row], displayFullPathAsSubtitle: true)
     }
     
     @objc func newGroup() {
@@ -145,7 +141,9 @@ class PathListsSplitViewController: SubPathsTableViewController {
         if isEditing {
             // we're deleting the section
             UserPreferences.pathGroups.remove(at: section)
-            tableView.reloadData()
+            var snapshot = dataSource.snapshot()
+            snapshot.deleteSections([section])
+            self.dataSource.apply(snapshot)
             return
         }
         
@@ -157,15 +155,18 @@ class PathListsSplitViewController: SubPathsTableViewController {
             sender.setImage(UIImage(systemName: newImageToSet), for: .normal)
         }
 
+        var snapshot = dataSource.snapshot()
         if isCollapsing {
             // Need to capture the index paths *before inserting* when collapsing
-            let indexPaths: [IndexPath] = self.indexPaths(forSection: section)
             collapsedSections.insert(section)
-            tableView.deleteRows(at: indexPaths, with: .fade)
+            snapshot.deleteItems(snapshot.itemIdentifiers(inSection: section))
         } else {
             collapsedSections.remove(section)
-            tableView.insertRows(at: self.indexPaths(forSection: section), with: .fade)
+            let itemsToAddBack = SubPathsRowItem.fromPaths(UserPreferences.pathGroups[section].paths)
+            snapshot.appendItems(itemsToAddBack, toSection: section)
         }
+        
+        self.dataSource.apply(snapshot)
     }
     
     override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {

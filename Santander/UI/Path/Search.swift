@@ -15,15 +15,9 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
         updateResults(searchBar: searchController.searchBar)
     }
     
-    func cancelSearch(displaySuggestions: Bool = false) {
-        self.filteredSearchContents = []
-        self.isSearching = false
-        self.doDisplaySearchSuggestions = displaySuggestions
-        tableView.reloadData()
-    }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        cancelSearch()
+        showPaths()
     }
     
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
@@ -35,9 +29,8 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
         
         // Make sure that we have search conditions or that the search text isn't empty
         guard !(searchText.isEmpty && searchBar.searchTextField.tokens.isEmpty) else {
-            self.filteredSearchContents = []
             self.isSearching = false
-            self.tableView.reloadData()
+            self.filteredSearchContents = []
             return
         }
         
@@ -72,8 +65,7 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
     }
     
     func presentSearchController(_ searchController: UISearchController) {
-        self.doDisplaySearchSuggestions = true
-        tableView.reloadData()
+        switchToSearchSuggestions()
     }
 }
 

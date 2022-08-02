@@ -19,7 +19,9 @@ class SubPathsTableViewController: UITableViewController {
     /// The contents of the path, filtered by the search
     var filteredSearchContents: [URL] = [] {
         didSet {
-            tableView.reloadData()
+            if !doDisplaySearchSuggestions {
+                self.showPaths()
+            }
         }
     }
     
@@ -70,15 +72,15 @@ class SubPathsTableViewController: UITableViewController {
         }
     }
     
-//    typealias DataSourceType = UITableViewDiffableDataSource<Int, SubPathsRowItem>
-//    lazy var dataSource: DataSourceType = DataSourceType(tableView: self.tableView) { tableView, indexPath, itemIdentifier in
-//        switch itemIdentifier {
-//        case .path(let url):
-//            return self.pathCellRow(forURL: url)
-//        case .searchSuggestion(let suggestion):
-//            return self.searchSuggestionCellRow(suggestion: suggestion)
-//        }
-//    }
+    typealias DataSourceType = UITableViewDiffableDataSource<Int, SubPathsRowItem>
+    lazy var dataSource = DataSourceType(tableView: self.tableView) { tableView, indexPath, itemIdentifier in
+        switch itemIdentifier {
+        case .path(let url):
+            return self.pathCellRow(forURL: url, displayFullPathAsSubtitle: self.isSearching || self.isFavouritePathsSheet)
+        case .searchSuggestion(let suggestion):
+            return self.searchSuggestionCellRow(suggestion: suggestion)
+        }
+    }
     
     /// Returns the SubPathsTableViewController for favourite paths
     class func favourites() -> SubPathsTableViewController {
@@ -144,35 +146,55 @@ class SubPathsTableViewController: UITableViewController {
         tableView.dragInteractionEnabled = true
         tableView.dropDelegate = self
         tableView.dragDelegate = self
+        tableView.dataSource = self.dataSource
+        showPaths()
         
         if self.contents.isEmpty {
             setupNoContentsLabel()
         }
     }
     
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if self.doDisplaySearchSuggestions {
-            switch section {
-            case 0: return 1
-            case 1, 2: return 3
-            default: fatalError("Should NOT have gotten here!")
-            }
-        }
+    /// Setup the snapshot to show the paths given
+    func showPaths() {
+        self.doDisplaySearchSuggestions = false
+        var snapshot = dataSource.snapshot()
+        snapshot.deleteAllItems()
+        snapshot.deleteSections([1, 2])
         
-        return self.contents.count
+        snapshot.appendSections([0])
+        snapshot.appendItems(SubPathsRowItem.fromPaths(contents))
+        dataSource.apply(snapshot, animatingDifferences: false)
+    }
+    
+    /// Show the search suggestions
+    func switchToSearchSuggestions() {
+        doDisplaySearchSuggestions = true
+        var snapshot = dataSource.snapshot()
+        snapshot.deleteAllItems()
+        snapshot.appendSections([0, 1, 2])
+        snapshot.appendItems([
+            .searchSuggestion(.displaySearchSuggestions(for: [0, 0]))
+        ], toSection: 0)
+        
+        snapshot.appendItems([
+            .searchSuggestion(.displaySearchSuggestions(for: [1, 0])),
+            .searchSuggestion(.displaySearchSuggestions(for: [1, 1])),
+            .searchSuggestion(.displaySearchSuggestions(for: [1, 2]))
+        ], toSection: 1)
+        
+        snapshot.appendItems([
+            .searchSuggestion(.displaySearchSuggestions(for: [2, 0])),
+            .searchSuggestion(.displaySearchSuggestions(for: [2, 1])),
+            .searchSuggestion(.displaySearchSuggestions(for: [2, 2])),
+        ])
+        
+        dataSource.apply(snapshot, animatingDifferences: false)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         self.directoryMonitor?.stopMonitoring()
-    }
-    
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        if doDisplaySearchSuggestions {
-            return 3
-        }
-        return 1
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -211,17 +233,6 @@ class SubPathsTableViewController: UITableViewController {
         }
     }
     
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        if doDisplaySearchSuggestions {
-            return searchSuggestionCellRow(suggestion: .displaySearchSuggestions(for: indexPath))
-        } else {
-            return self.pathCellRow(
-                forURL: contents[indexPath.row],
-                displayFullPathAsSubtitle: self.isSearching || self.isFavouritePathsSheet
-            )
-        }
-    }
-    
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
         let selectedItem = self.contents[indexPath.row]
@@ -236,7 +247,10 @@ class SubPathsTableViewController: UITableViewController {
                     self.unfilteredContents = UserPreferences.favouritePaths.map {
                         URL(fileURLWithPath: $0)
                     }
-                    self.tableView.deleteRows(at: [indexPath], with: .automatic)
+                    
+                    var snapshot = self.dataSource.snapshot()
+                    snapshot.deleteItems([.path(selectedItem)])
+                    self.dataSource.apply(snapshot)
                 }
             } else {
                 // otherwise, append it
@@ -403,7 +417,7 @@ class SubPathsTableViewController: UITableViewController {
     func sortContents() {
         self.unfilteredContents = sortMethod.sorting(URLs: unfilteredContents, sortOrder: .userPreferred)
         
-        self.tableView.reloadRows(at: self.indexPaths(forSection: 0), with: .fade)
+        self.showPaths()
     }
     
     /// Opens the information bottom sheet for a specified path
@@ -734,4 +748,11 @@ enum SubPathsRowItem: Hashable {
     
     case searchSuggestion(SearchSuggestion)
     case path(URL)
+    
+    /// Return an array of items from an array of URLs
+    static func fromPaths(_ paths: [URL]) -> [SubPathsRowItem] {
+        return paths.map { url in
+            return .path(url)
+        }
+    }
 }

@@ -25,9 +25,9 @@ extension SubPathsTableViewController: UITableViewDropDelegate, UITableViewDragD
                     // importing to favourites
                     UserPreferences.favouritePaths.append(url.path)
                     self.unfilteredContents = UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) }
-                    DispatchQueue.main.async {
-                        tableView.reloadData()
-                    }
+                    var snapshot = self.dataSource.snapshot()
+                    snapshot.appendItems([.path(url)])
+                    self.dataSource.apply(snapshot)
                 } else {
                     // copying to the current path
                     guard let currentPath = self.currentPath else {
