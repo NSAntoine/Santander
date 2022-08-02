@@ -680,8 +680,15 @@ class SubPathsTableViewController: UITableViewController {
 extension SubPathsTableViewController: DirectoryMonitorDelegate {
     func directoryMonitorDidObserveChange(directoryMonitor: DirectoryMonitor) {
         DispatchQueue.main.async {
-            self.unfilteredContents = directoryMonitor.url.contents
-            self.sortContents()
+            let items = self.sortMethod.sorting(URLs: directoryMonitor.url.contents, sortOrder: .userPreferred)
+            self.unfilteredContents = items
+
+            var snapshot = self.dataSource.snapshot()
+            snapshot.deleteAllItems()
+            snapshot.appendSections([0])
+
+            snapshot.appendItems(SubPathsRowItem.fromPaths(items))
+            self.dataSource.apply(snapshot, animatingDifferences: true)
             
             if self.isSearching, let searchBar = self.navigationItem.searchController?.searchBar {
                 // If we're searching,
