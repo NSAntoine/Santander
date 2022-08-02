@@ -14,7 +14,6 @@ class AudioPlayerViewController: UIViewController {
     let fileURL: URL
     var playButton: UIButton!
     var loopButton: UIButton!
-    var artworkImageView: UIImageView!
     var playbackSlider: UISlider!
     var durationLabel: UILabel!
     var currentProgressLabel: UILabel!
@@ -71,7 +70,7 @@ class AudioPlayerViewController: UIViewController {
     var playButtonImage: UIImage? {
         let conf = UIImage.SymbolConfiguration(pointSize: 45, weight: .medium, scale: .medium)
         return UIImage(systemName: player.isPlaying ? "pause.fill" : "play.fill", withConfiguration: conf)?
-            .withTintColor(.white, renderingMode: .alwaysOriginal)
+            .withTintColor(.systemGray, renderingMode: .alwaysOriginal)
     }
     
     /// Initializes a new AudioPlayerViewController with the given audio file URL
@@ -141,14 +140,9 @@ class AudioPlayerViewController: UIViewController {
         }
         self.loopButton = UIButton(primaryAction: loopAction)
         
-        self.artworkImageView = UIImageView(image: artworkImage?.imageWith(newSize: CGSize(width: 240, height: 250)))
-        
-        artworkImageView.clipsToBounds = true
-        artworkImageView.layer.cornerRadius = 10.2
-        
         self.forwardButton = UIButton(
             primaryAction: UIAction(
-                image: UIImage(systemName: "goforward")?.withTintColor(.white, renderingMode: .alwaysOriginal)
+                image: UIImage(systemName: "goforward")?.withTintColor(.systemGray, renderingMode: .alwaysOriginal)
             ) { _ in
                 self.player.currentTime += Double(self.skipDuration)
             }
@@ -156,7 +150,7 @@ class AudioPlayerViewController: UIViewController {
         
         self.backwardButton = UIButton(
             primaryAction: UIAction(
-                image: UIImage(systemName: "gobackward")?.withTintColor(.white, renderingMode: .alwaysOriginal)
+                image: UIImage(systemName: "gobackward")?.withTintColor(.systemGray, renderingMode: .alwaysOriginal)
             ) { _ in
                 self.player.currentTime -= Double(self.skipDuration)
             }
@@ -169,7 +163,6 @@ class AudioPlayerViewController: UIViewController {
         artistLabel.translatesAutoresizingMaskIntoConstraints = false
         playButton.translatesAutoresizingMaskIntoConstraints = false
         loopButton.translatesAutoresizingMaskIntoConstraints = false
-        artworkImageView.translatesAutoresizingMaskIntoConstraints = false
         currentProgressLabel.translatesAutoresizingMaskIntoConstraints = false
         forwardButton.translatesAutoresizingMaskIntoConstraints = false
         backwardButton.translatesAutoresizingMaskIntoConstraints = false
@@ -182,7 +175,6 @@ class AudioPlayerViewController: UIViewController {
         self.view.addSubview(durationLabel)
         self.view.addSubview(currentProgressLabel)
         self.view.addSubview(loopButton)
-        self.view.addSubview(artworkImageView)
         self.view.addSubview(forwardButton)
         self.view.addSubview(backwardButton)
         
@@ -215,10 +207,7 @@ class AudioPlayerViewController: UIViewController {
             currentProgressLabel.topAnchor.constraint(equalTo: playbackSlider.bottomAnchor),
             
             loopButton.rightAnchor.constraint(equalTo: artistLabel.rightAnchor),
-            loopButton.topAnchor.constraint(equalTo: artistLabel.topAnchor),
-            
-            artworkImageView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor, constant: -110),
-            artworkImageView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor)
+            loopButton.topAnchor.constraint(equalTo: artistLabel.topAnchor)
         ])
         
     }
@@ -371,6 +360,11 @@ class AudioPlayerViewController: UIViewController {
         }
         
         center.nowPlayingInfo = info
+    }
+    
+    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        player.stop()
+        super.dismiss(animated: flag, completion: completion)
     }
 }
 
