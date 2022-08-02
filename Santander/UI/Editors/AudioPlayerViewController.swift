@@ -19,7 +19,6 @@ class AudioPlayerViewController: UIViewController {
     var currentProgressLabel: UILabel!
     var forwardButton: UIButton!
     var backwardButton: UIButton!
-    var artworkImageView: UIImageView!
     
     var player: AVAudioPlayer
     var asset: AVAsset
@@ -211,20 +210,6 @@ class AudioPlayerViewController: UIViewController {
             loopButton.topAnchor.constraint(equalTo: artistLabel.topAnchor)
         ])
         
-        if let artworkImage = artworkImage {
-            print(self.view.bounds.height)
-            self.artworkImageView = UIImageView(image: resizeImage(image: artworkImage, newHeight: 320))
-            artworkImageView.translatesAutoresizingMaskIntoConstraints = false
-            artworkImageView.contentMode = .scaleAspectFit
-            
-            self.view.addSubview(artworkImageView)
-            
-            NSLayoutConstraint.activate([
-                artworkImageView.centerYAnchor.constraint(equalTo: self.view.centerYAnchor, constant: -150),
-                artworkImageView.rightAnchor.constraint(equalTo: playbackSlider.rightAnchor),
-                artworkImageView.leftAnchor.constraint(equalTo: playbackSlider.leftAnchor),
-            ])
-        }
     }
     
     func play() {
@@ -380,17 +365,6 @@ class AudioPlayerViewController: UIViewController {
     override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         player.stop()
         super.dismiss(animated: flag, completion: completion)
-    }
-    
-    func resizeImage(image: UIImage, newHeight: CGFloat) -> UIImage? {
-        let scale = newHeight / image.size.height
-        let newWidth = image.size.width * scale
-        UIGraphicsBeginImageContext(CGSize(width: newWidth, height: newHeight))
-        image.draw(in: CGRect(x: 0, y: 0, width: newWidth, height: newHeight))
-        let newImage = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-
-        return newImage
     }
 }
 
