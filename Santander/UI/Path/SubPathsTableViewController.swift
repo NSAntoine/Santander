@@ -155,7 +155,7 @@ class SubPathsTableViewController: UITableViewController {
     }
     
     /// Setup the snapshot to show the paths given
-    func showPaths() {
+    func showPaths(animatingDifferences: Bool = false) {
         self.doDisplaySearchSuggestions = false
         var snapshot = dataSource.snapshot()
         snapshot.deleteAllItems()
@@ -163,7 +163,7 @@ class SubPathsTableViewController: UITableViewController {
         
         snapshot.appendSections([0])
         snapshot.appendItems(SubPathsRowItem.fromPaths(contents))
-        dataSource.apply(snapshot, animatingDifferences: false)
+        dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
     }
     
     /// Show the search suggestions
@@ -415,9 +415,9 @@ class SubPathsTableViewController: UITableViewController {
     }
     
     func sortContents() {
-        self.unfilteredContents = sortMethod.sorting(URLs: unfilteredContents, sortOrder: .userPreferred)
-        
-        self.showPaths()
+        self.unfilteredContents = sortMethod.sorting(URLs: contents, sortOrder: .userPreferred)
+  
+        self.showPaths(animatingDifferences: true)
     }
     
     /// Opens the information bottom sheet for a specified path

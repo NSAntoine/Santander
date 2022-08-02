@@ -36,7 +36,7 @@ class PathListsSplitViewController: SubPathsTableViewController {
         self.navigationController?.setToolbarHidden(false, animated: false)
     }
     
-    override func showPaths() {
+    override func showPaths(animatingDifferences: Bool = true) {
         var snapshot = self.dataSource.snapshot()
         snapshot.deleteAllItems()
         for num in 0..<UserPreferences.pathGroups.count {
@@ -44,7 +44,7 @@ class PathListsSplitViewController: SubPathsTableViewController {
             snapshot.appendItems(SubPathsRowItem.fromPaths(UserPreferences.pathGroups[num].paths), toSection: num)
         }
         
-        dataSource.apply(snapshot)
+        dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
     }
     
     override func goToPath(path: URL, pushingToSplitViewVC: Bool = false) {
