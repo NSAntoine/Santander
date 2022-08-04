@@ -16,14 +16,8 @@ class SubPathsTableViewController: UITableViewController {
     /// The contents of the path, unfiltered
     var unfilteredContents: [URL]
     
-    /// The contents of the path, filtered by the search
-    var filteredSearchContents: [URL] = [] {
-        didSet {
-            if !doDisplaySearchSuggestions {
-                self.showPaths()
-            }
-        }
-    }
+    /// The contents of the path, filtered by the search or hiding dotfiles
+    var filteredSearchContents: [URL] = []
     
     /// A Boolean representing if the user is currently searching
     var isSearching: Bool = false
@@ -66,7 +60,7 @@ class SubPathsTableViewController: UITableViewController {
     /// Whether or not to display files beginning with a dot in their names
     var displayHiddenFiles: Bool = UserPreferences.displayHiddenFiles {
         didSet {
-            showOrHideHiddenFiles()
+            showOrHideDotfiles()
             
             UserPreferences.displayHiddenFiles = self.displayHiddenFiles
         }
@@ -117,7 +111,10 @@ class SubPathsTableViewController: UITableViewController {
         super.viewDidLoad()
         
         setRightBarButton()
-        showOrHideHiddenFiles()
+        
+        if !self.displayHiddenFiles {
+            showOrHideDotfiles()
+        }
         
         if let currentPath = self.currentPath {
             self.directoryMonitor = DirectoryMonitor(url: currentPath)
@@ -415,9 +412,8 @@ class SubPathsTableViewController: UITableViewController {
     }
     
     func sortContents() {
-        self.unfilteredContents = sortMethod.sorting(URLs: contents, sortOrder: .userPreferred)
-  
-        self.showPaths(animatingDifferences: true)
+        self.unfilteredContents = sortMethod.sorting(URLs: unfilteredContents, sortOrder: .userPreferred)
+        showOrHideDotfiles(animatingDifferences: true)
     }
     
     /// Opens the information bottom sheet for a specified path
@@ -644,11 +640,19 @@ class SubPathsTableViewController: UITableViewController {
         )
     }
     
-    func showOrHideHiddenFiles() {
+    func showOrHideDotfiles(animatingDifferences: Bool = false) {
         if !displayHiddenFiles {
-            self.filteredSearchContents = self.unfilteredContents.filter { !$0.lastPathComponent.starts(with: ".") }
+            let filtered = unfilteredContents.filter { !$0.lastPathComponent.starts(with: ".") }
+            setFilteredContents(filtered, animatingDifferences: animatingDifferences)
         } else {
-            self.filteredSearchContents = []
+            setFilteredContents([], animatingDifferences: animatingDifferences)
+        }
+    }
+    
+    func setFilteredContents(_ newContents: [URL], animatingDifferences: Bool = false) {
+        self.filteredSearchContents = newContents
+        if !doDisplaySearchSuggestions {
+            self.showPaths(animatingDifferences: animatingDifferences)
         }
     }
     

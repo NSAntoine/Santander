@@ -85,7 +85,7 @@ class TypesSelectionViewController: UITableViewController, UISearchBarDelegate {
             return 0
         }
         
-        else if self.isSearching {
+        if self.isSearching {
             return filteredTypes.count
         } else {
             return allTypes[section].count

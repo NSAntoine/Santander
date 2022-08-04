@@ -30,7 +30,7 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
         // Make sure that we have search conditions or that the search text isn't empty
         guard !(searchText.isEmpty && searchBar.searchTextField.tokens.isEmpty) else {
             self.isSearching = false
-            self.filteredSearchContents = []
+            setFilteredContents([])
             return
         }
         
@@ -48,7 +48,7 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
         }
         
         self.doDisplaySearchSuggestions = false
-        self.filteredSearchContents = results.filter { url in
+        let newFiltered = results.filter { url in
             let allConditionsMet = conditions.map { condition in
                 condition(url)
             }.allSatisfy { isCondtionTrue in
@@ -62,6 +62,7 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
             return allConditionsMet
         }
         
+        setFilteredContents(newFiltered)
     }
     
     func presentSearchController(_ searchController: UISearchController) {
