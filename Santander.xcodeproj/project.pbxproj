@@ -97,7 +97,7 @@
 			path = Preferences;
 			sourceTree = "<group>";
 		};
-		3771D3782862328400E200B6 /* Backend */ = {
+		3771D3782862328400E200B6 /* Other */ = {
 			isa = PBXGroup;
 			children = (
 				3771D37A2862329D00E200B6 /* Extensions.swift */,
@@ -106,7 +106,7 @@
 				37C6E0C928662C6800BDDA16 /* PathsSortMethods.swift */,
 				37963F16286A0F0B00C4B72A /* DirectoryMonitor.swift */,
 			);
-			path = Backend;
+			path = Other;
 			sourceTree = "<group>";
 		};
 		3771D3792862328B00E200B6 /* UI */ = {
@@ -141,7 +141,7 @@
 			isa = PBXGroup;
 			children = (
 				3771D3792862328B00E200B6 /* UI */,
-				3771D3782862328400E200B6 /* Backend */,
+				3771D3782862328400E200B6 /* Other */,
 				3789B5DF28622B7A00058688 /* AppDelegate.swift */,
 				3789B5E128622B7A00058688 /* SceneDelegate.swift */,
 				3789B5E828622B7C00058688 /* Assets.xcassets */,
