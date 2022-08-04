@@ -559,11 +559,9 @@ class SubPathsTableViewController: UITableViewController {
             if UIDevice.current.userInterfaceIdiom == .pad {
                 var menu = UIMenu(title: "Add to group..", image: UIImage(systemName: "sidebar.leading"), children: [])
                 
-                for (index, var group) in UserPreferences.pathGroups.enumerated() where group != .default {
+                for (index, group) in UserPreferences.pathGroups.enumerated() where group != .default {
                     let addAction = UIAction(title: group.name) { _ in
-                        UserPreferences.pathGroups.remove(at: index)
-                        group.paths.append(item)
-                        UserPreferences.pathGroups.append(group)
+                        UserPreferences.pathGroups[index].paths.append(item)
                     }
                     
                     menu = menu.appending(addAction)

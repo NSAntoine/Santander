@@ -81,6 +81,18 @@ class PathListsSplitViewController: SubPathsTableViewController {
         let item = UserPreferences.pathGroups[indexPath.section].paths[indexPath.row]
         goToPath(path: item)
         self.currentPath = UserPreferences.pathGroups[indexPath.section].paths[indexPath.row] // Set the current path
+        
+        popBackIfNeeded(toItem: item)
+    }
+    
+    /// Pops back the secondary vc if a parent path in the list is tapped
+    func popBackIfNeeded(toItem item: URL) {
+        if let secondary = splitViewController?.viewController(for: .secondary) as? SubPathsTableViewController, secondary.currentPath != item {
+            let vcs = (secondary.navigationController?.viewControllers as? [SubPathsTableViewController]) ?? []
+            if let vcWithCurrentPath = vcs.first(where: { $0.currentPath == item }) {
+                secondary.navigationController?.popToViewController(vcWithCurrentPath, animated: true)
+            }
+        }
     }
     
     override func setEditing(_ editing: Bool, animated: Bool) {
