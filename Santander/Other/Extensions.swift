@@ -389,8 +389,12 @@ extension UITableViewController {
             }
         }
         
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            completionHandler(false)
+        }
+        
         confirmationController.addAction(deleteAction)
-        confirmationController.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        confirmationController.addAction(cancelAction)
         self.present(confirmationController, animated: true)
     }
 }
