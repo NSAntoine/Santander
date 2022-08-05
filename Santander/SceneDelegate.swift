@@ -62,16 +62,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     // Path is being imported
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        guard let first = URLContexts.first else {
+        let urls = URLContexts.map(\.url)
+        guard !urls.isEmpty else {
             return
         }
         
-        let url = first.url
-        _ = url.startAccessingSecurityScopedResource()
-        defer {
-            url.stopAccessingSecurityScopedResource()
-        }
-        let operationsVC = PathOperationViewController(movingPath: url, sourceContentsVC: nil, operationType: .import)
+        let operationsVC = PathOperationViewController(paths: urls, operationType: .import)
         self.window?.rootViewController?.present(UINavigationController(rootViewController: operationsVC), animated: true)
     }
 }

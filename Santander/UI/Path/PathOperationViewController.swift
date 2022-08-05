@@ -12,18 +12,14 @@ import QuickLook
 /// A View Controller which presents a path to be selected, and then executes a specified operation, such as moving or copying the path
 class PathOperationViewController: SubPathsTableViewController {
     
-    /// The path being moved
-    let movingPath: URL
+    /// The paths being moved / copied / imported / etc.
+    let paths: [URL]
     
     /// The type of the operation to perform
     let operationType: PathSelectionOperation
     
-    /// The original Path Contents View Controller to reload if moving / copying succeeds
-    let sourceContentsVC: SubPathsTableViewController?
-    
-    init(movingPath: URL, sourceContentsVC: SubPathsTableViewController?, operationType: PathSelectionOperation, startingPath: URL = .root) {
-        self.movingPath = movingPath
-        self.sourceContentsVC = sourceContentsVC
+    init(paths: [URL], operationType: PathSelectionOperation, startingPath: URL = .root) {
+        self.paths = paths
         self.operationType = operationType
         
         super.init(path: startingPath) // Start from root
@@ -43,6 +39,10 @@ class PathOperationViewController: SubPathsTableViewController {
         }
         
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
+        
+        for path in paths {
+            _ = path.startAccessingSecurityScopedResource()
+        }
     }
     
     @objc func done() {
@@ -51,26 +51,45 @@ class PathOperationViewController: SubPathsTableViewController {
             return
         }
         
-        let destinationPath = currentPath.appendingPathComponent(movingPath.lastPathComponent)
-        do {
-            switch operationType {
-            case .move:
-                try FileManager.default.moveItem(at: movingPath, to: destinationPath)
-            case .copy, .import:
-                try FileManager.default.copyItem(at: movingPath, to: destinationPath)
-            case .symlink:
-                try FileManager.default.createSymbolicLink(at: destinationPath, withDestinationURL: movingPath)
+        // in case we get errors while operating on one or multiple paths,
+        // save the path and the errors in a dictionary
+        var failedPaths: [String: Error] = [:]
+        for path in paths {
+            let destinationPath = currentPath.appendingPathComponent(path.lastPathComponent)
+            do {
+                switch operationType {
+                case .move:
+                    try FileManager.default.moveItem(at: path, to: destinationPath)
+                case .copy, .import:
+                    try FileManager.default.copyItem(at: path, to: destinationPath)
+                case .symlink:
+                    try FileManager.default.createSymbolicLink(at: destinationPath, withDestinationURL: path)
+                }
+            } catch {
+                failedPaths[path.lastPathComponent] = error
+            }
+        }
+        
+        if !failedPaths.isEmpty {
+            let alert = UIAlertController(title: "Failed to \(operationType.description) \(failedPaths.count) item(s)", message: "", preferredStyle: .alert)
+            for (path, error) in failedPaths {
+                alert.message?.append("\(path): \(error.localizedDescription)\n")
             }
             
+            let okAction = UIAlertAction(title: "OK", style: .cancel) { _ in
+                self.dismiss(animated: true)
+            }
+            
+            alert.addAction(okAction)
+            self.present(alert, animated: true)
+        } else {
             self.dismiss(animated: true)
-        } catch {
-            self.errorAlert(error, title: "Unable to \(operationType.description) \(movingPath.lastPathComponent)")
         }
     }
     
     override func goToPath(path: URL, pushingToSplitViewVC: Bool = false) {
         if path.isDirectory {
-            self.navigationController?.pushViewController(PathOperationViewController(movingPath: movingPath, sourceContentsVC: self.sourceContentsVC, operationType: self.operationType, startingPath: path), animated: true)
+            self.navigationController?.pushViewController(PathOperationViewController(paths: paths, operationType: self.operationType, startingPath: path), animated: true)
         } else {
             self.goToFile(path: path)
         }
@@ -85,6 +104,14 @@ class PathOperationViewController: SubPathsTableViewController {
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
         let options = UIBarButtonItem(image: .init(systemName: "ellipsis.circle"), menu: makeRightBarButton())
         self.navigationItem.rightBarButtonItems = [doneButton, options]
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        
+        for path in paths {
+            path.stopAccessingSecurityScopedResource() // if we don't do this, we may result in a memory leak
+        }
     }
 }
 
@@ -125,11 +152,5 @@ enum PathSelectionOperation: CustomStringConvertible {
         case .symlink:
             return "Aliasing to.."
         }
-    }
-}
-
-extension UITableView.Style {
-    static var automatic: UITableView.Style {
-        return UserPreferences.usePlainStyleTableView ? .plain : .insetGrouped
     }
 }

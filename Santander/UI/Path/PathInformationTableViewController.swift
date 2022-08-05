@@ -11,6 +11,7 @@ import UIKit
 /// A Table View Controller displaying information for a given path
 class PathInformationTableViewController: UITableViewController {
     let path: URL
+    let metadata: PathMetadata
     
     var showByteCount: Bool = false
     var showDisplayName: Bool = false
@@ -18,6 +19,7 @@ class PathInformationTableViewController: UITableViewController {
     
     init(style: UITableView.Style, path: URL) {
         self.path = path
+        self.metadata = PathMetadata(fileURL: path)
         
         super.init(style: style)
     }
@@ -41,11 +43,11 @@ class PathInformationTableViewController: UITableViewController {
         case 0:
             return self.path.isDirectory ? 4 : 3
         case 1:
-            return self.path.contentType?.preferredMIMEType != nil ? 2 : 1
+            return metadata.contentType?.preferredMIMEType != nil ? 2 : 1
         case 2:
             return 4
         case 3:
-            return self.path.isDirectory ? 3 : 4
+            return self.path.isDirectory ? 2 : 3
         default:
             fatalError("Impossible to be here")
         }
@@ -98,34 +100,31 @@ class PathInformationTableViewController: UITableViewController {
             conf.secondaryText = self.path.contents.count.description
         case (1, 0):
             conf.text = "Type"
-            conf.secondaryText = self.path.contentType?.localizedDescription?.localizedCapitalized ?? "N/A"
+            conf.secondaryText = metadata.contentType?.localizedDescription?.localizedCapitalized ?? "N/A"
         case (1, 1):
             conf.text = "MIME Type"
-            conf.secondaryText = self.path.contentType?.preferredMIMEType ?? "N/A"
+            conf.secondaryText = metadata.contentType?.preferredMIMEType ?? "N/A"
         case (2, 0):
             conf.text = "Created"
-            conf.secondaryText = self.path.creationDate?.listFormatted() ?? "N/A"
+            conf.secondaryText = metadata.creationDate?.listFormatted() ?? "N/A"
         case (2, 1):
             conf.text = "Added"
-            conf.secondaryText = path.addedToDirectoryDate?.listFormatted() ?? "N/A"
+            conf.secondaryText = metadata.addedToDirectoryDate?.listFormatted() ?? "N/A"
         case (2, 2):
             conf.text = "Last modified"
-            conf.secondaryText = path.lastModifiedDate?.listFormatted() ?? "N/A"
+            conf.secondaryText = metadata.lastModifiedDate?.listFormatted() ?? "N/A"
         case (2, 3):
             conf.text = "Last accessed"
-            conf.secondaryText = path.lastAccessedDate?.listFormatted() ?? "N/A"
+            conf.secondaryText = metadata.lastAccessedDate?.listFormatted() ?? "N/A"
         case (3, 0):
-            conf.text = "Deletable"
-            conf.secondaryText = FileManager.default.isDeletableFile(atPath: self.path.path) ? "Yes" : "No"
-        case (3, 1):
             conf.text = "Readable"
-            conf.secondaryText = self.path.isReadable ? "Yes" : "No"
-        case (3, 2):
+            conf.secondaryText = metadata.permissions.contains(.read) ? "Yes" : "No"
+        case (3, 1):
             conf.text = "Writable"
-            conf.secondaryText = FileManager.default.isWritableFile(atPath: self.path.path) ? "Yes" : "No"
-        case (3, 3):
+            conf.secondaryText = metadata.permissions.contains(.write) ? "Yes" : "No"
+        case (3, 2):
             conf.text = "Executable"
-            conf.secondaryText = FileManager.default.isExecutableFile(atPath: self.path.path) ? "Yes" : "No"
+            conf.secondaryText = metadata.permissions.contains(.execute) ? "Yes" : "No"
         default: break
         }
         

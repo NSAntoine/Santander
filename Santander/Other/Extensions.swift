@@ -93,6 +93,11 @@ extension URL {
     var displayImage: UIImage? {
         return self.isDirectory ? UIImage(systemName: "folder.fill") : UIImage(systemName: "doc.fill")
     }
+    
+    func setPermissions(forOwner owner: Permission, group: Permission = [], others: Permission = []) throws {
+        let octal = Permission.octalRepresentation(of: [owner, group, others])
+        try FileManager.default.setAttributes([.posixPermissions: octal], ofItemAtPath: path)
+    }
 }
 
 extension UIViewController {
@@ -425,5 +430,12 @@ extension Optional: Comparable where Wrapped: Comparable {
         }
         
         return lhs < rhs
+    }
+}
+
+
+extension UITableView.Style {
+    static var automatic: UITableView.Style {
+        return UserPreferences.usePlainStyleTableView ? .plain : .insetGrouped
     }
 }

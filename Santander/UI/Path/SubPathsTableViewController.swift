@@ -19,6 +19,9 @@ class SubPathsTableViewController: UITableViewController {
     /// The contents of the path, filtered by the search or hiding dotfiles
     var filteredSearchContents: [URL] = []
     
+    /// The items selected by the user while editing
+    var selectedItems: [URL] = []
+    
     /// A Boolean representing if the user is currently searching
     var isSearching: Bool = false
     
@@ -195,6 +198,12 @@ class SubPathsTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if self.isEditing {
+            selectedItems.append(contents[indexPath.row])
+            setupOrUpdateToolbar()
+            return
+        }
+        
         if doDisplaySearchSuggestions {
             let searchTextField = self.navigationItem.searchController?.searchBar.searchTextField
             let tokensCount = searchTextField?.tokens.count
@@ -228,6 +237,15 @@ class SubPathsTableViewController: UITableViewController {
             let selectedItem = contents[indexPath.row]
             goToPath(path: selectedItem)
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        let selected = contents[indexPath.row]
+        selectedItems.removeAll { path in
+            path == selected
+        }
+        
+        setupOrUpdateToolbar()
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
@@ -502,17 +520,17 @@ class SubPathsTableViewController: UITableViewController {
         } actionProvider: { _ in
             
             let movePath = UIAction(title: "Move to..", image: UIImage(systemName: "arrow.right")) { _ in
-                let vc = PathOperationViewController(movingPath: item, sourceContentsVC: self, operationType: .move)
+                let vc = PathOperationViewController(paths: [item], operationType: .move)
                 self.present(UINavigationController(rootViewController: vc), animated: true)
             }
             
             let copyPath = UIAction(title: "Copy to..", image: UIImage(systemName: "doc.on.doc")) { _ in
-                let vc = PathOperationViewController(movingPath: item, sourceContentsVC: self, operationType: .copy)
+                let vc = PathOperationViewController(paths: [item], operationType: .copy)
                 self.present(UINavigationController(rootViewController: vc), animated: true)
             }
             
             let createSymlink = UIAction(title: "Create symbolic link to..", image: UIImage(systemName: "link")) { _ in
-                let vc = PathOperationViewController(movingPath: item, sourceContentsVC: self, operationType: .symlink)
+                let vc = PathOperationViewController(paths: [item], operationType: .symlink)
                 self.present(UINavigationController(rootViewController: vc), animated: true)
             }
             
@@ -523,10 +541,7 @@ class SubPathsTableViewController: UITableViewController {
             }
             
             let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                let vc = UIActivityViewController.init(activityItems: [item], applicationActivities: [])
-                vc.popoverPresentationController?.sourceView = self.view
-                vc.popoverPresentationController?.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
-                self.present(vc, animated: true)
+                self.presentShareAction(items: [item])
             }
             
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "rectangle.and.pencil.and.ellipsis")) { _ in
@@ -593,15 +608,28 @@ class SubPathsTableViewController: UITableViewController {
     }
     /// Returns the UIMenu to be used as the (primary) right bar button
     func makeRightBarButton() -> UIMenu {
-        let seeFavouritesAction = UIAction(title: "Favourites", image: UIImage(systemName: "star.fill")) { _ in
-            let newVC = UINavigationController(rootViewController: SubPathsTableViewController.favourites())
-            self.present(newVC, animated: true)
+        let selectAction = UIAction(title: "Select", image: UIImage(systemName: "checkmark.circle")) { _ in
+            self.tableView.allowsMultipleSelectionDuringEditing = true
+            self.setEditing(true, animated: true)
         }
         
-        var menuActions: [UIMenuElement] = [makeGoToMenu(), makeSortMenu()]
+        let selectionMenu = UIMenu(options: .displayInline, children: [selectAction])
+        var firstMenuItems = [selectionMenu, makeSortMenu(), makeGoToMenu()]
+        
+        if let currentPath = currentPath {
+            firstMenuItems.append(makeNewItemMenu(forURL: currentPath))
+        }
+        
+        let firstMenu = UIMenu(options: .displayInline, children: firstMenuItems)
+        var menuActions: [UIMenuElement] = [firstMenu]
         
         // if we're in the "Favourites" sheet, don't display the favourites button
         if !isFavouritePathsSheet {
+            let seeFavouritesAction = UIAction(title: "Favourites", image: UIImage(systemName: "star.fill")) { _ in
+                let newVC = UINavigationController(rootViewController: SubPathsTableViewController.favourites())
+                self.present(newVC, animated: true)
+            }
+            
             menuActions.append(seeFavouritesAction)
         }
         
@@ -610,7 +638,6 @@ class SubPathsTableViewController: UITableViewController {
                 self.openInfoBottomSheet(path: currentPath)
             }
             
-            menuActions.insert(makeNewItemMenu(forURL: currentPath), at: 2)
             menuActions.append(showInfoAction)
         }
         
@@ -632,10 +659,34 @@ class SubPathsTableViewController: UITableViewController {
     }
     
     func setRightBarButton() {
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(
-            image: .init(systemName: "ellipsis.circle"),
-            menu: makeRightBarButton()
-        )
+        if self.isEditing {
+            let editAction = UIAction {
+                self.setEditing(false, animated: true)
+            }
+            
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+                systemItem: .done,
+                primaryAction: editAction
+            )
+            
+        } else {
+            self.navigationItem.rightBarButtonItem = UIBarButtonItem(
+                image: .init(systemName: "ellipsis.circle"),
+                menu: makeRightBarButton()
+            )
+        }
+    }
+    
+    override func setEditing(_ editing: Bool, animated: Bool) {
+        super.setEditing(editing, animated: animated)
+        
+        setRightBarButton()
+        if editing {
+            setupOrUpdateToolbar()
+        } else {
+            hideToolbar()
+            selectedItems = []
+        }
     }
     
     func showOrHideDotfiles(animatingDifferences: Bool = false) {
