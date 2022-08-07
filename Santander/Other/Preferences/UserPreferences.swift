@@ -74,6 +74,9 @@ enum UserPreferences {
     
     @CodableStorage(key: "TextEditorTheme", defaultValue: CodableTheme(), didChange: nil)
     static var textEditorTheme: CodableTheme
+    
+    @CodableStorage(key: "AppTintColor", defaultValue: CodableColor(.systemBlue), didChange: nil)
+    static var appTintColor: CodableColor
 }
 
 /// A Group containing paths

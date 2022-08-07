@@ -11,6 +11,13 @@ import UniformTypeIdentifiers
 
 class SettingsTableViewController: UITableViewController {
     
+    lazy var colorPickerVC: UIColorPickerViewController = {
+        let vc = UIColorPickerViewController()
+        vc.selectedColor = UserPreferences.appTintColor.uiColor
+        vc.delegate = self
+        return vc
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -22,6 +29,7 @@ class SettingsTableViewController: UITableViewController {
         super.init(style: style)
         
         self.tableView.register(SettingsSwitchTableViewCell.self, forCellReuseIdentifier: SettingsSwitchTableViewCell.identifier)
+        self.tableView.register(SettingsColorTableViewCell.self, forCellReuseIdentifier: SettingsColorTableViewCell.identifier)
     }
     
     required init?(coder: NSCoder) {
@@ -35,12 +43,17 @@ class SettingsTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0: return 2
-        case 1: return 2
+        case 1: return 3
         default: fatalError("How'd we get here?")
         }
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        
+        if (indexPath.section, indexPath.row) == (1, 2) {
+            return tableView.dequeueReusableCell(withIdentifier: SettingsColorTableViewCell.identifier, for: indexPath)
+        }
+        
         let cell = tableView.dequeueReusableCell(withIdentifier: SettingsSwitchTableViewCell.identifier, for: indexPath) as! SettingsSwitchTableViewCell
         
         switch (indexPath.section, indexPath.row) {
@@ -70,6 +83,30 @@ class SettingsTableViewController: UITableViewController {
         case 1: return "Views"
         default: return nil
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        switch (indexPath.section, indexPath.row) {
+        case (1, 2):
+            self.present(colorPickerVC, animated: true)
+        default:
+            break
+        }
+    }
+}
+
+extension SettingsTableViewController: UIColorPickerViewControllerDelegate {
+    func colorPickerViewController(
+        _ viewController: UIColorPickerViewController,
+        didSelect color: UIColor,
+        continuously: Bool) {
+            guard !continuously else {
+                return
+            }
+            
+            UserPreferences.appTintColor = CodableColor(color)
+            self.view.window?.tintColor = color
+            tableView.reloadRows(at: [IndexPath(row: 2, section: 1)], with: .fade)
     }
 }
 
@@ -123,5 +160,25 @@ class SettingsSwitchTableViewCell: UITableViewCell {
             UserDefaults.standard.set(sender.isOn, forKey: defaultKey)
         }
         callback?(sender.isOn)
+    }
+}
+
+class SettingsColorTableViewCell: UITableViewCell {
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    static var identifier = "SettingsColorTableViewCell"
+    
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
+        super.init(style: style, reuseIdentifier: Self.identifier)
+        
+        self.textLabel?.text = "Tint color"
+        let colorPreview = UIView(frame: CGRect(x: 0, y: 0, width: 29, height: 29))
+        colorPreview.backgroundColor = UserPreferences.appTintColor.uiColor
+        colorPreview.layer.cornerRadius = colorPreview.frame.size.width / 2
+        colorPreview.layer.borderWidth = 1.5
+        
+        accessoryView = colorPreview
     }
 }

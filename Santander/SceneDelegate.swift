@@ -29,6 +29,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
         (window.rootViewController as? UISplitViewController)?.show(.primary) // Needed on iPad so that the SplitViewController displays no matter orientation
         self.window = window
+        
+        DispatchQueue.main.async {
+            window.tintColor = UserPreferences.appTintColor.uiColor
+        }
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {
