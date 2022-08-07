@@ -439,3 +439,21 @@ extension UITableView.Style {
         return UserPreferences.usePlainStyleTableView ? .plain : .insetGrouped
     }
 }
+
+extension Array where Element: OptionSet {
+    // bizzare! see https://forums.swift.org/t/reducing-array-optionset-to-optionset/4438/8
+    func reducingToSingleOptionSet() -> Element {
+        return self.reduce(Element()) { return $0.union($1) }
+    }
+}
+
+extension passwd {
+    init?(fileURLOwner fileURL: URL) {
+        var buffer = stat()
+        guard lstat(fileURL.path, &buffer) == 0, let pwd = getpwuid(buffer.st_uid)?.pointee else {
+            return nil
+        }
+        
+        self = pwd
+    }
+}

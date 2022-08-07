@@ -47,7 +47,7 @@ class PathInformationTableViewController: UITableViewController {
         case 2:
             return 4
         case 3:
-            return self.path.isDirectory ? 2 : 3
+            return 1
         default:
             fatalError("Impossible to be here")
         }
@@ -61,6 +61,12 @@ class PathInformationTableViewController: UITableViewController {
             showRealPath.toggle()
         case (0, 2):
             showByteCount.toggle()
+        case (3, 0):
+            guard let permissions = metadata.permissions else {
+                return
+            }
+            
+            self.navigationController?.pushViewController(PathPermissionsViewController(permissions: permissions), animated: true)
         default:
             return
         }
@@ -111,20 +117,15 @@ class PathInformationTableViewController: UITableViewController {
             conf.text = "Added"
             conf.secondaryText = metadata.addedToDirectoryDate?.listFormatted() ?? "N/A"
         case (2, 2):
-            conf.text = "Last modified"
+            conf.text = "Modified"
             conf.secondaryText = metadata.lastModifiedDate?.listFormatted() ?? "N/A"
         case (2, 3):
-            conf.text = "Last accessed"
+            conf.text = "Accessed"
             conf.secondaryText = metadata.lastAccessedDate?.listFormatted() ?? "N/A"
         case (3, 0):
-            conf.text = "Readable"
-            conf.secondaryText = metadata.permissions.contains(.read) ? "Yes" : "No"
-        case (3, 1):
-            conf.text = "Writable"
-            conf.secondaryText = metadata.permissions.contains(.write) ? "Yes" : "No"
-        case (3, 2):
-            conf.text = "Executable"
-            conf.secondaryText = metadata.permissions.contains(.execute) ? "Yes" : "No"
+            conf.text = "Permissions"
+            cell.accessoryType = .disclosureIndicator
+            cell.isUserInteractionEnabled = metadata.permissions != nil
         default: break
         }
         
@@ -141,6 +142,8 @@ class PathInformationTableViewController: UITableViewController {
             return (try? FileManager.default.destinationOfSymbolicLink(atPath: self.path.path)) != nil
         case (0, 2):
             return self.path.size != nil
+        case (3, 0):
+            return metadata.permissions != nil
         default:
             return false
         }
