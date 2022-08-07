@@ -10,6 +10,7 @@ import UIKit
 
 /// Represents the split view to be used on iPads
 class PathListsSplitViewController: SubPathsTableViewController {
+    var pathGroups = UserPreferences.pathGroups
     
     /// The action for editing the path groups
     lazy var editAction = UIAction { _ in
@@ -24,28 +25,36 @@ class PathListsSplitViewController: SubPathsTableViewController {
         self.navigationItem.rightBarButtonItem = nil
         self.navigationItem.searchController = nil
         
-        self.toolbarItems = [
-            UIBarButtonItem(systemItem: .add, primaryAction: UIAction(withClosure: newGroup)),
-            UIBarButtonItem(systemItem: .edit, primaryAction: editAction)
-        ]
-        
         NotificationCenter.default.addObserver(forName: .pathGroupsDidChange, object: nil, queue: nil) { _ in
+            self.pathGroups = UserPreferences.pathGroups
             self.showPaths()
         }
-        
-        self.navigationController?.setToolbarHidden(false, animated: false)
+        setupOrUpdateToolbar()
     }
     
     override func showPaths(animatingDifferences: Bool = true) {
         var snapshot = self.dataSource.snapshot()
         snapshot.deleteAllItems()
-        for num in 0..<UserPreferences.pathGroups.count {
+        for num in 0..<pathGroups.count {
             snapshot.appendSections([num])
-            snapshot.appendItems(SubPathsRowItem.fromPaths(UserPreferences.pathGroups[num].paths), toSection: num)
+            snapshot.appendItems(SubPathsRowItem.fromPaths(pathGroups[num].paths), toSection: num)
         }
         
         dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
     }
+    
+    override func hideToolbar() {}
+    
+    override func setupOrUpdateToolbar() {
+        self.toolbarItems = [
+            UIBarButtonItem(systemItem: .add, primaryAction: UIAction(withClosure: newGroup)),
+            UIBarButtonItem(systemItem: .edit, primaryAction: editAction)
+        ]
+        
+        self.navigationController?.setToolbarHidden(false, animated: false)
+    }
+    
+    override func setRightBarButton() {}
     
     override func goToPath(path: URL, pushingToSplitViewVC: Bool = false) {
         guard path != currentPath else {
@@ -58,7 +67,7 @@ class PathListsSplitViewController: SubPathsTableViewController {
     var collapsedSections: Set<Int> = []
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let group = UserPreferences.pathGroups[indexPath.section]
+        let group = pathGroups[indexPath.section]
         // Make sure the default group can't be removed
         guard group != .default else {
             return nil
@@ -74,13 +83,13 @@ class PathListsSplitViewController: SubPathsTableViewController {
     }
 
     override var contents: [URL] {
-        return UserPreferences.pathGroups.flatMap(\.paths)
+        return pathGroups.flatMap(\.paths)
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item = UserPreferences.pathGroups[indexPath.section].paths[indexPath.row]
+        let item = pathGroups[indexPath.section].paths[indexPath.row]
         goToPath(path: item)
-        self.currentPath = UserPreferences.pathGroups[indexPath.section].paths[indexPath.row] // Set the current path
+        self.currentPath = pathGroups[indexPath.section].paths[indexPath.row] // Set the current path
         
         popBackIfNeeded(toItem: item)
     }
@@ -114,7 +123,7 @@ class PathListsSplitViewController: SubPathsTableViewController {
                 return
             }
             
-            guard !UserPreferences.pathGroups.map(\.name).contains(name) else {
+            guard !self.pathGroups.map(\.name).contains(name) else {
                 alert.dismiss(animated: true)
                 self.errorAlert("\"\(name)\" Already exists", title: "Item already exists")
                 return
@@ -138,7 +147,7 @@ class PathListsSplitViewController: SubPathsTableViewController {
         return sectionHeaderWithButton(
             action: #selector(sectionButtonClicked(_:)),
             sectionTag: section,
-            titleText: UserPreferences.pathGroups[section].name) { button in
+            titleText: pathGroups[section].name) { button in
                 button.setImage(UIImage(systemName: isEditing ? "trash" : "chevron.down"), for: .normal)
                 if self.isEditing {
                     button.tintColor = .systemRed
@@ -174,7 +183,7 @@ class PathListsSplitViewController: SubPathsTableViewController {
             snapshot.deleteItems(snapshot.itemIdentifiers(inSection: section))
         } else {
             collapsedSections.remove(section)
-            let itemsToAddBack = SubPathsRowItem.fromPaths(UserPreferences.pathGroups[section].paths)
+            let itemsToAddBack = SubPathsRowItem.fromPaths(pathGroups[section].paths)
             snapshot.appendItems(itemsToAddBack, toSection: section)
         }
         

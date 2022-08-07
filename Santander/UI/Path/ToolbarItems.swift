@@ -10,6 +10,7 @@ import UIKit
 
 extension SubPathsTableViewController {
     
+    @objc
     func setupOrUpdateToolbar() {
         
         if let toolbarItems, !toolbarItems.isEmpty, selectedItems.isEmpty {
@@ -53,6 +54,7 @@ extension SubPathsTableViewController {
         self.navigationController?.setToolbarHidden(false, animated: true)
     }
     
+    @objc
     func hideToolbar() {
         self.navigationController?.setToolbarHidden(true, animated: true)
     }

@@ -72,23 +72,8 @@ enum UserPreferences {
         }
     }
     
-    static var textEditorTheme: CodableTheme {
-        get {
-            guard let data = UserDefaults.standard.data(forKey: "TextEditorTheme"), let decoded = try? JSONDecoder().decode(CodableTheme.self, from: data) else {
-                return CodableTheme()
-            }
-            
-            return decoded
-        }
-        
-        set {
-            guard let data = try? JSONEncoder().encode(newValue) else {
-                return
-            }
-            
-            UserDefaults.standard.set(data, forKey: "TextEditorTheme")
-        }
-    }
+    @CodableStorage(key: "TextEditorTheme", defaultValue: CodableTheme(), didChange: nil)
+    static var textEditorTheme: CodableTheme
 }
 
 /// A Group containing paths
