@@ -681,6 +681,7 @@ class SubPathsTableViewController: UITableViewController {
         super.setEditing(editing, animated: animated)
         
         setRightBarButton()
+        setLeftBarSelectionButtonItem()
         if editing {
             setupOrUpdateToolbar()
         } else {

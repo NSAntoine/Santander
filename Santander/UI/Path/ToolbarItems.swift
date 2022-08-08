@@ -96,4 +96,29 @@ extension SubPathsTableViewController {
         
         return UIMenu(children: [moveAction, copyAction, symlinkAction])
     }
+    
+    /// The button which says "Select all" or "Deselect all" when in edit mode
+    func setLeftBarSelectionButtonItem() {
+        if !isEditing {
+            navigationItem.leftBarButtonItem = nil
+            return
+        }
+        
+        let allItemsSelected = selectedItems.count == contents.count
+        let action = UIAction {
+            for (index, _) in self.contents.enumerated() {
+                if !allItemsSelected {
+                    self.tableView.selectRow(at: IndexPath(row: index, section: 0), animated: true, scrollPosition: .none)
+                } else {
+                    self.tableView.deselectRow(at: IndexPath(row: index, section: 0), animated: true)
+                }
+            }
+            
+            self.selectedItems = allItemsSelected ? [] : self.contents // why do i have to do this? welp! it works
+            self.setLeftBarSelectionButtonItem()
+        }
+        
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: allItemsSelected ? "Deselect All" : "Select All", primaryAction: action)
+        setupOrUpdateToolbar()
+    }
 }
