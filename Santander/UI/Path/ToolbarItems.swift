@@ -104,9 +104,10 @@ extension SubPathsTableViewController {
             return
         }
         
+        let contents = self.contents // in order to not keep triggering the getter
         let allItemsSelected = selectedItems.count == contents.count
         let action = UIAction {
-            for (index, _) in self.contents.enumerated() {
+            for index in contents.indices {
                 if !allItemsSelected {
                     self.tableView.selectRow(at: IndexPath(row: index, section: 0), animated: true, scrollPosition: .none)
                 } else {
@@ -114,7 +115,7 @@ extension SubPathsTableViewController {
                 }
             }
             
-            self.selectedItems = allItemsSelected ? [] : self.contents // why do i have to do this? welp! it works
+            self.selectedItems = allItemsSelected ? [] : contents // why do i have to do this? welp! it works
             self.setLeftBarSelectionButtonItem()
         }
         
