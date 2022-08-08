@@ -96,17 +96,14 @@ class SettingsTableViewController: UITableViewController {
 }
 
 extension SettingsTableViewController: UIColorPickerViewControllerDelegate {
-    func colorPickerViewController(
-        _ viewController: UIColorPickerViewController,
-        didSelect color: UIColor,
-        continuously: Bool) {
-            guard !continuously else {
-                return
-            }
-            
+    func colorPickerViewControllerDidFinish(_ viewController: UIColorPickerViewController) {
+        let color = viewController.selectedColor
+        
+        DispatchQueue.main.async {
             UserPreferences.appTintColor = CodableColor(color)
             self.view.window?.tintColor = color
-            tableView.reloadRows(at: [IndexPath(row: 2, section: 1)], with: .fade)
+            self.tableView.reloadRows(at: [IndexPath(row: 2, section: 1)], with: .fade)
+        }
     }
 }
 
