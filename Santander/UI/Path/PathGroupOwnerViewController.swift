@@ -47,8 +47,12 @@ class PathGroupOwnerViewController: UITableViewController {
     
     override func viewDidLoad() {
         DispatchQueue.main.async {
-            self.allData = self.type.getAll(forURL: self.fileURL)
-            self.tableView.reloadData()
+            do {
+                self.allData = try self.type.getAll(forURL: self.fileURL)
+                self.tableView.reloadData()
+            } catch {
+                self.showError(error)
+            }
         }
         
         self.title = typeName(capitalizingFirstLetter: true)
@@ -111,13 +115,30 @@ class PathGroupOwnerViewController: UITableViewController {
         }
     }
     
+    func showError(_ error: Error) {
+        let errorLabel = UILabel()
+        errorLabel.text = error.localizedDescription
+        errorLabel.textAlignment = .center
+        errorLabel.numberOfLines = 0
+        errorLabel.lineBreakMode = .byWordWrapping
+        errorLabel.textColor = .systemGray
+        
+        errorLabel.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(errorLabel)
+        NSLayoutConstraint.activate([
+            errorLabel.widthAnchor.constraint(equalTo: self.view.widthAnchor),
+            errorLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            errorLabel.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+        ])
+    }
+    
     /// The list of items to display,
     /// either being groups or owners
     enum ItemType: CustomStringConvertible {
         case group(groupName: String), owner(ownerName: String)
         
         /// Returns a string array of either types
-        func getAll(forURL url: URL) -> [String] {
+        func getAll(forURL url: URL) throws -> [String] {
             switch self {
             case .owner:
                 var arr: [String] = []
@@ -129,7 +150,7 @@ class PathGroupOwnerViewController: UITableViewController {
                 return arr
             case .group:
                 guard let owner = passwd(fileURLOwner: url) else {
-                    return []
+                    throw Errors.unableToGetGroups(description: "Failed to get groups:\nUnable to fetch the owner of the path in order to get the groups which the owner belongs to")
                 }
                 
                 var groups: gid_t = 0
@@ -139,9 +160,21 @@ class PathGroupOwnerViewController: UITableViewController {
                     guard let gr = getgrgid(gid)?.pointee.gr_name else {
                         return nil
                     }
+                    
                     return String(cString: gr)
                 }
                 
+            }
+        }
+        
+        enum Errors: Error, LocalizedError {
+            case unableToGetGroups(description: String)
+            
+            var errorDescription: String? {
+                switch self {
+                case .unableToGetGroups(let description):
+                    return description
+                }
             }
         }
         

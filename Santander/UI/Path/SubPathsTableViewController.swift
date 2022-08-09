@@ -4,7 +4,7 @@
 //
 //  Created by Serena on 21/06/2022
 //
-	
+
 
 import UIKit
 import QuickLook
@@ -223,10 +223,6 @@ class SubPathsTableViewController: UITableViewController {
                 
                 let navVC = UINavigationController(rootViewController: vc)
                 
-                if #available(iOS 15.0, *) {
-                    navVC.sheetPresentationController?.detents = [.medium(), .large()]
-                }
-                
                 self.present(navVC, animated: true)
                 
             } else {
@@ -277,7 +273,7 @@ class SubPathsTableViewController: UITableViewController {
         
         favouriteAction.backgroundColor = .systemBlue
         favouriteAction.image = itemAlreadyFavourited ? UIImage(systemName: "star.fill") : UIImage(systemName: "star")
-
+        
         let deleteAction = UIContextualAction(style: .destructive, title: nil) { _, _, completion in
             self.deleteURL(selectedItem) { didSucceed in
                 completion(didSucceed)
@@ -363,7 +359,7 @@ class SubPathsTableViewController: UITableViewController {
             alert.addTextField { textfield in
                 textfield.placeholder = "url.."
             }
-                
+            
             let goAction = UIAlertAction(title: "Go", style: .default) { _ in
                 guard let text = alert.textFields?.first?.text, FileManager.default.fileExists(atPath: text) else {
                     self.errorAlert("URL inputted must be valid and must exist", title: "Error")
@@ -736,11 +732,11 @@ extension SubPathsTableViewController: DirectoryMonitorDelegate {
         DispatchQueue.main.async {
             let items = self.sortMethod.sorting(URLs: directoryMonitor.url.contents, sortOrder: .userPreferred)
             self.unfilteredContents = items
-
+            
             var snapshot = self.dataSource.snapshot()
             snapshot.deleteAllItems()
             snapshot.appendSections([0])
-
+            
             snapshot.appendItems(SubPathsRowItem.fromPaths(items))
             self.dataSource.apply(snapshot, animatingDifferences: true)
             
@@ -786,6 +782,8 @@ extension SubPathsTableViewController: UINavigationItemRenameDelegate {
     }
 }
 
+/// Represents an item which could be displayed in SubPathsTableViewController,
+/// being either a search suggestion or a path
 enum SubPathsRowItem: Hashable {
     static func == (lhs: SubPathsRowItem, rhs: SubPathsRowItem) -> Bool {
         switch (lhs, rhs) {
