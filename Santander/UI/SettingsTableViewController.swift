@@ -60,12 +60,7 @@ class SettingsTableViewController: UITableViewController {
             conf.text = "Tint Color"
             cell.contentConfiguration = conf
             
-            let colorPreview = UIView(frame: CGRect(x: 0, y: 0, width: 29, height: 29))
-            colorPreview.backgroundColor = UserPreferences.appTintColor.uiColor
-            colorPreview.layer.cornerRadius = colorPreview.frame.size.width / 2
-            colorPreview.layer.borderWidth = 1.5
-            colorPreview.layer.borderColor = UIColor.systemGray.cgColor
-            cell.accessoryView = colorPreview
+            cell.accessoryView = cell.colorCircleAccessoryView(color: UserPreferences.appTintColor.uiColor)
             return cell
         case (1, 1):
             return setupCell(withComplimentaryView: setupStyleButton(), text: "Table View Style")

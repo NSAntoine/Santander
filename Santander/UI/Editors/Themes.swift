@@ -119,6 +119,7 @@ struct CodableTheme: Codable {
     var markedTextBackgroundColor: CodableColor = CodableColor(.systemFill)
     var markedTextBackgroundBorderColor: CodableColor = CodableColor(.clear)
     
+    var textEditorBackgroundColor: CodableColor = CodableColor(.tertiarySystemBackground)
     var theme: AnyTheme {
         AnyTheme(
             textColor: textColor.uiColor,

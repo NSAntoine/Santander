@@ -1,5 +1,5 @@
 //
-//  EditorThemeSettingsViewController.swift
+//  TextEditorThemeSettingsViewController.swift
 //  Santander
 //
 //  Created by Serena on 03/07/2022
@@ -9,10 +9,10 @@
 import UIKit
 import Runestone
 
-class EditorThemeSettingsViewController: SettingsTableViewController {
+class TextEditorThemeSettingsViewController: SettingsTableViewController {
     
     weak var delegate: EditorThemeSettingsDelegate?
-    
+    var selectedIndexPath: IndexPath? = nil
     var theme: CodableTheme
     
     init(style: UITableView.Style, theme: CodableTheme) {
@@ -29,13 +29,12 @@ class EditorThemeSettingsViewController: SettingsTableViewController {
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case 0: return 2
-        case 1: return 2
+        case 0, 1, 2: return 2
         default: fatalError("How the hell did you get here?! Unhandled section: \(section)")
         }
     }
@@ -58,6 +57,12 @@ class EditorThemeSettingsViewController: SettingsTableViewController {
             return setupCell(withComplimentaryView: settingsSwitch(forIndexPath: indexPath), text: "Show line count")
         case (1, 1):
             return setupCell(withComplimentaryView: settingsSwitch(forIndexPath: indexPath), text: "Wrap lines")
+        case (2, 0):
+            conf.text = "Text Color"
+            cell.accessoryView = cell.colorCircleAccessoryView(color: theme.textColor.uiColor)
+        case (2, 1):
+            conf.text = "Editor Background Color"
+            cell.accessoryView = cell.colorCircleAccessoryView(color: theme.textEditorBackgroundColor.uiColor)
         default: break
         }
         
@@ -66,6 +71,23 @@ class EditorThemeSettingsViewController: SettingsTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.selectedIndexPath = indexPath
+        if indexPath.section == 2 {
+            let vc = UIColorPickerViewController()
+            switch indexPath.row {
+            case 0:
+                vc.selectedColor = theme.textColor.uiColor
+            case 1:
+                vc.selectedColor = theme.textEditorBackgroundColor.uiColor
+            default:
+                break
+            }
+            
+            vc.delegate = self
+            self.present(vc, animated: true)
+            return
+        }
+        
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
             let vc = UIFontPickerViewController()
@@ -118,11 +140,47 @@ class EditorThemeSettingsViewController: SettingsTableViewController {
     }
     
     override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-        return (indexPath.section, indexPath.row) == (0, 0)
+        return indexPath.section == 2 || (indexPath.section, indexPath.row) == (0, 0)
+    }
+    
+    func setColor(_ color: UIColor, forIndexPath indexPath: IndexPath) {
+        switch (indexPath.section, indexPath.row) {
+        case (2, 0):
+            theme.textColor = CodableColor(color)
+            self.delegate?.themeDidChange(to: theme)
+        case (2, 1):
+            let codableColor = CodableColor(color)
+            theme.textEditorBackgroundColor = codableColor
+            self.delegate?.didChangeEditorBackground(to: codableColor)
+        default:
+            break
+        }
+        
+        tableView.reloadRows(at: [indexPath], with: .none)
+    }
+    
+    override func colorPickerViewControllerDidFinish(_ viewController: UIColorPickerViewController) {
+        guard let selectedIndexPath = selectedIndexPath else {
+            return
+        }
+        setColor(viewController.selectedColor, forIndexPath: selectedIndexPath)
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        switch section {
+        case 0:
+            return "Fonts"
+        case 1:
+            return "Lines"
+        case 2:
+            return "Colors"
+        default:
+            return nil
+        }
     }
 }
 
-extension EditorThemeSettingsViewController: UIFontPickerViewControllerDelegate {
+extension TextEditorThemeSettingsViewController: UIFontPickerViewControllerDelegate {
     func fontPickerViewControllerDidPickFont(_ viewController: UIFontPickerViewController) {
         viewController.dismiss(animated: true) // Dismiss the vc
         // Make sure we got the descriptor
@@ -135,9 +193,10 @@ extension EditorThemeSettingsViewController: UIFontPickerViewControllerDelegate 
         delegate?.themeDidChange(to: self.theme)
     }
 }
-
+                                                    
 protocol EditorThemeSettingsDelegate: AnyObject {
     func themeDidChange(to newTheme: CodableTheme)
     func wrapLinesConfigurationDidChange(wrapLines: Bool)
     func showLineCountConfigurationDidChange(showLineCount: Bool)
+    func didChangeEditorBackground(to color: CodableColor)
 }

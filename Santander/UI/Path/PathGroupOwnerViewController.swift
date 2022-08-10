@@ -156,7 +156,7 @@ class PathGroupOwnerViewController: UITableViewController {
                 var groups: Int32 = 0
                 var count: Int32 = Int32(sysconf(_SC_NGROUPS_MAX))
                 getgrouplist(owner.pw_name, Int32(owner.pw_gid), &groups, &count)
-                return convert(length: Int(count), data: &groups, Int32.self).compactMap { gid in
+                return convert(length: Int(count), data: &groups).compactMap { gid in
                     guard let gr = getgrgid(gid_t(gid))?.pointee.gr_name else {
                         return nil
                     }
@@ -209,7 +209,7 @@ class PathGroupOwnerViewController: UITableViewController {
         }
         
         /// Converts a pointer to an Array
-        func convert<T>(length: Int, data: UnsafePointer<T>, _: T.Type) -> [T] {
+        func convert<T>(length: Int, data: UnsafePointer<T>) -> [T] {
             let buffer = data.withMemoryRebound(to: T.self, capacity: length) {
                 UnsafeBufferPointer(start: $0, count: length)
             }

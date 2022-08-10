@@ -488,3 +488,15 @@ extension UIUserInterfaceStyle: CaseIterable {
         }
     }
 }
+
+extension UITableViewCell {
+    func colorCircleAccessoryView(color: UIColor) -> UIView {
+        let colorPreview = UIView(frame: CGRect(x: 0, y: 0, width: 29, height: 29))
+        colorPreview.backgroundColor = color
+        colorPreview.layer.cornerRadius = colorPreview.frame.size.width / 2
+        colorPreview.layer.borderWidth = 1.5
+        colorPreview.layer.borderColor = UIColor.systemGray.cgColor
+        
+        return colorPreview
+    }
+}

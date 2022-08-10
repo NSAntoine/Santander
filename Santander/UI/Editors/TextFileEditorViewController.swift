@@ -18,7 +18,7 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
     
     var textView: TextView = TextView()
     var keyboardToolsView: KeyboardToolsView!
-    var theme = UserPreferences.textEditorTheme {
+    var theme: CodableTheme = UserPreferences.textEditorTheme {
         didSet {
             UserPreferences.textEditorTheme = theme
             DispatchQueue.global(qos: .userInitiated).sync {
@@ -58,7 +58,7 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
         
         textView.isEditable = /*FileManager.default.isWritableFile(atPath: fileURL.path)*/ true
         textView.editorDelegate = self
-        textView.backgroundColor = .tertiarySystemBackground
+        textView.backgroundColor = theme.textEditorBackgroundColor.uiColor
         self.keyboardToolsView = KeyboardToolsView(textView: textView)
         textView.inputAccessoryView = keyboardToolsView
         
@@ -172,7 +172,7 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
     }
     
     @objc func presentTextEditorSettings() {
-        let settings = EditorThemeSettingsViewController(style: .insetGrouped, theme: self.theme)
+        let settings = TextEditorThemeSettingsViewController(style: .insetGrouped, theme: self.theme)
         settings.delegate = self
         let navVC = UINavigationController(rootViewController: settings)
         if #available(iOS 15.0, *) {
@@ -191,6 +191,12 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
     
     func showLineCountConfigurationDidChange(showLineCount: Bool) {
         self.textView.showLineNumbers = showLineCount
+    }
+    
+    func didChangeEditorBackground(to color: CodableColor) {
+        self.textView.backgroundColor = color.uiColor
+        self.theme.textEditorBackgroundColor = color
+//        print(self.theme.textEditorBackgroundColor == color)
     }
 }
 
