@@ -54,7 +54,7 @@ jobs:
           xcodebuild build -scheme Santander -configuration "Release" CODE_SIGNING_ALLOWED="NO" CODE_SIGNING_REQUIRED="NO" CODE_SIGN_IDENTITY="" BUILD_DIR=${{ github.workspace }}/xcodebuild
           
           mkdir -p ${{ github.workspace }}/ipadir/Payload
-          cp -R ${{ github.workspace }}/xcodebuild/Products/Release-iphoneos/Santander.app ${{ github.workspace }}/ipadir/Payload
+          cp -R ${{ github.workspace }}/xcodebuild/Release-iphoneos/Santander.app ${{ github.workspace }}/ipadir/Payload
           zip -r ${{ github.workspace }}/Santander.ipa ${{ github.workspace }}/ipadir
 
           pip3 install permasigner
