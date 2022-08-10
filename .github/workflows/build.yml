@@ -1,0 +1,80 @@
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  
+name: Build
+jobs:
+  build:
+    name: Build and Upload
+    runs-on: macos-12
+    
+    steps:
+      - uses: actions/cache@v2
+        id: procache
+        with:
+          path: |
+            ~/__cache
+          key: ${{ runner.os }}-procursus
+          
+      - name: Checkout
+        uses: actions/checkout@master
+        
+      - name: Setup Procursus Bootstrap (install)
+        if: steps.procache.outputs.cache-hit != 'true'
+        run: |
+          wget https://apt.procurs.us/bootstrap_darwin-amd64.tar.zst
+          sudo gtar --preserve-permissions -xkf ./bootstrap_darwin-amd64.tar.zst -C /
+          echo '/opt/procursus/sbin:/opt/procursus/bin' >> $GITHUB_PATH
+          PATH=/opt/procursus/sbin:/opt/procursus/bin:$PATH sudo /opt/procursus/bin/apt update
+          sudo /opt/procursus/bin/apt -V dist-upgrade -y || :
+          sudo /opt/procursus/bin/apt -V dist-upgrade -y
+          sudo /opt/procursus/bin/apt install ldid -y
+          
+      - name: Add Procursus to PATH
+        run: |
+          echo '/opt/procursus/sbin:/opt/procursus/bin' >> $GITHUB_PATH
+          
+      - name: Setup Procursus Bootstrap (cache)
+        if: steps.procache.outputs.cache-hit == 'true'
+        run: |
+          sudo mkdir -p ~/__cache/procursus/var/cache/apt/archives/partial ~/__cache/procursus/var/lib/apt/lists/partial
+          sudo rsync -aP ~/__cache/procursus /opt
+          sudo /opt/procursus/bin/apt update
+          sudo /opt/procursus/bin/apt -V dist-upgrade -y
+          sudo /opt/procursus/bin/apt -V dist-upgrade -y
+      
+      - name: Select Correct Xcode (14.0)
+        run: |
+          sudo xcode-select --switch /Applications/Xcode_14.0.app
+          
+      - name: Build and Package IPA
+        run: |
+          xcodebuild build -scheme Santander -configuration "Release" CODE_SIGNING_ALLOWED="NO" CODE_SIGNING_REQUIRED="NO" CODE_SIGN_IDENTITY="" BUILD_DIR=${{ github.workspace }}/xcodebuild
+          
+          mkdir -p ${{ github.workspace }}/ipadir/Payload
+          cp -R ${{ github.workspace }}/xcodebuild/Release-iphoneos/Santander.app ${{ github.workspace }}/ipadir/Payload
+          cd ${{ github.workspace }}/ipadir
+          zip -r ${{ github.workspace }}/Santander.ipa .
+
+          pip3 install permasigner
+          permasigner -d -n -p ${{ github.workspace }}/Santander.ipa -o ${{ github.workspace }}/Santander.deb
+          
+      - name: Upload IPA
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: Santander.ipa
+          path: ${{ github.workspace }}/Santander.ipa
+
+      - name: Upload deb
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: Santander.deb
+          path: ${{ github.workspace }}/Santander.deb
+          
+      - name: Copy Procursus to Cache Location
+        run: |
+          sudo mkdir -p ~/__cache
+          sudo rsync -aP /opt/procursus ~/__cache
+          sudo rm -rf ~/__cache/procursus/var/cache/apt/archives/partial ~/__cache/procursus/var/lib/apt/lists/partial ~/__cache/procursus/Library/dpkg/triggers/Lock

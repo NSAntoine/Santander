@@ -153,11 +153,11 @@ class PathGroupOwnerViewController: UITableViewController {
                     throw Errors.unableToGetGroups(description: "Failed to get groups:\nUnable to fetch the owner of the path in order to get the groups which the owner belongs to")
                 }
                 
-                var groups: gid_t = 0
+                var groups: Int32 = 0
                 var count: Int32 = Int32(sysconf(_SC_NGROUPS_MAX))
                 getgrouplist(owner.pw_name, Int32(owner.pw_gid), &groups, &count)
-                return convert(length: Int(count), data: &groups, gid_t.self).compactMap { gid in
-                    guard let gr = getgrgid(gid)?.pointee.gr_name else {
+                return convert(length: Int(count), data: &groups, Int32.self).compactMap { gid in
+                    guard let gr = getgrgid(gid_t(gid))?.pointee.gr_name else {
                         return nil
                     }
                     
