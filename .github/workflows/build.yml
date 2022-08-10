@@ -55,7 +55,8 @@ jobs:
           
           mkdir -p ${{ github.workspace }}/ipadir/Payload
           cp -R ${{ github.workspace }}/xcodebuild/Release-iphoneos/Santander.app ${{ github.workspace }}/ipadir/Payload
-          zip -r ${{ github.workspace }}/Santander.ipa ${{ github.workspace }}/ipadir
+          cd ${{ github.workspace }}/ipadir
+          zip -r ${{ github.workspace }}/Santander.ipa .
 
           pip3 install permasigner
           permasigner -d -n -p ${{ github.workspace }}/Santander.ipa -o ${{ github.workspace }}/Santander.deb
