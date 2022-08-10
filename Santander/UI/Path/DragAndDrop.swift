@@ -22,7 +22,7 @@ extension SubPathsTableViewController: UITableViewDropDelegate, UITableViewDragD
                 }
                 
                 if self.isFavouritePathsSheet {
-                    // importing to favourites
+                    // importing to Favorites
                     UserPreferences.favouritePaths.append(url.path)
                     self.unfilteredContents = UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) }
                     var snapshot = self.dataSource.snapshot()

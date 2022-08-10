@@ -80,15 +80,15 @@ class SubPathsTableViewController: UITableViewController {
     }
     
     /// Returns the SubPathsTableViewController for favourite paths
-    class func favourites() -> SubPathsTableViewController {
+    class func Favorites() -> SubPathsTableViewController {
         return SubPathsTableViewController(
             contents: UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) },
-            title: "Favourites",
+            title: "Favorites",
             isFavouritePathsSheet: true)
     }
     
     /// Initialize with a given path URL
-    init(style: UITableView.Style = .automatic, path: URL, isFavouritePathsSheet: Bool = false) {
+    init(style: UITableView.Style = .userPreferred, path: URL, isFavouritePathsSheet: Bool = false) {
         self.unfilteredContents = self.sortMethod.sorting(URLs: path.contents, sortOrder: .userPreferred)
         self.currentPath = path
         self.isFavouritePathsSheet = isFavouritePathsSheet
@@ -98,7 +98,7 @@ class SubPathsTableViewController: UITableViewController {
     }
     
     /// Initialize with the given specified URLs
-    init(style: UITableView.Style = .automatic, contents: [URL], title: String, isFavouritePathsSheet: Bool = false) {
+    init(style: UITableView.Style = .userPreferred, contents: [URL], title: String, isFavouritePathsSheet: Bool = false) {
         self.unfilteredContents = self.sortMethod.sorting(URLs: contents, sortOrder: .userPreferred)
         self.isFavouritePathsSheet = isFavouritePathsSheet
         
@@ -253,7 +253,7 @@ class SubPathsTableViewController: UITableViewController {
             if itemAlreadyFavourited {
                 UserPreferences.favouritePaths.removeAll { $0 == selectedItem.path }
                 
-                // if we're in the favourites sheet, reload the table
+                // if we're in the Favorites sheet, reload the table
                 if self.isFavouritePathsSheet {
                     self.unfilteredContents = UserPreferences.favouritePaths.map {
                         URL(fileURLWithPath: $0)
@@ -510,6 +510,7 @@ class SubPathsTableViewController: UITableViewController {
             // 2) Rounded corners, which we wouldn't have if we returned previewProvider as `nil`
             let vc = UIViewController()
             vc.view = self.pathCellRow(forURL: item, displayFullPathAsSubtitle: true)
+            vc.view.backgroundColor = .clear
             let sizeFrame = vc.view.frame
             vc.preferredContentSize = CGSize(width: sizeFrame.width, height: sizeFrame.height)
             return vc
@@ -619,14 +620,14 @@ class SubPathsTableViewController: UITableViewController {
         let firstMenu = UIMenu(options: .displayInline, children: firstMenuItems)
         var menuActions: [UIMenuElement] = [firstMenu]
         
-        // if we're in the "Favourites" sheet, don't display the favourites button
+        // if we're in the "Favorites" sheet, don't display the Favorites button
         if !isFavouritePathsSheet {
-            let seeFavouritesAction = UIAction(title: "Favourites", image: UIImage(systemName: "star.fill")) { _ in
-                let newVC = UINavigationController(rootViewController: SubPathsTableViewController.favourites())
+            let seeFavoritesAction = UIAction(title: "Favorites", image: UIImage(systemName: "star.fill")) { _ in
+                let newVC = UINavigationController(rootViewController: SubPathsTableViewController.Favorites())
                 self.present(newVC, animated: true)
             }
             
-            menuActions.append(seeFavouritesAction)
+            menuActions.append(seeFavoritesAction)
         }
         
         if let currentPath = currentPath {

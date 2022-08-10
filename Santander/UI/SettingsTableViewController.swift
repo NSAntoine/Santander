@@ -22,18 +22,15 @@ class SettingsTableViewController: UITableViewController {
         super.viewDidLoad()
         
         self.title = "Settings"
-        self.navigationController?.navigationBar.prefersLargeTitles = true
-    }
-    
-    override init(style: UITableView.Style = .insetGrouped) {
-        super.init(style: style)
-        
-        self.tableView.register(SettingsSwitchTableViewCell.self, forCellReuseIdentifier: SettingsSwitchTableViewCell.identifier)
-        self.tableView.register(SettingsColorTableViewCell.self, forCellReuseIdentifier: SettingsColorTableViewCell.identifier)
+        self.navigationController?.navigationBar.prefersLargeTitles = false
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override init(style: UITableView.Style) {
+        super.init(style: style)
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -42,7 +39,7 @@ class SettingsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case 0: return 2
+        case 0: return 3
         case 1: return 3
         default: fatalError("How'd we get here?")
         }
@@ -50,48 +47,132 @@ class SettingsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
-        if (indexPath.section, indexPath.row) == (1, 2) {
-            return tableView.dequeueReusableCell(withIdentifier: SettingsColorTableViewCell.identifier, for: indexPath)
-        }
-        
-        let cell = tableView.dequeueReusableCell(withIdentifier: SettingsSwitchTableViewCell.identifier, for: indexPath) as! SettingsSwitchTableViewCell
-        
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
-            cell.label.text = "Display large navigation title"
-            cell.fallback = true
-            cell.defaultKey = "UseLargeNavTitles"
+            return setupCell(withComplimentaryView: settingsSwitch(forIndexPath: indexPath), text: "Large navigation titles")
         case (0, 1):
-            cell.label.text = "Always show search bar"
-            cell.defaultKey = "AlwaysShowSearchBar"
+            return setupCell(withComplimentaryView: settingsSwitch(forIndexPath: indexPath), text: "Always show search bar")
+        case (0, 2):
+            return setupCell(withComplimentaryView: settingsSwitch(forIndexPath: indexPath), text: "Show information button")
         case (1, 0):
-            cell.label.text = "Display items in plain style"
-            cell.defaultKey = "usePlainStyleTableView"
+            let cell = UITableViewCell()
+            var conf = cell.defaultContentConfiguration()
+            conf.text = "Tint Color"
+            cell.contentConfiguration = conf
+            
+            let colorPreview = UIView(frame: CGRect(x: 0, y: 0, width: 29, height: 29))
+            colorPreview.backgroundColor = UserPreferences.appTintColor.uiColor
+            colorPreview.layer.cornerRadius = colorPreview.frame.size.width / 2
+            colorPreview.layer.borderWidth = 1.5
+            colorPreview.layer.borderColor = UIColor.systemGray.cgColor
+            cell.accessoryView = colorPreview
+            return cell
         case (1, 1):
-            cell.label.text = "Show information button"
-            cell.defaultKey = "ShowInfoButton"
-        default: break
+            return setupCell(withComplimentaryView: setupStyleButton(), text: "Table View Style")
+        case (1, 2):
+            return setupCell(withComplimentaryView: setupAppearanceButton(), text: "Appearance")
+        default: fatalError()
         }
-        
-        return cell
     }
     
+    fileprivate func setupAppearanceButton() -> UIButton {
+        let button = UIButton()
+        let currentStyle = UIUserInterfaceStyle(rawValue: UserPreferences.preferredInterfaceStyle) ?? .unspecified
+        button.setTitle(currentStyle.description, for: .normal)
+        button.setTitleColor(.systemGray, for: .normal)
+        
+        let chosenStyle = UserPreferences.preferredInterfaceStyle
+        let actions = UIUserInterfaceStyle.allCases.map { style in
+            return UIAction(title: style.description, state: chosenStyle == style.rawValue ? .on : .off) { _ in
+                self.view.window?.overrideUserInterfaceStyle = style
+                UserPreferences.preferredInterfaceStyle = style.rawValue
+                self.tableView.reloadRows(at: [IndexPath(row: 2, section: 1)], with: .fade)
+            }
+        }
+        
+        button.menu = UIMenu(children: actions)
+        button.showsMenuAsPrimaryAction = true
+        return button
+    }
+    
+    fileprivate func setupStyleButton() -> UIButton {
+        let button = UIButton()
+        let selectedStyle = UITableView.Style.userPreferred
+        
+        button.setTitle(selectedStyle.description, for: .normal)
+        button.setTitleColor(.systemGray, for: .normal)
+        let actions = UITableView.Style.allCases.map { style in
+            return UIAction(title: style.description, state: selectedStyle == style ? .on : .off) { _ in
+                UserPreferences.preferredTableViewStyle = style.rawValue
+                self.tableView.reloadRows(at: [IndexPath(row: 1, section: 1)], with: .none)
+            }
+        }
+        
+        button.menu = UIMenu(children: actions)
+        button.showsMenuAsPrimaryAction = true
+        return button
+    }
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
-        case 0: return "Navigation"
-        case 1: return "Views"
+        case 0: return "Views"
+        case 1: return "Theming"
         default: return nil
         }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch (indexPath.section, indexPath.row) {
-        case (1, 2):
+        case (1, 0):
             self.present(colorPickerVC, animated: true)
         default:
             break
         }
+    }
+    
+    override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        return (indexPath.section, indexPath.row) == (1, 0)
+    }
+    
+    func setupCell(withComplimentaryView view: UIView, text: String) -> UITableViewCell {
+        let cell = UITableViewCell()
+        var conf = cell.defaultContentConfiguration()
+        conf.text = text
+        cell.contentConfiguration = conf
+        view.translatesAutoresizingMaskIntoConstraints = false
+        cell.contentView.addSubview(view)
+        
+        NSLayoutConstraint.activate([
+            view.rightAnchor.constraint(equalTo: cell.contentView.rightAnchor, constant: -20),
+            view.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
+        ])
+        
+        return cell
+    }
+    
+    func defaultsKey(forIndexPath indexPath: IndexPath) -> String {
+        switch (indexPath.section, indexPath.row) {
+        case (0, 0):
+            return "UseLargeNavTitles"
+        case (0, 1):
+            return "AlwaysShowSearchBar"
+        case (0, 2):
+            return "ShowInfoButton"
+        default:
+            fatalError()
+        }
+        
+    }
+    
+    func settingsSwitch(forIndexPath indexPath: IndexPath) -> UISwitch {
+        let s = UISwitch()
+        s.isOn = UserDefaults.standard.bool(forKey: defaultsKey(forIndexPath: indexPath))
+        let action = UIAction { _ in
+            UserDefaults.standard.set(s.isOn, forKey: self.defaultsKey(forIndexPath: indexPath))
+        }
+        
+        s.addAction(action, for: .valueChanged)
+        return s
     }
 }
 
@@ -102,80 +183,7 @@ extension SettingsTableViewController: UIColorPickerViewControllerDelegate {
         DispatchQueue.main.async {
             UserPreferences.appTintColor = CodableColor(color)
             self.view.window?.tintColor = color
-            self.tableView.reloadRows(at: [IndexPath(row: 2, section: 1)], with: .fade)
+            self.tableView.reloadRows(at: [IndexPath(row: 0, section: 1)], with: .fade)
         }
-    }
-}
-
-class SettingsSwitchTableViewCell: UITableViewCell {
-    
-    static let identifier = "SettingsSwitchTableViewCell"
-    
-    public var control: UISwitch = UISwitch()
-    public var label: UILabel = UILabel()
-    var fallback = false
-    var callback: ((Bool) -> Void)? = nil
-    
-    
-    var defaultKey: String? {
-        didSet {
-            if let key = defaultKey {
-                control.isOn = UserDefaults.standard.object(forKey: key) as? Bool ?? fallback
-            }
-        }
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: reuseIdentifier)
-        
-        self.selectionStyle = .none
-        label.adjustsFontSizeToFitWidth = true
-        self.contentView.addSubview(control)
-        self.contentView.addSubview(label)
-        
-        label.translatesAutoresizingMaskIntoConstraints = false
-        control.translatesAutoresizingMaskIntoConstraints = false
-        
-        control.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
-        control.addTarget(self, action: #selector(self.didChange(sender:)), for: .valueChanged)
-        
-        label.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
-        label.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 20).isActive = true
-        control.leadingAnchor.constraint(equalTo: label.trailingAnchor, constant: 5).isActive = true
-        control.trailingAnchor.constraint(equalTo: self.layoutMarginsGuide.trailingAnchor).isActive = true
-        label.setContentHuggingPriority(UILayoutPriority(251), for: .horizontal)
-        label.setContentHuggingPriority(UILayoutPriority(251), for: .vertical)
-        label.setContentCompressionResistancePriority(UILayoutPriority(749), for: .horizontal)
-    }
-    
-    @objc public func didChange(sender: UISwitch!) {
-        if let defaultKey = defaultKey {
-            UserDefaults.standard.set(sender.isOn, forKey: defaultKey)
-        }
-        callback?(sender.isOn)
-    }
-}
-
-class SettingsColorTableViewCell: UITableViewCell {
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    static var identifier = "SettingsColorTableViewCell"
-    
-    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
-        super.init(style: style, reuseIdentifier: Self.identifier)
-        
-        self.textLabel?.text = "Tint color"
-        let colorPreview = UIView(frame: CGRect(x: 0, y: 0, width: 29, height: 29))
-        colorPreview.backgroundColor = UserPreferences.appTintColor.uiColor
-        colorPreview.layer.cornerRadius = colorPreview.frame.size.width / 2
-        colorPreview.layer.borderWidth = 1.5
-        
-        accessoryView = colorPreview
     }
 }

@@ -6,7 +6,7 @@
 //
 
 
-import Foundation
+import UIKit
 
 /// Contains user preferences used in the Application
 enum UserPreferences {
@@ -44,6 +44,13 @@ enum UserPreferences {
     
     @Storage(key: "displayHiddenFiles", defaultValue: true)
     static var displayHiddenFiles: Bool
+    
+    /// The user interface style (dark, light, system) which the user choses to use
+    @Storage(key: "userIntefaceStyle", defaultValue: UIUserInterfaceStyle.unspecified.rawValue)
+    static var preferredInterfaceStyle: Int
+    
+    @Storage(key: "userPreferredTableViewStyle", defaultValue: UITableView.Style.insetGrouped.rawValue)
+    static var preferredTableViewStyle: Int
     
     static var pathGroups: [PathGroup] {
         get {

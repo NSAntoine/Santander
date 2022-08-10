@@ -24,15 +24,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             splitVC.setViewController(PathListsSplitViewController(contents: [], title: "Santander"), for: .primary)
             window.rootViewController = splitVC
         } else {
-            window.rootViewController = UINavigationController(rootViewController: SubPathsTableViewController(style: .automatic, path: URL(fileURLWithPath: FileManager.default.currentDirectoryPath)))
+            window.rootViewController = UINavigationController(rootViewController: SubPathsTableViewController(style: .userPreferred, path: URL(fileURLWithPath: FileManager.default.currentDirectoryPath)))
         }
-        window.makeKeyAndVisible()
-        (window.rootViewController as? UISplitViewController)?.show(.primary) // Needed on iPad so that the SplitViewController displays no matter orientation
-        self.window = window
         
         DispatchQueue.main.async {
             window.tintColor = UserPreferences.appTintColor.uiColor
+            window.overrideUserInterfaceStyle = UIUserInterfaceStyle(rawValue: UserPreferences.preferredInterfaceStyle) ?? .unspecified
         }
+        
+        window.makeKeyAndVisible()
+        (window.rootViewController as? UISplitViewController)?.show(.primary) // Needed on iPad so that the SplitViewController displays no matter orientation
+        self.window = window
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {

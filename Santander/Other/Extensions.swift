@@ -434,9 +434,24 @@ extension Optional: Comparable where Wrapped: Comparable {
 }
 
 
-extension UITableView.Style {
-    static var automatic: UITableView.Style {
-        return UserPreferences.usePlainStyleTableView ? .plain : .insetGrouped
+extension UITableView.Style: CaseIterable, CustomStringConvertible {
+    static var userPreferred: UITableView.Style {
+        return UITableView.Style(rawValue: UserPreferences.preferredTableViewStyle) ?? .insetGrouped
+    }
+    
+    public static var allCases: [UITableView.Style] = [.insetGrouped, .grouped, .plain]
+    
+    public var description: String {
+        switch self {
+        case .plain:
+            return "Plain"
+        case .grouped:
+            return "Grouped"
+        case .insetGrouped:
+            return "Inset Grouped"
+        @unknown default:
+            return "Unknown Mode"
+        }
     }
 }
 
@@ -455,5 +470,21 @@ extension passwd {
         }
         
         self = pwd
+    }
+}
+
+extension UIUserInterfaceStyle: CaseIterable {
+    public static var allCases: [UIUserInterfaceStyle] = [.unspecified, .dark, .light]
+    var description: String {
+        switch self {
+        case .unspecified:
+            return "System"
+        case .light:
+            return "Light"
+        case .dark:
+            return "Dark"
+        @unknown default:
+            return "Unknown Mode"
+        }
     }
 }

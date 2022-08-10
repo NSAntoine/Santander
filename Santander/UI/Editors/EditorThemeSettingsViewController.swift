@@ -9,7 +9,7 @@
 import UIKit
 import Runestone
 
-class EditorThemeSettingsViewController: UITableViewController {
+class EditorThemeSettingsViewController: SettingsTableViewController {
     
     weak var delegate: EditorThemeSettingsDelegate?
     
@@ -18,8 +18,6 @@ class EditorThemeSettingsViewController: UITableViewController {
     init(style: UITableView.Style, theme: CodableTheme) {
         self.theme = theme
         super.init(style: style)
-        
-        self.tableView.register(SettingsSwitchTableViewCell.self, forCellReuseIdentifier: SettingsSwitchTableViewCell.identifier)
     }
     
     required init?(coder: NSCoder) {
@@ -57,25 +55,12 @@ class EditorThemeSettingsViewController: UITableViewController {
             cell.accessoryView = stepper
             conf.secondaryText = theme.font.font.pointSize.description
         case (1, 0):
-            let cell = tableView.dequeueReusableCell(withIdentifier: SettingsSwitchTableViewCell.identifier) as! SettingsSwitchTableViewCell
-            cell.label.text = "Show line count"
-            cell.defaultKey = "TextEditorShowLineCount"
-            cell.fallback = UserPreferences.showLineCount
-            cell.callback = { isOn in
-                self.delegate?.showLineCountConfigurationDidChange(showLineCount: isOn)
-            }
-            return cell
+            return setupCell(withComplimentaryView: settingsSwitch(forIndexPath: indexPath), text: "Show line count")
         case (1, 1):
-            let cell = tableView.dequeueReusableCell(withIdentifier: SettingsSwitchTableViewCell.identifier) as! SettingsSwitchTableViewCell
-            cell.label.text = "Wrap lines"
-            cell.defaultKey = "TextEditorWrapLines"
-            cell.fallback = UserPreferences.wrapLines
-            cell.callback = { isOn in
-                self.delegate?.wrapLinesConfigurationDidChange(wrapLines: isOn)
-            }
-            return cell
+            return setupCell(withComplimentaryView: settingsSwitch(forIndexPath: indexPath), text: "Wrap lines")
         default: break
         }
+        
         cell.contentConfiguration = conf
         return cell
     }
@@ -90,6 +75,36 @@ class EditorThemeSettingsViewController: UITableViewController {
         }
     }
     
+    override func settingsSwitch(forIndexPath indexPath: IndexPath) -> UISwitch {
+        let s = super.settingsSwitch(forIndexPath: indexPath)
+        
+        let action = UIAction {
+            UserDefaults.standard.set(s.isOn, forKey: self.defaultsKey(forIndexPath: indexPath))
+            switch indexPath.row {
+            case 0:
+                self.delegate?.showLineCountConfigurationDidChange(showLineCount: s.isOn)
+            case 1:
+                self.delegate?.wrapLinesConfigurationDidChange(wrapLines: s.isOn)
+            default:
+                break
+            }
+        }
+        
+        s.addAction(action, for: .valueChanged)
+        return s
+    }
+    
+    override func defaultsKey(forIndexPath indexPath: IndexPath) -> String {
+        switch (indexPath.section, indexPath.row) {
+        case (1, 0):
+            return "TextEditorShowLineCount"
+        case (1, 1):
+            return "TextEditorWrapLines"
+        default:
+            fatalError()
+        }
+    }
+    
     @objc
     func fontStepperValueChanged(sender: UIStepper) {
         let val = sender.value
@@ -100,6 +115,10 @@ class EditorThemeSettingsViewController: UITableViewController {
         let stepperCellIndexPath = IndexPath(row: 1, section: 0)
         self.tableView.reloadRows(at: [stepperCellIndexPath], with: .none)
         delegate?.themeDidChange(to: self.theme)
+    }
+    
+    override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        return (indexPath.section, indexPath.row) == (0, 0)
     }
 }
 
