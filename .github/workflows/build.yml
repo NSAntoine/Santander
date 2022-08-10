@@ -1,7 +1,7 @@
 on:
   push:
     branches:
-      - dev
+      - main
   workflow_dispatch:
   
 name: Build
