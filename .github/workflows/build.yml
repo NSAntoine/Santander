@@ -7,7 +7,7 @@ on:
 name: Build
 jobs:
   build:
-    name: Build and Upload Sileo
+    name: Build and Upload
     runs-on: macos-12
     
     steps:
@@ -51,7 +51,7 @@ jobs:
           
       - name: Build and Package IPA
         run: |
-          xcodebuild build -scheme Santander CODE_SIGNING_ALLOWED="NO" CODE_SIGNING_REQUIRED="NO" CODE_SIGN_IDENTITY="" BUILD_DIR=${{ github.workspace }}/xcodebuild
+          xcodebuild build -scheme Santander -configuration "Release" CODE_SIGNING_ALLOWED="NO" CODE_SIGNING_REQUIRED="NO" CODE_SIGN_IDENTITY="" BUILD_DIR=${{ github.workspace }}/xcodebuild
           
           mkdir -p ${{ github.workspace }}/ipadir/Payload
           cp -R ${{ github.workspace }}/xcodebuild/Products/Release-iphoneos/Santander.app ${{ github.workspace }}/ipadir/Payload
