@@ -91,7 +91,7 @@ extension URL {
     
     /// The image to represent this URL in the UI.
     var displayImage: UIImage? {
-        return self.isDirectory ? UIImage(systemName: "folder.fill") : UIImage(systemName: "doc.fill")
+        return self.isDirectory ? UIImage(systemName: "folder.fill") : UIImage(systemName: "doc")
     }
     
     func setPermissions(forOwner owner: Permission, group: Permission = [], others: Permission = []) throws {
