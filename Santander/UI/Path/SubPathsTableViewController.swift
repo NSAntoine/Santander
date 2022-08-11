@@ -511,7 +511,7 @@ class SubPathsTableViewController: UITableViewController {
             // 2) Rounded corners, which we wouldn't have if we returned previewProvider as `nil`
             let vc = UIViewController()
             vc.view = self.pathCellRow(forURL: item, displayFullPathAsSubtitle: true)
-            vc.view.backgroundColor = .clear
+            vc.view.backgroundColor = .systemBackground
             let sizeFrame = vc.view.frame
             vc.preferredContentSize = CGSize(width: sizeFrame.width, height: sizeFrame.height)
             return vc
