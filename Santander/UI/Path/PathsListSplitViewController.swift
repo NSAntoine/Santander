@@ -104,6 +104,8 @@ class PathListsSplitViewController: SubPathsTableViewController {
         }
     }
     
+    override func setLeftBarSelectionButtonItem() {}
+    
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: animated)
         self.toolbarItems?[1] = UIBarButtonItem(systemItem: editing ? .done : .edit, primaryAction: editAction)

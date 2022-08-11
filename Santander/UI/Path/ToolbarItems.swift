@@ -109,6 +109,7 @@ extension SubPathsTableViewController {
     }
     
     /// The button which says "Select all" or "Deselect all" when in edit mode
+    @objc
     func setLeftBarSelectionButtonItem() {
         if !isEditing {
             navigationItem.leftBarButtonItem = nil
