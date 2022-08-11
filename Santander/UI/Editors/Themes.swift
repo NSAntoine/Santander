@@ -139,3 +139,17 @@ struct CodableTheme: Codable {
         )
     }
 }
+
+/// Represents a generic CharacterPair
+struct AnyCharacterPair: CharacterPair {
+    var leading: String
+    var trailing: String
+    
+    static func all() -> [AnyCharacterPair] {
+        return [
+            AnyCharacterPair(leading: "{", trailing: "}"),
+            AnyCharacterPair(leading: "(", trailing: ")"),
+            AnyCharacterPair(leading: "[", trailing: "]"),
+        ]
+    }
+}

@@ -55,6 +55,9 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
         
         textView.autocorrectionType = .no
         textView.autocapitalizationType = .none
+        if UserPreferences.useCharacterPairs {
+            textView.characterPairs = AnyCharacterPair.all()
+        }
         
         textView.isEditable = /*FileManager.default.isWritableFile(atPath: fileURL.path)*/ true
         textView.editorDelegate = self
@@ -198,6 +201,10 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
     func didChangeEditorBackground(to color: CodableColor) {
         self.textView.backgroundColor = color.uiColor
         self.theme.textEditorBackgroundColor = color
+    }
+    
+    func characterPairConfigurationDidChange(useCharacterPairs: Bool) {
+        textView.characterPairs = useCharacterPairs ? AnyCharacterPair.all() : []
     }
 }
 
