@@ -119,12 +119,6 @@ class SubPathsTableViewController: UITableViewController {
             showOrHideDotfiles()
         }
         
-        if let currentPath = self.currentPath {
-            self.directoryMonitor = DirectoryMonitor(url: currentPath)
-            self.directoryMonitor?.delegate = self
-            directoryMonitor?.startMonitoring()
-        }
-        
         self.navigationController?.navigationBar.prefersLargeTitles = UserPreferences.useLargeNavigationTitles
         let searchController = UISearchController(searchResultsController: nil)
         searchController.searchBar.delegate = self
@@ -155,6 +149,21 @@ class SubPathsTableViewController: UITableViewController {
         }
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        
+        // The code for setting up the directory monitor should stay in viewDidAppear
+        // if used in viewDidLoad, it won't be monitoring if the user goes into a different directory
+        // then comes back
+        if let currentPath = self.currentPath {
+            if directoryMonitor == nil {
+                directoryMonitor = DirectoryMonitor(url: currentPath)
+                directoryMonitor?.delegate = self
+            }
+            
+            directoryMonitor?.startMonitoring()
+        }
+    }
     /// Setup the snapshot to show the paths given
     func showPaths(animatingDifferences: Bool = false) {
         self.doDisplaySearchSuggestions = false
