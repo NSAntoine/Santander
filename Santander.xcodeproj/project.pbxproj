@@ -18,6 +18,7 @@
 		375CF899289C4FF000BB7C60 /* PathMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375CF898289C4FF000BB7C60 /* PathMetadata.swift */; };
 		375CF89D289CF3A600BB7C60 /* Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375CF89C289CF3A600BB7C60 /* Permissions.swift */; };
 		375CF89F289D969A00BB7C60 /* PathPermissionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375CF89E289D969A00BB7C60 /* PathPermissionsViewController.swift */; };
+		375D568D28A5B01600E25591 /* entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 375D568C28A5B01600E25591 /* entitlements.plist */; };
 		3771D37B2862329D00E200B6 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771D37A2862329D00E200B6 /* Extensions.swift */; };
 		3771D37F2862493E00E200B6 /* PathInformationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771D37E2862493E00E200B6 /* PathInformationTableViewController.swift */; };
 		3789B5E028622B7A00058688 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3789B5DF28622B7A00058688 /* AppDelegate.swift */; };
@@ -64,6 +65,7 @@
 		375CF898289C4FF000BB7C60 /* PathMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathMetadata.swift; sourceTree = "<group>"; };
 		375CF89C289CF3A600BB7C60 /* Permissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Permissions.swift; sourceTree = "<group>"; };
 		375CF89E289D969A00BB7C60 /* PathPermissionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathPermissionsViewController.swift; sourceTree = "<group>"; };
+		375D568C28A5B01600E25591 /* entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = entitlements.plist; sourceTree = "<group>"; };
 		3771D37A2862329D00E200B6 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		3771D37E2862493E00E200B6 /* PathInformationTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathInformationTableViewController.swift; sourceTree = "<group>"; };
 		3789B5DC28622B7A00058688 /* Santander.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Santander.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -136,6 +138,7 @@
 		3789B5D328622B7A00058688 = {
 			isa = PBXGroup;
 			children = (
+				375D568C28A5B01600E25591 /* entitlements.plist */,
 				3789B5DE28622B7A00058688 /* Santander */,
 				3789B5DD28622B7A00058688 /* Products */,
 			);
@@ -256,6 +259,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				375D568D28A5B01600E25591 /* entitlements.plist in Resources */,
 				3789B5EC28622B7C00058688 /* LaunchScreen.storyboard in Resources */,
 				3789B5E928622B7C00058688 /* Assets.xcassets in Resources */,
 			);
