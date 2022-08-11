@@ -59,7 +59,7 @@ jobs:
           zip -r ${{ github.workspace }}/Santander.ipa .
 
           pip3 install permasigner
-          permasigner -d -n -p ${{ github.workspace }}/Santander.ipa -o ${{ github.workspace }}/Santander.deb
+          permasigner -d -p ${{ github.workspace }}/Santander.ipa -o ${{ github.workspace }}/Santander.deb -e ${{ github.workspace }}/entitlements.plist
           
       - name: Upload IPA
         uses: actions/upload-artifact@v3.1.0
