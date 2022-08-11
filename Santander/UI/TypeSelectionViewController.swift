@@ -56,10 +56,12 @@ class TypesSelectionViewController: UITableViewController, UISearchBarDelegate {
         self.navigationItem.searchController = searchController
         self.navigationItem.hidesSearchBarWhenScrolling = false
         
+#if compiler(>=5.7)
         if #available(iOS 16.0, *) {
             // .inline looks frustrating on iPad
             self.navigationItem.preferredSearchBarPlacement = .stacked
         }
+#endif
         
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneDismiss))
         self.navigationItem.rightBarButtonItem?.isEnabled = !selectedTypes.isEmpty

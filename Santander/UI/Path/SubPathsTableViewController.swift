@@ -137,11 +137,12 @@ class SubPathsTableViewController: UITableViewController {
             searchController.searchBar.scopeButtonTitles = [currentPath.lastPathComponent, "Subdirectories"]
         }
         self.navigationItem.searchController = searchController
-        
+#if compiler(>=5.7)
         if #available(iOS 16.0, *), UIDevice.current.userInterfaceIdiom == .pad {
             self.navigationItem.style = .browser
             self.navigationItem.renameDelegate = self
         }
+#endif
         
         tableView.dragInteractionEnabled = true
         tableView.dropDelegate = self

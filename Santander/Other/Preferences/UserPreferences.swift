@@ -34,6 +34,9 @@ enum UserPreferences {
     @Storage(key: "TextEditorShowLineCount", defaultValue: true)
     static var showLineCount: Bool 
     
+    @Storage(key: "TextEditorUseCharacterPairs", defaultValue: true)
+    static var useCharacterPairs: Bool
+    
     /// The amount of seconds in the go forward / go backward buttons in the `AudioPlayerViewController`
     @Storage(key: "AudioVCSkipDuration", defaultValue: 15)
     static var skipDuration: Int

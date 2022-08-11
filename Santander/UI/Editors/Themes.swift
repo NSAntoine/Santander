@@ -119,7 +119,7 @@ struct CodableTheme: Codable {
     var markedTextBackgroundColor: CodableColor = CodableColor(.systemFill)
     var markedTextBackgroundBorderColor: CodableColor = CodableColor(.clear)
     
-    var textEditorBackgroundColor: CodableColor = CodableColor(.tertiarySystemBackground)
+    var textEditorBackgroundColor: CodableColor? = nil
     var theme: AnyTheme {
         AnyTheme(
             textColor: textColor.uiColor,
@@ -137,5 +137,19 @@ struct CodableTheme: Codable {
             markedTextBackgroundColor: markedTextBackgroundColor.uiColor,
             markedTextBackgroundBorderColor: markedTextBackgroundBorderColor.uiColor
         )
+    }
+}
+
+/// Represents a generic CharacterPair
+struct AnyCharacterPair: CharacterPair {
+    var leading: String
+    var trailing: String
+    
+    static func all() -> [AnyCharacterPair] {
+        return [
+            AnyCharacterPair(leading: "{", trailing: "}"),
+            AnyCharacterPair(leading: "(", trailing: ")"),
+            AnyCharacterPair(leading: "[", trailing: "]"),
+        ]
     }
 }

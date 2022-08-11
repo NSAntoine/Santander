@@ -55,10 +55,13 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
         
         textView.autocorrectionType = .no
         textView.autocapitalizationType = .none
+        if UserPreferences.useCharacterPairs {
+            textView.characterPairs = AnyCharacterPair.all()
+        }
         
         textView.isEditable = /*FileManager.default.isWritableFile(atPath: fileURL.path)*/ true
         textView.editorDelegate = self
-        textView.backgroundColor = theme.textEditorBackgroundColor.uiColor
+        textView.backgroundColor = theme.textEditorBackgroundColor?.uiColor ?? .tertiarySystemBackground
         self.keyboardToolsView = KeyboardToolsView(textView: textView)
         textView.inputAccessoryView = keyboardToolsView
         
@@ -68,11 +71,13 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
         
+#if compiler(>=5.7)
         if #available(iOS 16.0, *) {
             navigationItem.style = .editor
             self.navigationItem.renameDelegate = self
             self.navigationItem.documentProperties = UIDocumentProperties(url: self.fileURL)
         }
+#endif
         
         textView.keyboardDismissMode = .onDrag
         textView.translatesAutoresizingMaskIntoConstraints = false
@@ -196,7 +201,10 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
     func didChangeEditorBackground(to color: CodableColor) {
         self.textView.backgroundColor = color.uiColor
         self.theme.textEditorBackgroundColor = color
-//        print(self.theme.textEditorBackgroundColor == color)
+    }
+    
+    func characterPairConfigurationDidChange(useCharacterPairs: Bool) {
+        textView.characterPairs = useCharacterPairs ? AnyCharacterPair.all() : []
     }
 }
 
