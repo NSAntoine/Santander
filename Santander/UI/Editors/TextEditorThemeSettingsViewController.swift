@@ -15,6 +15,10 @@ class TextEditorThemeSettingsViewController: SettingsTableViewController {
     var selectedIndexPath: IndexPath? = nil
     var theme: CodableTheme
     
+    var editorBackgroundColor: UIColor {
+        theme.textEditorBackgroundColor?.uiColor ?? .tertiarySystemBackground
+    }
+    
     init(style: UITableView.Style, theme: CodableTheme) {
         self.theme = theme
         super.init(style: style)
@@ -62,7 +66,7 @@ class TextEditorThemeSettingsViewController: SettingsTableViewController {
             cell.accessoryView = cell.colorCircleAccessoryView(color: theme.textColor.uiColor)
         case (2, 1):
             conf.text = "Editor Background Color"
-            cell.accessoryView = cell.colorCircleAccessoryView(color: theme.textEditorBackgroundColor.uiColor)
+            cell.accessoryView = cell.colorCircleAccessoryView(color: editorBackgroundColor)
         default: break
         }
         
@@ -78,7 +82,7 @@ class TextEditorThemeSettingsViewController: SettingsTableViewController {
             case 0:
                 vc.selectedColor = theme.textColor.uiColor
             case 1:
-                vc.selectedColor = theme.textEditorBackgroundColor.uiColor
+                vc.selectedColor = editorBackgroundColor
             default:
                 break
             }
