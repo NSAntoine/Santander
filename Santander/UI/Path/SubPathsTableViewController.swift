@@ -424,12 +424,21 @@ class SubPathsTableViewController: UITableViewController {
         // if we're going to a directory, or a search result,
         // go to the directory path
         if path.isDirectory || (self.isSearching && dirResult != self.currentPath) {
-            let vc = SubPathsTableViewController(path: path, isFavouritePathsSheet: self.isFavouritePathsSheet)
-            if pushingToSplitViewVC {
-                self.splitViewController?.setViewController(vc, for: .secondary)
-            } else {
-                self.navigationController?.pushViewController(vc, animated: true)
+            UserPreferences.lastOpenedPath = path.path
+            let vcs = path.fullPathComponents().map {
+                SubPathsTableViewController(path: $0, isFavouritePathsSheet: self.isFavouritePathsSheet)
             }
+            
+            if pushingToSplitViewVC {
+                let navVC = UINavigationController()
+                navVC.setViewControllers(vcs, animated: true)
+                self.splitViewController?.setViewController(navVC, for: .secondary)
+            } else if isFavouritePathsSheet {
+                self.navigationController?.pushViewController(vcs.last!, animated: true)
+            } else {
+                self.navigationController?.setViewControllers(vcs, animated: true)
+            }
+            
         } else {
             self.goToFile(path: path)
         }
@@ -768,7 +777,7 @@ extension SubPathsTableViewController: DirectoryMonitorDelegate {
         }
     }
 }
-
+#if compiler(>=5.7)
 extension SubPathsTableViewController: UINavigationItemRenameDelegate {
     func navigationItem(_: UINavigationItem, didEndRenamingWith title: String) {
         guard let currentPath = currentPath else {
@@ -776,6 +785,12 @@ extension SubPathsTableViewController: UINavigationItemRenameDelegate {
         }
         
         let newURL = currentPath.deletingLastPathComponent().appendingPathComponent(title)
+        
+        // new name is the exact same, don't continue renaming
+        guard currentPath != newURL else {
+            return
+        }
+        
         do {
             try FileManager.default.moveItem(at: currentPath, to: newURL)
             self.currentPath = newURL
@@ -792,6 +807,7 @@ extension SubPathsTableViewController: UINavigationItemRenameDelegate {
         return currentPath != nil
     }
 }
+#endif
 
 /// Represents an item which could be displayed in SubPathsTableViewController,
 /// being either a search suggestion or a path
@@ -826,3 +842,4 @@ enum SubPathsRowItem: Hashable {
         }
     }
 }
+

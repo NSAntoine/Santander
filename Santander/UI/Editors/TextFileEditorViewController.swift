@@ -208,9 +208,16 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
     }
 }
 
+#if compiler(>=5.7)
 extension TextFileEditorViewController: UINavigationItemRenameDelegate {
     func navigationItem(_: UINavigationItem, didEndRenamingWith title: String) {
         let newURL = self.fileURL.deletingLastPathComponent().appendingPathComponent(title)
+        
+        // make sure the new filename isn't the same as the current
+        guard newURL == self.fileURL else {
+            return
+        }
+        
         do {
             try FileManager.default.moveItem(at: self.fileURL, to: newURL)
             self.fileURL = newURL
@@ -223,3 +230,4 @@ extension TextFileEditorViewController: UINavigationItemRenameDelegate {
         }
     }
 }
+#endif

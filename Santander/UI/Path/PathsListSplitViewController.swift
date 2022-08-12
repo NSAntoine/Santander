@@ -20,8 +20,6 @@ class PathListsSplitViewController: SubPathsTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Select the first item by default
-        tableView(self.tableView, didSelectRowAt: [0, 0])
         self.navigationItem.rightBarButtonItem = nil
         self.navigationItem.searchController = nil
         

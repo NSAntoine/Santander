@@ -104,6 +104,19 @@ class TextEditorThemeSettingsViewController: SettingsTableViewController {
         }
     }
     
+    override func switchOptionIsEnabled(forIndexPath indexPath: IndexPath) -> Bool {
+        switch (indexPath.section, indexPath.row) {
+        case (1, 0):
+            return UserPreferences.showLineCount
+        case (1, 1):
+            return UserPreferences.wrapLines
+        case (1, 2):
+            return UserPreferences.useCharacterPairs
+        default:
+            fatalError()
+        }
+    }
+    
     override func settingsSwitch(forIndexPath indexPath: IndexPath) -> UISwitch {
         let s = super.settingsSwitch(forIndexPath: indexPath)
         

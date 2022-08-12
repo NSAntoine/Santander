@@ -34,13 +34,13 @@ class SettingsTableViewController: UITableViewController {
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 2
+        return 3
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case 0: return 3
-        case 1: return 3
+        case 0, 1: return 3
+        case 2: return UserPreferences.useLastOpenedPathWhenLaunching ? 1 : 2
         default: fatalError("How'd we get here?")
         }
     }
@@ -66,6 +66,15 @@ class SettingsTableViewController: UITableViewController {
             return setupCell(withComplimentaryView: setupStyleButton(), text: "Table View Style")
         case (1, 2):
             return setupCell(withComplimentaryView: setupAppearanceButton(), text: "Appearance")
+        case (2, 0):
+            return setupCell(withComplimentaryView: setupLaunchPathButton(), text: "Launch Path")
+        case (2, 1):
+            let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
+            var conf = cell.defaultContentConfiguration()
+            conf.text = "Custom Launch Path"
+            conf.secondaryText = UserPreferences.userPreferredLaunchPath ?? "N/A"
+            cell.contentConfiguration = conf
+            return cell
         default: fatalError()
         }
     }
@@ -108,10 +117,37 @@ class SettingsTableViewController: UITableViewController {
         return button
     }
     
+    fileprivate func setupLaunchPathButton() -> UIButton {
+        let button = UIButton()
+        
+        let customPathChosen = !UserPreferences.useLastOpenedPathWhenLaunching
+        button.setTitle(customPathChosen ? "Custom Path" : "Last Opened Path", for: .normal)
+        button.setTitleColor(.systemGray, for: .normal)
+        
+        let lastOpenedPathAction = UIAction(title: "Last Opened Path", state: UserPreferences.useLastOpenedPathWhenLaunching ? .on : .off) { _ in
+            UserPreferences.useLastOpenedPathWhenLaunching = true
+            self.tableView.reloadData()
+        }
+        
+        let otherPathAction = UIAction(title: "Custom Path", state: customPathChosen ? .on : .off) { _ in
+            UserPreferences.useLastOpenedPathWhenLaunching = false
+            if UserPreferences.userPreferredLaunchPath == nil {
+                self.changeCustomLaunchPathAlert()
+            } else {
+                self.tableView.reloadData()
+            }
+        }
+        
+        button.menu = UIMenu(children: [lastOpenedPathAction, otherPathAction])
+        button.showsMenuAsPrimaryAction = true
+        return button
+    }
+    
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
         case 0: return "Views"
         case 1: return "Theming"
+        case 2: return "Other"
         default: return nil
         }
     }
@@ -120,13 +156,15 @@ class SettingsTableViewController: UITableViewController {
         switch (indexPath.section, indexPath.row) {
         case (1, 0):
             self.present(colorPickerVC, animated: true)
+        case (2, 1):
+            self.changeCustomLaunchPathAlert()
         default:
             break
         }
     }
     
     override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-        return (indexPath.section, indexPath.row) == (1, 0)
+        return (indexPath.section, indexPath.row) == (1, 0) || (indexPath.section, indexPath.row) == (2, 1)
     }
     
     func setupCell(withComplimentaryView view: UIView, text: String) -> UITableViewCell {
@@ -159,9 +197,47 @@ class SettingsTableViewController: UITableViewController {
         
     }
     
+    fileprivate func changeCustomLaunchPathAlert() {
+        let alert = UIAlertController(title: "Path", message: "Enter the other path you want to be opened at launch", preferredStyle: .alert)
+        alert.addTextField()
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        let applyAction = UIAlertAction(title: "Add", style: .default) { _ in
+            guard let text = alert.textFields?.first?.text, !text.isEmpty else {
+                self.errorAlert("Input text is invalid or empty", title: "Unable to set path as Launch Path")
+                return
+            }
+            
+            let url = URL(fileURLWithPath: text)
+            guard url.isDirectory else {
+                self.errorAlert("Path must be a directory", title: "Unable to set path as Launch Path")
+                return
+            }
+            
+            UserPreferences.useLastOpenedPathWhenLaunching = false
+            UserPreferences.userPreferredLaunchPath = url.path
+        }
+        alert.addAction(applyAction)
+        self.present(alert, animated: true)
+    }
+    
+    /// Whether or not the option at the specific index path is enabled
+    func switchOptionIsEnabled(forIndexPath indexPath: IndexPath) -> Bool {
+        switch (indexPath.section, indexPath.row) {
+        case (0, 0):
+            return UserPreferences.useLargeNavigationTitles
+        case (0, 1):
+            return UserPreferences.alwaysShowSearchBar
+        case (0, 2):
+            return UserPreferences.showInfoButton
+        default:
+            fatalError("Got unknown index path in \(#function)! IndexPath: \(indexPath)")
+        }
+    }
+    
     func settingsSwitch(forIndexPath indexPath: IndexPath) -> UISwitch {
         let s = UISwitch()
-        s.isOn = UserDefaults.standard.bool(forKey: defaultsKey(forIndexPath: indexPath))
+        s.isOn = switchOptionIsEnabled(forIndexPath: indexPath)
         let action = UIAction { _ in
             UserDefaults.standard.set(s.isOn, forKey: self.defaultsKey(forIndexPath: indexPath))
         }

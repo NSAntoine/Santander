@@ -28,6 +28,12 @@ enum UserPreferences {
     @Storage(key: "LastOpenedPath", defaultValue: nil)
     static var lastOpenedPath: String?
     
+    @Storage(key: "UseLastOpenedPathWhenLaunching", defaultValue: true)
+    static var useLastOpenedPathWhenLaunching: Bool
+    
+    @Storage(key: "UserPreferredLaunchPath", defaultValue: nil)
+    static var userPreferredLaunchPath: String?
+    
     @Storage(key: "TextEditorWrapLines", defaultValue: true)
     static var wrapLines: Bool 
     
@@ -45,6 +51,7 @@ enum UserPreferences {
     @Storage(key: "AudioVCSpeed", defaultValue: 1)
     static var audioVCSpeed: Float
     
+    /// Whether or not to display files whose name starts with a dot
     @Storage(key: "displayHiddenFiles", defaultValue: true)
     static var displayHiddenFiles: Bool
     
@@ -80,6 +87,12 @@ enum UserPreferences {
             UserDefaults.standard.set(encoded, forKey: "UserPathGroups")
             NotificationCenter.default.post(name: .pathGroupsDidChange, object: nil)
         }
+    }
+    
+    /// The path to launch upon opening the program,
+    /// if this is nil, use `URL.root` instead.
+    static var launchPath: String? {
+        useLastOpenedPathWhenLaunching ? lastOpenedPath : userPreferredLaunchPath
     }
     
     @CodableStorage(key: "TextEditorTheme", defaultValue: CodableTheme(), didChange: nil)

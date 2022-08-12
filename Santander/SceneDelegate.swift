@@ -18,13 +18,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
+        let subPathsVC: SubPathsTableViewController
         let window = UIWindow(windowScene: windowScene)
         if UIDevice.current.userInterfaceIdiom == .pad {
             let splitVC = UISplitViewController(style: .doubleColumn)
-            splitVC.setViewController(PathListsSplitViewController(contents: [], title: "Santander"), for: .primary)
+            let vc = PathListsSplitViewController(contents: [], title: "Santander")
+            subPathsVC = vc
+            splitVC.setViewController(vc, for: .primary)
             window.rootViewController = splitVC
         } else {
-            window.rootViewController = UINavigationController(rootViewController: SubPathsTableViewController(style: .userPreferred, path: URL(fileURLWithPath: FileManager.default.currentDirectoryPath)))
+            let vc = SubPathsTableViewController(style: .userPreferred, path: .root)
+            subPathsVC = vc
+            window.rootViewController = UINavigationController(rootViewController: vc)
         }
         
         DispatchQueue.main.async {
@@ -32,9 +37,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window.overrideUserInterfaceStyle = UIUserInterfaceStyle(rawValue: UserPreferences.preferredInterfaceStyle) ?? .unspecified
         }
         
-        window.makeKeyAndVisible()
         (window.rootViewController as? UISplitViewController)?.show(.primary) // Needed on iPad so that the SplitViewController displays no matter orientation
         self.window = window
+        
+        if let launchPath = UserPreferences.launchPath {
+            subPathsVC.goToPath(path: URL(fileURLWithPath: launchPath))
+        }
+        
+        window.makeKeyAndVisible()
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {

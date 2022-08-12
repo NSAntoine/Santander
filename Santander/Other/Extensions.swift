@@ -98,6 +98,22 @@ extension URL {
         let octal = Permission.octalRepresentation(of: [owner, group, others])
         try FileManager.default.setAttributes([.posixPermissions: octal], ofItemAtPath: path)
     }
+    
+    /// Returns an array of complete URLs to the URL's path components
+    func fullPathComponents() -> [URL] {
+        var arr: [URL] = []
+        let components = self.pathComponents
+        for indx in components.indices {
+            let item = components[components.startIndex...indx]
+                .joined(separator: "/")
+                .replacingOccurrences(of: "//", with: "/")
+            if item.isEmpty {
+                continue
+            }
+            arr.append(URL(fileURLWithPath: item))
+        }
+        return arr
+    }
 }
 
 extension UIViewController {
