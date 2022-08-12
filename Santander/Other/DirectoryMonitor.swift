@@ -52,13 +52,13 @@ class DirectoryMonitor {
             }
 
             // Define the block to call when a file change is detected.
-            directoryMonitorSource?.setEventHandler{
+            directoryMonitorSource?.setEventHandler {
                 // Call out to the `DirectoryMonitorDelegate` so that it can react appropriately to the change.
                 self.delegate?.directoryMonitorDidObserveChange(directoryMonitor: self)
             }
 
             // Define a cancel handler to ensure the directory is closed when the source is cancelled.
-            directoryMonitorSource?.setCancelHandler{
+            directoryMonitorSource?.setCancelHandler {
                 close(self.monitoredDirectoryFileDescriptor)
 
                 self.monitoredDirectoryFileDescriptor = -1

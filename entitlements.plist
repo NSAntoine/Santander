@@ -6,9 +6,13 @@
         <true/>
         <key>com.apple.private.skip-library-validation</key>
         <true/>
-    <key>com.apple.security.iokit-user-client-class</key>
-    <array>
-        <string>IOUserClient</string>
-    </array>
+        <key>com.apple.private.security.no-container</key>
+        <true/>
+        <key>com.apple.security.app-sandbox</key>
+        <false/>
+        <key>com.apple.security.iokit-user-client-class</key>
+        <array>
+            <string>IOUserClient</string>
+        </array>
     </dict>
 </plist>
