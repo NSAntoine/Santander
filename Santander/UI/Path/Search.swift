@@ -18,6 +18,7 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         showPaths()
+        setupPermissionDeniedLabelIfNeeded()
     }
     
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
@@ -67,6 +68,7 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
     
     func presentSearchController(_ searchController: UISearchController) {
         switchToSearchSuggestions()
+        permissionDeniedLabel?.removeFromSuperview()
     }
 }
 

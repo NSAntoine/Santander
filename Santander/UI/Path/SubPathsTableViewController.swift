@@ -58,7 +58,7 @@ class SubPathsTableViewController: UITableViewController {
     /// The label which displays that the user doesn't have permission to view a directory,
     /// or that the directory / group is empty
     /// (if those conditions apply)
-    var noContentsLabel: UILabel!
+    var permissionDeniedLabel: UILabel!
     
     /// Whether or not to display files beginning with a dot in their names
     var displayHiddenFiles: Bool = UserPreferences.displayHiddenFiles {
@@ -144,7 +144,7 @@ class SubPathsTableViewController: UITableViewController {
         showPaths()
         
         if self.contents.isEmpty {
-            setupNoContentsLabel()
+            setupPermissionDeniedLabelIfNeeded()
         }
     }
     
@@ -246,6 +246,10 @@ class SubPathsTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        guard self.isEditing else {
+            return
+        }
+        
         let selected = contents[indexPath.row]
         selectedItems.removeAll { path in
             path == selected
@@ -721,6 +725,8 @@ class SubPathsTableViewController: UITableViewController {
         }
     }
     
+    /// Shows or hides dotfiles,
+    /// this method is the primary way of reloading the view
     func showOrHideDotfiles(animatingDifferences: Bool = false) {
         if !displayHiddenFiles {
             let filtered = unfilteredContents.filter { !$0.lastPathComponent.starts(with: ".") }
@@ -737,27 +743,23 @@ class SubPathsTableViewController: UITableViewController {
         }
     }
     
-    func setupNoContentsLabel() {
-        noContentsLabel = UILabel()
-        
-        // if we can't read the contents of the path,
-        // then let the user know that we don't have permission to
-        // otherwise, just say that no items were found
-        if let currentPath = currentPath, !currentPath.isReadable {
-            noContentsLabel.text = "Don't have permission to read directory."
-        } else {
-            noContentsLabel.text = "No items found."
+    func setupPermissionDeniedLabelIfNeeded() {
+        guard let currentPath = currentPath, !currentPath.isReadable else {
+            return
         }
         
-        noContentsLabel.font = .systemFont(ofSize: 20, weight: .medium)
-        noContentsLabel.textColor = .systemGray
-        noContentsLabel.textAlignment = .center
+        permissionDeniedLabel = UILabel()
+        permissionDeniedLabel.text = "Don't have permission to read directory."
         
-        self.view.addSubview(noContentsLabel)
-        noContentsLabel.translatesAutoresizingMaskIntoConstraints = false
+        permissionDeniedLabel.font = .systemFont(ofSize: 20, weight: .medium)
+        permissionDeniedLabel.textColor = .systemGray
+        permissionDeniedLabel.textAlignment = .center
+        
+        self.view.addSubview(permissionDeniedLabel)
+        permissionDeniedLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            noContentsLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            noContentsLabel.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
+            permissionDeniedLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+            permissionDeniedLabel.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
         ])
     }
 }
@@ -767,27 +769,12 @@ extension SubPathsTableViewController: DirectoryMonitorDelegate {
         DispatchQueue.main.async {
             let items = self.sortMethod.sorting(URLs: directoryMonitor.url.contents, sortOrder: .userPreferred)
             self.unfilteredContents = items
-            
-            var snapshot = self.dataSource.snapshot()
-            snapshot.deleteAllItems()
-            snapshot.appendSections([0])
-            
-            snapshot.appendItems(SubPathsRowItem.fromPaths(items))
-            self.dataSource.apply(snapshot, animatingDifferences: true)
+            self.showOrHideDotfiles(animatingDifferences: true)
             
             if self.isSearching, let searchBar = self.navigationItem.searchController?.searchBar {
                 // If we're searching,
                 // update the search bar
                 self.updateResults(searchBar: searchBar)
-            }
-            
-            // if the 'No items found' or 'dont have permission to display' label isn't shown
-            // and the contents are empty, setup the label
-            if self.contents.isEmpty && self.noContentsLabel == nil {
-                self.setupNoContentsLabel()
-            } else if !self.contents.isEmpty && self.noContentsLabel != nil {
-                self.noContentsLabel.removeFromSuperview()
-                self.noContentsLabel = nil
             }
         }
     }
