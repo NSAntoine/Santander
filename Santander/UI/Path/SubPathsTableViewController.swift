@@ -114,7 +114,6 @@ class SubPathsTableViewController: UITableViewController {
         super.viewDidLoad()
         
         setRightBarButton()
-        
         if !self.displayHiddenFiles {
             showOrHideDotfiles()
         }
@@ -416,31 +415,45 @@ class SubPathsTableViewController: UITableViewController {
     }
     
     /// Opens a path in the UI
-    func goToPath(path: URL, pushingToSplitViewVC: Bool = false) {
+    func goToPath(path: URL, pushingToSplitView: Bool = false) {
         // Make sure we're opening a directory,
         // or the parent directory of the file selected (if searching)
-        let dirResult = path.isDirectory ? path : path.deletingLastPathComponent()
         
         // if we're going to a directory, or a search result,
         // go to the directory path
-        if path.isDirectory || (self.isSearching && dirResult != self.currentPath) {
+        if path.isDirectory {
             UserPreferences.lastOpenedPath = path.path
-            let vcs = path.fullPathComponents().map {
-                SubPathsTableViewController(path: $0, isFavouritePathsSheet: self.isFavouritePathsSheet)
-            }
+            let parentDirectory = path.deletingLastPathComponent()
             
-            if pushingToSplitViewVC {
-                let navVC = UINavigationController()
-                navVC.setViewControllers(vcs, animated: true)
-                self.splitViewController?.setViewController(navVC, for: .secondary)
-            } else if isFavouritePathsSheet {
-                self.navigationController?.pushViewController(vcs.last!, animated: true)
+            // if the parent directory is the current directory or we're in the favourites sheet
+            // simply push through the navigation controller
+            // rather than traversing through each parent path
+            if isFavouritePathsSheet || parentDirectory == self.currentPath {
+                let vc = SubPathsTableViewController(path: path, isFavouritePathsSheet: self.isFavouritePathsSheet)
+                if pushingToSplitView {
+                    self.splitViewController?.setViewController(vc, for: .secondary)
+                } else {
+                    self.navigationController?.pushViewController(vc, animated: true)
+                }
             } else {
-                self.navigationController?.setViewControllers(vcs, animated: true)
+                traverseThroughPath(path, pushingToSplitView: pushingToSplitView)
             }
-            
         } else {
             self.goToFile(path: path)
+        }
+    }
+    
+    func traverseThroughPath(_ path: URL, pushingToSplitView: Bool) {
+        let vcs = path.fullPathComponents().map {
+            SubPathsTableViewController(path: $0, isFavouritePathsSheet: self.isFavouritePathsSheet)
+        }
+        
+        if pushingToSplitView {
+            let navVC = UINavigationController()
+            navVC.setViewControllers(vcs, animated: true)
+            self.splitViewController?.setViewController(navVC, for: .secondary)
+        } else {
+            self.navigationController?.setViewControllers(vcs, animated: true)
         }
     }
     

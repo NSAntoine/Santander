@@ -45,6 +45,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         
         window.makeKeyAndVisible()
+        // handle incoming URLs
+        self.scene(scene, openURLContexts: connectionOptions.urlContexts)
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {

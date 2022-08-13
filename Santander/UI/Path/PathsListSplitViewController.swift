@@ -54,12 +54,12 @@ class PathListsSplitViewController: SubPathsTableViewController {
     
     override func setRightBarButton() {}
     
-    override func goToPath(path: URL, pushingToSplitViewVC: Bool = false) {
+    override func goToPath(path: URL, pushingToSplitView: Bool = false) {
         guard path != currentPath else {
             return
         }
         
-        super.goToPath(path: path, pushingToSplitViewVC: true)
+        super.goToPath(path: path, pushingToSplitView: true)
     }
     
     var collapsedSections: Set<Int> = []

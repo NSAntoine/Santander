@@ -214,7 +214,7 @@ extension TextFileEditorViewController: UINavigationItemRenameDelegate {
         let newURL = self.fileURL.deletingLastPathComponent().appendingPathComponent(title)
         
         // make sure the new filename isn't the same as the current
-        guard newURL == self.fileURL else {
+        guard newURL != self.fileURL else {
             return
         }
         
