@@ -210,6 +210,7 @@ class SubPathsTableViewController: UITableViewController {
         if self.isEditing {
             selectedItems.append(contents[indexPath.row])
             setupOrUpdateToolbar()
+            setLeftBarSelectionButtonItem()
             return
         }
         
@@ -251,6 +252,7 @@ class SubPathsTableViewController: UITableViewController {
         }
         
         setupOrUpdateToolbar()
+        setLeftBarSelectionButtonItem()
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {

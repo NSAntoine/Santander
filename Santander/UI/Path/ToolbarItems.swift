@@ -13,13 +13,8 @@ extension SubPathsTableViewController {
     @objc
     func setupOrUpdateToolbar() {
         
-        if let toolbarItems, !toolbarItems.isEmpty, selectedItems.isEmpty {
-            disableToolbarItems()
-            return
-        }
-        
         let trashAction = UIAction {
-            let confirmationController = UIAlertController(title: "Are you sure you want to delete \(self.selectedItems.count) items?", message: nil, preferredStyle: .alert)
+            let confirmationController = UIAlertController(title: "Are you sure you want to delete \(self.selectedItems.count) item(s)?", message: nil, preferredStyle: .alert)
             
             let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { _ in
                 
