@@ -79,7 +79,7 @@ class PathListsSplitViewController: SubPathsTableViewController {
         removeAction.image = .remove
         return UISwipeActionsConfiguration(actions: [removeAction])
     }
-
+    
     override var contents: [URL] {
         return pathGroups.flatMap(\.paths)
     }
@@ -171,11 +171,11 @@ class PathListsSplitViewController: SubPathsTableViewController {
         let isCollapsing: Bool = !(self.collapsedSections.contains(section))
         let newImageToSet = isCollapsing ? "chevron.forward" : "chevron.down"
         let animationOptions: UIView.AnimationOptions = isCollapsing ? .transitionFlipFromLeft : .transitionFlipFromRight
-
+        
         UIView.transition(with: sender, duration: 0.3, options: animationOptions) {
             sender.setImage(UIImage(systemName: newImageToSet), for: .normal)
         }
-
+        
         var snapshot = dataSource.snapshot()
         if isCollapsing {
             // Need to capture the index paths *before inserting* when collapsing

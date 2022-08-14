@@ -38,6 +38,10 @@
 		37C6E0D028673AFF00BDDA16 /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0CF28673AFF00BDDA16 /* Search.swift */; };
 		37C6E0D22867653A00BDDA16 /* PathsListSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0D12867653A00BDDA16 /* PathsListSplitViewController.swift */; };
 		37DE0FA22864902400E5EBBC /* FilePreviewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */; };
+		37EEA02828A8BF2700FA8CEB /* Compression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA02728A8BF2700FA8CEB /* Compression.swift */; };
+		37EEA03928A8C86B00FA8CEB /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA02F28A8C86A00FA8CEB /* unzip.c */; };
+		37EEA03A28A8C86B00FA8CEB /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA03728A8C86B00FA8CEB /* ioapi.c */; };
+		37EEA03B28A8C86B00FA8CEB /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA03828A8C86B00FA8CEB /* zip.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -86,6 +90,17 @@
 		37C6E0CF28673AFF00BDDA16 /* Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		37C6E0D12867653A00BDDA16 /* PathsListSplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathsListSplitViewController.swift; sourceTree = "<group>"; };
 		37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewDataSource.swift; sourceTree = "<group>"; };
+		37EEA02728A8BF2700FA8CEB /* Compression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Compression.swift; sourceTree = "<group>"; };
+		37EEA02E28A8C86A00FA8CEB /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
+		37EEA02F28A8C86A00FA8CEB /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
+		37EEA03128A8C86A00FA8CEB /* Minizip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Minizip.h; sourceTree = "<group>"; };
+		37EEA03228A8C86A00FA8CEB /* crypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypt.h; sourceTree = "<group>"; };
+		37EEA03328A8C86A00FA8CEB /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
+		37EEA03428A8C86A00FA8CEB /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
+		37EEA03528A8C86A00FA8CEB /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
+		37EEA03628A8C86B00FA8CEB /* minizip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = minizip.h; sourceTree = "<group>"; };
+		37EEA03728A8C86B00FA8CEB /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
+		37EEA03828A8C86B00FA8CEB /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -112,6 +127,8 @@
 		3771D3782862328400E200B6 /* Other */ = {
 			isa = PBXGroup;
 			children = (
+				37EEA02728A8BF2700FA8CEB /* Compression.swift */,
+				37EEA02428A8BE4E00FA8CEB /* External */,
 				3771D37A2862329D00E200B6 /* Extensions.swift */,
 				37963F122869C96C00C4B72A /* PathType.swift */,
 				375CF898289C4FF000BB7C60 /* PathMetadata.swift */,
@@ -194,6 +211,39 @@
 			path = Path;
 			sourceTree = "<group>";
 		};
+		37EEA02428A8BE4E00FA8CEB /* External */ = {
+			isa = PBXGroup;
+			children = (
+				37EEA03028A8C86A00FA8CEB /* include */,
+				37EEA03728A8C86B00FA8CEB /* ioapi.c */,
+				37EEA03628A8C86B00FA8CEB /* minizip.h */,
+				37EEA02D28A8C86A00FA8CEB /* module */,
+				37EEA02F28A8C86A00FA8CEB /* unzip.c */,
+				37EEA03828A8C86B00FA8CEB /* zip.c */,
+			);
+			path = External;
+			sourceTree = "<group>";
+		};
+		37EEA02D28A8C86A00FA8CEB /* module */ = {
+			isa = PBXGroup;
+			children = (
+				37EEA02E28A8C86A00FA8CEB /* module.modulemap */,
+			);
+			path = module;
+			sourceTree = "<group>";
+		};
+		37EEA03028A8C86A00FA8CEB /* include */ = {
+			isa = PBXGroup;
+			children = (
+				37EEA03128A8C86A00FA8CEB /* Minizip.h */,
+				37EEA03228A8C86A00FA8CEB /* crypt.h */,
+				37EEA03328A8C86A00FA8CEB /* zip.h */,
+				37EEA03428A8C86A00FA8CEB /* unzip.h */,
+				37EEA03528A8C86A00FA8CEB /* ioapi.h */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -274,6 +324,7 @@
 			files = (
 				37C6E0CE28665B2A00BDDA16 /* PathOperationViewController.swift in Sources */,
 				3771D37B2862329D00E200B6 /* Extensions.swift in Sources */,
+				37EEA03928A8C86B00FA8CEB /* unzip.c in Sources */,
 				374ECDCA2875F5350066E9DD /* AudioPlayerViewController.swift in Sources */,
 				37C6E0C52865CF7C00BDDA16 /* SettingsTableViewController.swift in Sources */,
 				37C6E0CA28662C6800BDDA16 /* PathsSortMethods.swift in Sources */,
@@ -290,10 +341,13 @@
 				37198B9F2872DDA6000C8CDF /* KeyboardToolsView.swift in Sources */,
 				37DE0FA22864902400E5EBBC /* FilePreviewDataSource.swift in Sources */,
 				37963F17286A0F0B00C4B72A /* DirectoryMonitor.swift in Sources */,
+				37EEA02828A8BF2700FA8CEB /* Compression.swift in Sources */,
+				37EEA03B28A8C86B00FA8CEB /* zip.c in Sources */,
 				375CF897289C394E00BB7C60 /* ToolbarItems.swift in Sources */,
 				37C6E0D22867653A00BDDA16 /* PathsListSplitViewController.swift in Sources */,
 				37198B9C28721275000C8CDF /* Themes.swift in Sources */,
 				37C6E0D028673AFF00BDDA16 /* Search.swift in Sources */,
+				37EEA03A28A8C86B00FA8CEB /* ioapi.c in Sources */,
 				375CF89D289CF3A600BB7C60 /* Permissions.swift in Sources */,
 				3771D37F2862493E00E200B6 /* PathInformationTableViewController.swift in Sources */,
 				37198B9A28721069000C8CDF /* TextEditorThemeSettingsViewController.swift in Sources */,
@@ -439,6 +493,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L9735M962H;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Santander/Other/External",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Santander/Info.plist;
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
@@ -455,6 +513,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.serena.santanderfm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Santander/Other/External/module";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -470,6 +529,10 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L9735M962H;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Santander/Other/External",
+				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Santander/Info.plist;
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
@@ -486,6 +549,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.serena.santanderfm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Santander/Other/External/module";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

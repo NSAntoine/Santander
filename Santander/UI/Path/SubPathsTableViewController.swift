@@ -606,6 +606,33 @@ class SubPathsTableViewController: UITableViewController {
             
             var children: [UIMenuElement] = [informationAction, renameAction, shareAction]
             
+            let compressOrDecompressAction: UIAction
+            if item.pathExtension != "zip" {
+                compressOrDecompressAction = UIAction(title: "Compress", image: UIImage(systemName: "archivebox")) { _ in
+                    let zipFilePath = item.deletingPathExtension().appendingPathExtension("zip")
+                    DispatchQueue.main.async {
+                        do {
+                            try Compression.shared.zipFiles(paths: [item], zipFilePath: zipFilePath, password: nil, progress: nil)
+                        } catch {
+                            self.errorAlert(error, title: "Unable to compress \"\(item.lastPathComponent)\"")
+                        }
+                    }
+                }
+            } else {
+                compressOrDecompressAction = UIAction(title: "Decompress", image: UIImage(systemName: "archivebox")) { _ in
+                    let destination = item.deletingPathExtension()
+                    DispatchQueue.main.async {
+                        do {
+                            try Compression.shared.unzipFile(item, destination: item.deletingPathExtension(), overwrite: true, password: nil)
+                        } catch {
+                            self.errorAlert(error, title: "Unable to decompress \"\(item.lastPathComponent)\"")
+                        }
+                    }
+                }
+            }
+            
+            children.append(compressOrDecompressAction)
+            
             if UIDevice.current.userInterfaceIdiom == .pad {
                 var menu = UIMenu(title: "Add to group..", image: UIImage(systemName: "sidebar.leading"), children: [])
                 
