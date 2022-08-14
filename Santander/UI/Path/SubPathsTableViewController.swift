@@ -408,6 +408,14 @@ class SubPathsTableViewController: UITableViewController {
             let vc = UINavigationController(rootViewController: editorVC)
             vc.modalPresentationStyle = .overFullScreen
             self.present(vc, animated: true)
+        } else if path.pathExtension == "zip" {
+            DispatchQueue.main.async {
+                do {
+                    try Compression.shared.unzipFile(path, destination: path.deletingPathExtension(), overwrite: true, password: nil)
+                } catch {
+                    self.errorAlert(error, title: "Unable to decompress \"\(path.lastPathComponent)\"")
+                }
+            }
         } else {
             openQuickLookPreview(forURL: path)
         }
@@ -623,7 +631,7 @@ class SubPathsTableViewController: UITableViewController {
                     let destination = item.deletingPathExtension()
                     DispatchQueue.main.async {
                         do {
-                            try Compression.shared.unzipFile(item, destination: item.deletingPathExtension(), overwrite: true, password: nil)
+                            try Compression.shared.unzipFile(item, destination: destination, overwrite: true, password: nil)
                         } catch {
                             self.errorAlert(error, title: "Unable to decompress \"\(item.lastPathComponent)\"")
                         }

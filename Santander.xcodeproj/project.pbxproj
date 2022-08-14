@@ -98,7 +98,6 @@
 		37EEA03328A8C86A00FA8CEB /* zip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = zip.h; sourceTree = "<group>"; };
 		37EEA03428A8C86A00FA8CEB /* unzip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = unzip.h; sourceTree = "<group>"; };
 		37EEA03528A8C86A00FA8CEB /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
-		37EEA03628A8C86B00FA8CEB /* minizip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = minizip.h; sourceTree = "<group>"; };
 		37EEA03728A8C86B00FA8CEB /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
 		37EEA03828A8C86B00FA8CEB /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -216,7 +215,6 @@
 			children = (
 				37EEA03028A8C86A00FA8CEB /* include */,
 				37EEA03728A8C86B00FA8CEB /* ioapi.c */,
-				37EEA03628A8C86B00FA8CEB /* minizip.h */,
 				37EEA02D28A8C86A00FA8CEB /* module */,
 				37EEA02F28A8C86A00FA8CEB /* unzip.c */,
 				37EEA03828A8C86B00FA8CEB /* zip.c */,
