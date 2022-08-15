@@ -98,8 +98,8 @@ struct CodableFont: Codable {
 
 /// Represents a theme usable with Runestone, which is Codable.
 struct CodableTheme: Codable {
-    var textColor: CodableColor = CodableColor(.label)
-    var font = CodableFont(UIFont(name: "Menlo-Regular", size: 25)!)
+    var textColor: CodableColor? = nil
+    var font = CodableFont(UIFont(name: "Menlo-Regular", size: 16)!)
 
     var gutterBackgroundColor: CodableColor = CodableColor(.secondarySystemBackground)
     var gutterHairlineColor: CodableColor = CodableColor(.opaqueSeparator)
@@ -122,7 +122,7 @@ struct CodableTheme: Codable {
     var textEditorBackgroundColor: CodableColor? = nil
     var theme: AnyTheme {
         AnyTheme(
-            textColor: textColor.uiColor,
+            textColor: textColor?.uiColor ?? .label,
             font: font.font,
             gutterBackgroundColor: gutterBackgroundColor.uiColor,
             gutterHairlineColor: gutterHairlineColor.uiColor,

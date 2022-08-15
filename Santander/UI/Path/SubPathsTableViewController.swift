@@ -398,17 +398,8 @@ class SubPathsTableViewController: UITableViewController {
     
     
     func goToFile(path: URL) {
-        // if we can get the string contents,
-        // open the Text Editor
-        if let audioVC = try? AudioPlayerViewController(fileURL: path) {
-            let navVC = UINavigationController(rootViewController: audioVC)
-            navVC.modalPresentationStyle = .fullScreen
-            self.present(navVC, animated: true)
-        } else if let editorVC = try? TextFileEditorViewController(fileURL: path) {
-            let vc = UINavigationController(rootViewController: editorVC)
-            vc.modalPresentationStyle = .overFullScreen
-            self.present(vc, animated: true)
-        } else if path.pathExtension == "zip" {
+        // decompress if zip
+        if path.pathExtension == "zip" {
             DispatchQueue.main.async {
                 do {
                     try Compression.shared.unzipFile(path, destination: path.deletingPathExtension(), overwrite: true, password: nil)
@@ -416,6 +407,14 @@ class SubPathsTableViewController: UITableViewController {
                     self.errorAlert(error, title: "Unable to decompress \"\(path.lastPathComponent)\"")
                 }
             }
+        } else if let audioVC = try? AudioPlayerViewController(fileURL: path) {
+            let navVC = UINavigationController(rootViewController: audioVC)
+            navVC.modalPresentationStyle = .fullScreen
+            self.present(navVC, animated: true)
+        } else if let editorVC = try? TextFileEditorViewController(fileURL: path) {
+            let vc = UINavigationController(rootViewController: editorVC)
+            vc.modalPresentationStyle = .overFullScreen
+            self.present(vc, animated: true)
         } else {
             openQuickLookPreview(forURL: path)
         }
@@ -618,23 +617,19 @@ class SubPathsTableViewController: UITableViewController {
             if item.pathExtension != "zip" {
                 compressOrDecompressAction = UIAction(title: "Compress", image: UIImage(systemName: "archivebox")) { _ in
                     let zipFilePath = item.deletingPathExtension().appendingPathExtension("zip")
-                    DispatchQueue.main.async {
-                        do {
-                            try Compression.shared.zipFiles(paths: [item], zipFilePath: zipFilePath, password: nil, progress: nil)
-                        } catch {
-                            self.errorAlert(error, title: "Unable to compress \"\(item.lastPathComponent)\"")
-                        }
+                    do {
+                        try Compression.shared.zipFiles(paths: [item], zipFilePath: zipFilePath, password: nil, progress: nil)
+                    } catch {
+                        self.errorAlert(error, title: "Unable to compress \"\(item.lastPathComponent)\"")
                     }
                 }
             } else {
                 compressOrDecompressAction = UIAction(title: "Decompress", image: UIImage(systemName: "archivebox")) { _ in
                     let destination = item.deletingPathExtension()
-                    DispatchQueue.main.async {
-                        do {
-                            try Compression.shared.unzipFile(item, destination: destination, overwrite: true, password: nil)
-                        } catch {
-                            self.errorAlert(error, title: "Unable to decompress \"\(item.lastPathComponent)\"")
-                        }
+                    do {
+                        try Compression.shared.unzipFile(item, destination: destination, overwrite: true, password: nil)
+                    } catch {
+                        self.errorAlert(error, title: "Unable to decompress \"\(item.lastPathComponent)\"")
                     }
                 }
             }

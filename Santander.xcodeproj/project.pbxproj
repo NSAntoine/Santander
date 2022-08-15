@@ -213,11 +213,7 @@
 		37EEA02428A8BE4E00FA8CEB /* External */ = {
 			isa = PBXGroup;
 			children = (
-				37EEA03028A8C86A00FA8CEB /* include */,
-				37EEA03728A8C86B00FA8CEB /* ioapi.c */,
-				37EEA02D28A8C86A00FA8CEB /* module */,
-				37EEA02F28A8C86A00FA8CEB /* unzip.c */,
-				37EEA03828A8C86B00FA8CEB /* zip.c */,
+				37EEA03C28A912B900FA8CEB /* Compression */,
 			);
 			path = External;
 			sourceTree = "<group>";
@@ -240,6 +236,18 @@
 				37EEA03528A8C86A00FA8CEB /* ioapi.h */,
 			);
 			path = include;
+			sourceTree = "<group>";
+		};
+		37EEA03C28A912B900FA8CEB /* Compression */ = {
+			isa = PBXGroup;
+			children = (
+				37EEA03028A8C86A00FA8CEB /* include */,
+				37EEA03728A8C86B00FA8CEB /* ioapi.c */,
+				37EEA02D28A8C86A00FA8CEB /* module */,
+				37EEA02F28A8C86A00FA8CEB /* unzip.c */,
+				37EEA03828A8C86B00FA8CEB /* zip.c */,
+			);
+			path = Compression;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -511,7 +519,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.serena.santanderfm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Santander/Other/External/module";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Santander/Other/External/**";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -547,7 +555,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.serena.santanderfm;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Santander/Other/External/module";
+				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Santander/Other/External/**";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

@@ -67,6 +67,9 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
     }
     
     func presentSearchController(_ searchController: UISearchController) {
+        if self.isEditing {
+            setEditing(false, animated: true)
+        }
         switchToSearchSuggestions()
         permissionDeniedLabel?.removeFromSuperview()
     }

@@ -66,7 +66,7 @@ class TextEditorThemeSettingsViewController: SettingsTableViewController {
             return setupCell(withComplimentaryView: settingsSwitch(forIndexPath: indexPath), text: "Use Character Pairs")
         case (2, 0):
             conf.text = "Text Color"
-            cell.accessoryView = cell.colorCircleAccessoryView(color: theme.textColor.uiColor)
+            cell.accessoryView = cell.colorCircleAccessoryView(color: theme.textColor?.uiColor ?? .label)
         case (2, 1):
             conf.text = "Editor Background Color"
             cell.accessoryView = cell.colorCircleAccessoryView(color: editorBackgroundColor)
@@ -83,7 +83,7 @@ class TextEditorThemeSettingsViewController: SettingsTableViewController {
             let vc = UIColorPickerViewController()
             switch indexPath.row {
             case 0:
-                vc.selectedColor = theme.textColor.uiColor
+                vc.selectedColor = theme.textColor?.uiColor ?? .label
             case 1:
                 vc.selectedColor = editorBackgroundColor
             default:

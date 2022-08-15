@@ -100,7 +100,21 @@ extension SubPathsTableViewController {
             self.present(UINavigationController(rootViewController: vc), animated: true)
         }
         
-        return UIMenu(children: [moveAction, copyAction, symlinkAction])
+        var children = [symlinkAction, moveAction, copyAction]
+        if let currentPath = currentPath {
+            let compressAction = UIAction(title: "Compress", image: UIImage(systemName: "archivebox")) { _ in
+                do {
+                    let zipFilePath = currentPath.appendingPathComponent("Archive.zip")
+                    try Compression.shared.zipFiles(paths: self.selectedItems, zipFilePath: zipFilePath, password: nil, progress: nil)
+                } catch {
+                    self.errorAlert(error, title: "Unable to compress items")
+                }
+            }
+            
+            children.insert(compressAction, at: 0)
+        }
+        
+        return UIMenu(children: children)
     }
     
     /// The button which says "Select all" or "Deselect all" when in edit mode
