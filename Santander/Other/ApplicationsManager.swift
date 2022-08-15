@@ -25,8 +25,8 @@ struct ApplicationsManager {
         }
     }
     
-    func icon(forApplication app: LSApplicationProxy) -> UIImage {
-        return ._applicationIconImage(forBundleIdentifier: app.applicationIdentifier(), format: 1, scale: UIScreen.main.scale)
+    func icon(forApplication app: LSApplicationProxy, scale: CGFloat = UIScreen.main.scale) -> UIImage {
+        return ._applicationIconImage(forBundleIdentifier: app.applicationIdentifier(), format: 1, scale: scale)
     }
     
     func openApp(_ app: LSApplicationProxy) throws {

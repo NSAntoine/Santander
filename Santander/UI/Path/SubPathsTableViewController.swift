@@ -69,9 +69,6 @@ class SubPathsTableViewController: UITableViewController {
         }
     }
     
-    /// Whether or not we're in the URL for application containers
-    lazy var isInAppContainersURL = currentPath?.isApplicationsContainerURL ?? false
-    
     typealias DataSourceType = UITableViewDiffableDataSource<Int, SubPathsRowItem>
     lazy var dataSource = DataSourceType(tableView: self.tableView) { tableView, indexPath, itemIdentifier in
         switch itemIdentifier {
@@ -83,7 +80,7 @@ class SubPathsTableViewController: UITableViewController {
     }
     
     /// Returns the SubPathsTableViewController for favourite paths
-    class func Favorites() -> SubPathsTableViewController {
+    class func favorites() -> SubPathsTableViewController {
         return SubPathsTableViewController(
             contents: UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) },
             title: "Favorites",
@@ -164,7 +161,6 @@ class SubPathsTableViewController: UITableViewController {
             }
             
             directoryMonitor?.startMonitoring()
-            UserPreferences.lastOpenedPath = currentPath.path
         }
     }
     /// Setup the snapshot to show the paths given
@@ -439,6 +435,7 @@ class SubPathsTableViewController: UITableViewController {
         // if we're going to a directory, or a search result,
         // go to the directory path
         if path.isDirectory {
+            UserPreferences.lastOpenedPath = path.path
             let parentDirectory = path.deletingLastPathComponent()
             
             // if the parent directory is the current directory or we're in the favourites sheet
@@ -480,15 +477,45 @@ class SubPathsTableViewController: UITableViewController {
     
     /// Opens the information bottom sheet for a specified path
     func openInfoBottomSheet(path: URL) {
-        let navController = UINavigationController(
-            rootViewController: PathInformationTableViewController(style: .insetGrouped, path: path)
-        )
-        
-        if #available(iOS 15.0, *) {
-            navController.sheetPresentationController?.detents = [.medium(), .large()]
+        if let app = path.applicationItem {
+            // if we can get the app info too,
+            // present an action sheet to choose between either
+            let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            let pathInfoAction = UIAlertAction(title: "Path Info", style: .default) { _ in
+                let navController = UINavigationController(
+                    rootViewController: PathInformationTableViewController(style: .insetGrouped, path: path)
+                )
+                
+                if #available(iOS 15.0, *) {
+                    navController.sheetPresentationController?.detents = [.medium(), .large()]
+                }
+                
+                self.present(navController, animated: true)
+            }
+            
+            let appInfoAction = UIAlertAction(title: "App Info", style: .default) { _ in
+                let navController = UINavigationController(
+                    rootViewController: AppInfoViewController(style: .insetGrouped, app: app, subPathsSender: self)
+                )
+                
+                self.present(navController, animated: true)
+            }
+            
+            actionSheet.addAction(appInfoAction)
+            actionSheet.addAction(pathInfoAction)
+            actionSheet.addAction(.init(title: "Cancel", style: .cancel))
+            self.present(actionSheet, animated: true)
+        } else {
+            let navController = UINavigationController(
+                rootViewController: PathInformationTableViewController(style: .insetGrouped, path: path)
+            )
+            
+            if #available(iOS 15.0, *) {
+                navController.sheetPresentationController?.detents = [.medium(), .large()]
+            }
+            
+            self.present(navController, animated: true)
         }
-        
-        self.present(navController, animated: true)
     }
     
     override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
@@ -719,7 +746,7 @@ class SubPathsTableViewController: UITableViewController {
         // if we're in the "Favorites" sheet, don't display the Favorites button
         if !isFavouritePathsSheet {
             let seeFavoritesAction = UIAction(title: "Favorites", image: UIImage(systemName: "star.fill")) { _ in
-                let newVC = UINavigationController(rootViewController: SubPathsTableViewController.Favorites())
+                let newVC = UINavigationController(rootViewController: SubPathsTableViewController.favorites())
                 self.present(newVC, animated: true)
             }
             
