@@ -143,9 +143,7 @@ class SubPathsTableViewController: UITableViewController {
         tableView.dataSource = self.dataSource
         showPaths()
         
-        if self.contents.isEmpty {
-            setupPermissionDeniedLabelIfNeeded()
-        }
+        setupPermissionDeniedLabelIfNeeded()
     }
     
     override func viewDidAppear(_ animated: Bool) {
