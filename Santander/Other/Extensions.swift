@@ -122,7 +122,7 @@ extension URL {
         // so deleting the app id from the URL gives us the URL for app containers
         return self == URL.home.deletingLastPathComponent()
         #else
-        return self == URL(fileURLWithPath: "/var/containers/Bundle/Application")
+        return self == URL(fileURLWithPath: "/private/var/containers/Bundle/Application")
         #endif
     }
     
