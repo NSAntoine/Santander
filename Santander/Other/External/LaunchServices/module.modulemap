@@ -1,0 +1,3 @@
+module LaunchServicesPrivate {
+    header "LaunchServicesPrivate.h"
+}

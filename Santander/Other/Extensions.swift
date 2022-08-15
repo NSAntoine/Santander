@@ -10,6 +10,7 @@
 
 import UIKit
 import UniformTypeIdentifiers
+import LaunchServicesPrivate
 
 extension URL {
     
@@ -113,6 +114,26 @@ extension URL {
             arr.append(URL(fileURLWithPath: item))
         }
         return arr
+    }
+    
+    var isApplicationsContainerURL: Bool {
+        #if targetEnvironment(simulator)
+        // on the simulator, the home URL is the app's container,
+        // so deleting the app id from the URL gives us the URL for app containers
+        return self == URL.home.deletingLastPathComponent()
+        #else
+        return self == URL(fileURLWithPath: "/var/mobile/containers/Data/Application")
+        #endif
+    }
+    
+    var applicationItem: LSApplicationProxy? {
+        if self.pathExtension == "app" {
+            return ApplicationsManager.shared.applicationForBundleURL(self)
+        } else if self.deletingLastPathComponent().isApplicationsContainerURL {
+            return ApplicationsManager.shared.applicationForContainerURL(self)
+        }
+        
+        return nil
     }
 }
 

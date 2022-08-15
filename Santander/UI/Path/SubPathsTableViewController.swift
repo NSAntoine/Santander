@@ -69,6 +69,9 @@ class SubPathsTableViewController: UITableViewController {
         }
     }
     
+    /// Whether or not we're in the URL for application containers
+    lazy var isInAppContainersURL = currentPath?.isApplicationsContainerURL ?? false
+    
     typealias DataSourceType = UITableViewDiffableDataSource<Int, SubPathsRowItem>
     lazy var dataSource = DataSourceType(tableView: self.tableView) { tableView, indexPath, itemIdentifier in
         switch itemIdentifier {
@@ -161,6 +164,7 @@ class SubPathsTableViewController: UITableViewController {
             }
             
             directoryMonitor?.startMonitoring()
+            UserPreferences.lastOpenedPath = currentPath.path
         }
     }
     /// Setup the snapshot to show the paths given
@@ -435,7 +439,6 @@ class SubPathsTableViewController: UITableViewController {
         // if we're going to a directory, or a search result,
         // go to the directory path
         if path.isDirectory {
-            UserPreferences.lastOpenedPath = path.path
             let parentDirectory = path.deletingLastPathComponent()
             
             // if the parent directory is the current directory or we're in the favourites sheet
@@ -514,6 +517,20 @@ class SubPathsTableViewController: UITableViewController {
         }
         
         var cellConf = cell.defaultContentConfiguration()
+        defer {
+            cell.contentConfiguration = cellConf
+        }
+        
+        // if we're displaying an app, whether it's a .app
+        // or an app in the containers URL
+        // display the properties of the app instead
+        if let app = fsItem.applicationItem {
+            cellConf.text = app.localizedName()
+            cellConf.image = ApplicationsManager.shared.icon(forApplication: app)
+            cellConf.secondaryText = fsItem.lastPathComponent
+            cell.accessoryType = .disclosureIndicator
+            return cell
+        }
         
         cellConf.text = fsItem.lastPathComponent
         
@@ -537,7 +554,6 @@ class SubPathsTableViewController: UITableViewController {
             cell.accessoryType = .disclosureIndicator
         }
         
-        cell.contentConfiguration = cellConf
         return cell
     }
     
@@ -635,6 +651,18 @@ class SubPathsTableViewController: UITableViewController {
             }
             
             children.append(compressOrDecompressAction)
+            
+            // "Open App" option for apps
+            if let app = item.applicationItem {
+                let openAction = UIAction(title: "Open App") { _ in
+                    do {
+                        try ApplicationsManager.shared.openApp(app)
+                    } catch {
+                        self.errorAlert(error, title: "Unable to open app")
+                    }
+                }
+                children.append(openAction)
+            }
             
             if UIDevice.current.userInterfaceIdiom == .pad {
                 var menu = UIMenu(title: "Add to group..", image: UIImage(systemName: "sidebar.leading"), children: [])

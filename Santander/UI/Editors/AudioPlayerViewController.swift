@@ -97,7 +97,7 @@ class AudioPlayerViewController: UIViewController {
         
         displayLink.add(to: .main, forMode: .default)
         
-        addItemToControlCenter()
+        addItemSystemToMediaPlayer()
         
         let playAction = UIAction(image: playButtonImage) { _ in
             self.play()
@@ -310,7 +310,7 @@ class AudioPlayerViewController: UIViewController {
         })
     }
     
-    func addItemToControlCenter() {
+    func addItemSystemToMediaPlayer() {
         let center = MPNowPlayingInfoCenter.default()
         
         UIApplication.shared.beginReceivingRemoteControlEvents()

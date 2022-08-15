@@ -4,7 +4,7 @@
 //
 //  Created by Serena on 02/07/2022
 //
-	
+
 
 import UIKit
 // Unfortunately, using a dep here for the text editor
@@ -68,7 +68,7 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
         let saveBarButton = UIBarButtonItem(barButtonSystemItem: .save, target: self, action: #selector(saveToFile))
         saveBarButton.isEnabled = !textIsSameAsOriginal
         navigationItem.rightBarButtonItems = [saveBarButton, UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: makeRightBarMenuItemsMenu())]
-
+        
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
         
 #if compiler(>=5.7)
@@ -83,7 +83,7 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
         textView.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(textView)
-
+        
         setupNavBar()
         
         NSLayoutConstraint.activate([
