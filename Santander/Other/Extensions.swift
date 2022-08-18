@@ -157,6 +157,13 @@ extension UIMenu {
     }
 }
 
+extension UIAlertAction {
+    static func cancel(handler: (() -> Void)? = nil) -> UIAlertAction {
+        UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            handler?()
+        }
+    }
+}
 extension FileManager {
     
     /// Calculate the allocated size of a directory and all its contents on the volume.
@@ -368,6 +375,22 @@ extension UITableViewController {
         }
     }
     
+    func cellWithView(_ view: UIView, text: String) -> UITableViewCell {
+        let cell = UITableViewCell()
+        var conf = cell.defaultContentConfiguration()
+        conf.text = text
+        cell.contentConfiguration = conf
+        view.translatesAutoresizingMaskIntoConstraints = false
+        cell.contentView.addSubview(view)
+        
+        NSLayoutConstraint.activate([
+            view.rightAnchor.constraint(equalTo: cell.contentView.rightAnchor, constant: -20),
+            view.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
+        ])
+        
+        return cell
+    }
+    
     /// A title view for a header, containing a button and a title
     func sectionHeaderWithButton(
         action: Selector,
@@ -431,7 +454,7 @@ extension UITableViewController {
             }
         }
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
+        let cancelAction: UIAlertAction = .cancel {
             completionHandler(false)
         }
         
@@ -535,5 +558,16 @@ extension UITableViewCell {
         colorPreview.layer.borderColor = UIColor.systemGray.cgColor
         
         return colorPreview
+    }
+}
+
+extension Dictionary<String, PropertyListItemType> {
+    func asAnyDictionary() -> [String: Any] {
+        var dict: [String: Any] = [:]
+        for (key, value) in self {
+            dict[key] = value.representedObject
+        }
+        
+        return dict
     }
 }

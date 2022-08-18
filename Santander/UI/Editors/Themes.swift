@@ -150,6 +150,7 @@ struct AnyCharacterPair: CharacterPair {
             AnyCharacterPair(leading: "{", trailing: "}"),
             AnyCharacterPair(leading: "(", trailing: ")"),
             AnyCharacterPair(leading: "[", trailing: "]"),
+            AnyCharacterPair(leading: "<", trailing: ">")
         ]
     }
 }

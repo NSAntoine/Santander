@@ -37,7 +37,7 @@ extension SubPathsTableViewController {
                 }
             }
             
-            confirmationController.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            confirmationController.addAction(.cancel())
             confirmationController.addAction(deleteAction)
             self.present(confirmationController, animated: true)
         }

@@ -383,7 +383,7 @@ class SubPathsTableViewController: UITableViewController {
                 self.goToPath(path: url)
             }
             
-            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+            alert.addAction(.cancel())
             alert.addAction(goAction)
             alert.preferredAction = goAction
             self.present(alert, animated: true)
@@ -396,7 +396,6 @@ class SubPathsTableViewController: UITableViewController {
     
     
     func goToFile(path: URL) {
-        // decompress if zip
         if path.pathExtension == "zip" {
             DispatchQueue.main.async {
                 do {
@@ -405,14 +404,12 @@ class SubPathsTableViewController: UITableViewController {
                     self.errorAlert(error, title: "Unable to decompress \"\(path.lastPathComponent)\"")
                 }
             }
-        } else if let audioVC = try? AudioPlayerViewController(fileURL: path) {
-            let navVC = UINavigationController(rootViewController: audioVC)
-            navVC.modalPresentationStyle = .fullScreen
+        } else if let preferred = FileEditor.preferred(forURL: path) {
+            let navVC = UINavigationController(rootViewController: preferred.viewController)
+            if preferred.type != .propertyList {
+                navVC.modalPresentationStyle = .fullScreen
+            }
             self.present(navVC, animated: true)
-        } else if let editorVC = try? TextFileEditorViewController(fileURL: path) {
-            let vc = UINavigationController(rootViewController: editorVC)
-            vc.modalPresentationStyle = .overFullScreen
-            self.present(vc, animated: true)
         } else {
             openQuickLookPreview(forURL: path)
         }
@@ -629,7 +626,7 @@ class SubPathsTableViewController: UITableViewController {
             
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "rectangle.and.pencil.and.ellipsis")) { _ in
                 let alert = UIAlertController(title: "Rename", message: nil, preferredStyle: .alert)
-                let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+                
                 let renameAction = UIAlertAction(title: "Rename", style: .default) { _ in
                     guard let name = alert.textFields?.first?.text else {
                         return
@@ -647,7 +644,7 @@ class SubPathsTableViewController: UITableViewController {
                     textField.text = item.lastPathComponent
                 }
                 
-                alert.addAction(cancelAction)
+                alert.addAction(.cancel())
                 alert.addAction(renameAction)
                 self.present(alert, animated: true)
             }
@@ -687,6 +684,21 @@ class SubPathsTableViewController: UITableViewController {
                     }
                 }
                 children.append(openAction)
+            }
+            
+            if !item.isDirectory {
+                let allEditors = FileEditor.allEditors(forURL: item)
+                let actions = allEditors.map { editor in
+                    UIAction(title: editor.type.description) { _ in
+                        let navVC = UINavigationController(rootViewController: editor.viewController)
+                        if editor.type != .propertyList {
+                            navVC.modalPresentationStyle = .fullScreen
+                        }
+                        self.present(navVC, animated: true)
+                    }
+                }
+                
+                children.append(UIMenu(title: "Open in..", children: actions))
             }
             
             if UIDevice.current.userInterfaceIdiom == .pad {

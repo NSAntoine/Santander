@@ -16,7 +16,6 @@ extension UITableViewController {
             textField.placeholder = "name"
         }
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
         let createAction = UIAlertAction(title: "Create", style: .default) { _ in
             guard let name = alert.textFields?.first?.text, !name.isEmpty else {
                 return
@@ -30,7 +29,7 @@ extension UITableViewController {
             }
         }
         
-        alert.addAction(cancelAction)
+        alert.addAction(.cancel())
         alert.addAction(createAction)
         self.present(alert, animated: true)
     }

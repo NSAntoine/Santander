@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		3712D319286F7F2E00BCD034 /* TypeSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3712D318286F7F2E00BCD034 /* TypeSelectionViewController.swift */; };
+		37137F7828AED89F00E28069 /* PropertyListArrayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37137F7728AED89F00E28069 /* PropertyListArrayViewController.swift */; };
 		37177E4C289F12640025042E /* PathGroupOwnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37177E4B289F12640025042E /* PathGroupOwnerViewController.swift */; };
 		37198B9A28721069000C8CDF /* TextEditorThemeSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37198B9928721069000C8CDF /* TextEditorThemeSettingsViewController.swift */; };
 		37198B9C28721275000C8CDF /* Themes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37198B9B28721275000C8CDF /* Themes.swift */; };
@@ -22,6 +23,10 @@
 		375D568D28A5B01600E25591 /* entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 375D568C28A5B01600E25591 /* entitlements.plist */; };
 		3771D37B2862329D00E200B6 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771D37A2862329D00E200B6 /* Extensions.swift */; };
 		3771D37F2862493E00E200B6 /* PathInformationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771D37E2862493E00E200B6 /* PathInformationTableViewController.swift */; };
+		3787DB0528ABECF200ACA60B /* FileEditorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3787DB0428ABECF200ACA60B /* FileEditorType.swift */; };
+		3787DB0728ACB74D00ACA60B /* PropertyListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3787DB0628ACB74D00ACA60B /* PropertyListViewController.swift */; };
+		3787DB0A28ACE4EE00ACA60B /* PropertyListItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3787DB0928ACE4EE00ACA60B /* PropertyListItemViewController.swift */; };
+		3787DB0C28ACE5E200ACA60B /* PropertyListItemType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3787DB0B28ACE5E200ACA60B /* PropertyListItemType.swift */; };
 		3789B5E028622B7A00058688 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3789B5DF28622B7A00058688 /* AppDelegate.swift */; };
 		3789B5E228622B7A00058688 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3789B5E128622B7A00058688 /* SceneDelegate.swift */; };
 		3789B5E928622B7C00058688 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3789B5E828622B7C00058688 /* Assets.xcassets */; };
@@ -62,6 +67,7 @@
 
 /* Begin PBXFileReference section */
 		3712D318286F7F2E00BCD034 /* TypeSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeSelectionViewController.swift; sourceTree = "<group>"; };
+		37137F7728AED89F00E28069 /* PropertyListArrayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyListArrayViewController.swift; sourceTree = "<group>"; };
 		37177E4B289F12640025042E /* PathGroupOwnerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathGroupOwnerViewController.swift; sourceTree = "<group>"; };
 		37198B9928721069000C8CDF /* TextEditorThemeSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditorThemeSettingsViewController.swift; sourceTree = "<group>"; };
 		37198B9B28721275000C8CDF /* Themes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Themes.swift; sourceTree = "<group>"; };
@@ -78,6 +84,11 @@
 		375D568C28A5B01600E25591 /* entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = entitlements.plist; sourceTree = "<group>"; };
 		3771D37A2862329D00E200B6 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		3771D37E2862493E00E200B6 /* PathInformationTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathInformationTableViewController.swift; sourceTree = "<group>"; };
+		3787DAFC28AB905B00ACA60B /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		3787DB0428ABECF200ACA60B /* FileEditorType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileEditorType.swift; sourceTree = "<group>"; };
+		3787DB0628ACB74D00ACA60B /* PropertyListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PropertyListViewController.swift; sourceTree = "<group>"; };
+		3787DB0928ACE4EE00ACA60B /* PropertyListItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyListItemViewController.swift; sourceTree = "<group>"; };
+		3787DB0B28ACE5E200ACA60B /* PropertyListItemType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PropertyListItemType.swift; sourceTree = "<group>"; };
 		3789B5DC28622B7A00058688 /* Santander.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Santander.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3789B5DF28622B7A00058688 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3789B5E128622B7A00058688 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -148,6 +159,7 @@
 				372A570E28AA44D200781243 /* ApplicationsManager.swift */,
 				37EEA02428A8BE4E00FA8CEB /* External */,
 				3771D37A2862329D00E200B6 /* Extensions.swift */,
+				3787DB0B28ACE5E200ACA60B /* PropertyListItemType.swift */,
 				37963F122869C96C00C4B72A /* PathType.swift */,
 				375CF898289C4FF000BB7C60 /* PathMetadata.swift */,
 				375CF89C289CF3A600BB7C60 /* Permissions.swift */,
@@ -169,6 +181,16 @@
 				3712D318286F7F2E00BCD034 /* TypeSelectionViewController.swift */,
 			);
 			path = UI;
+			sourceTree = "<group>";
+		};
+		3787DB0828ACE4C900ACA60B /* PropertyList */ = {
+			isa = PBXGroup;
+			children = (
+				3787DB0628ACB74D00ACA60B /* PropertyListViewController.swift */,
+				37137F7728AED89F00E28069 /* PropertyListArrayViewController.swift */,
+				3787DB0928ACE4EE00ACA60B /* PropertyListItemViewController.swift */,
+			);
+			path = PropertyList;
 			sourceTree = "<group>";
 		};
 		3789B5D328622B7A00058688 = {
@@ -209,6 +231,8 @@
 				37198B9928721069000C8CDF /* TextEditorThemeSettingsViewController.swift */,
 				37934DB628707F4500D1248A /* TextFileEditorViewController.swift */,
 				374ECDC92875F5350066E9DD /* AudioPlayerViewController.swift */,
+				3787DB0828ACE4C900ACA60B /* PropertyList */,
+				3787DB0428ABECF200ACA60B /* FileEditorType.swift */,
 				37198B9B28721275000C8CDF /* Themes.swift */,
 				37198B9E2872DDA6000C8CDF /* KeyboardToolsView.swift */,
 			);
@@ -234,6 +258,7 @@
 		37CA828628AA4637000236D7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				3787DAFC28AB905B00ACA60B /* MobileCoreServices.framework */,
 				37CA828728AA4638000236D7 /* CoreServices.framework */,
 			);
 			name = Frameworks;
@@ -361,11 +386,13 @@
 				37C6E0CE28665B2A00BDDA16 /* PathOperationViewController.swift in Sources */,
 				3771D37B2862329D00E200B6 /* Extensions.swift in Sources */,
 				37EEA03928A8C86B00FA8CEB /* unzip.c in Sources */,
+				3787DB0C28ACE5E200ACA60B /* PropertyListItemType.swift in Sources */,
 				374ECDCA2875F5350066E9DD /* AudioPlayerViewController.swift in Sources */,
 				37C6E0C52865CF7C00BDDA16 /* SettingsTableViewController.swift in Sources */,
 				37C6E0CA28662C6800BDDA16 /* PathsSortMethods.swift in Sources */,
 				37934DB728707F4500D1248A /* TextFileEditorViewController.swift in Sources */,
 				375CF89F289D969A00BB7C60 /* PathPermissionsViewController.swift in Sources */,
+				3787DB0528ABECF200ACA60B /* FileEditorType.swift in Sources */,
 				37C6E0C828662C4100BDDA16 /* DragAndDrop.swift in Sources */,
 				37932F052863205F00BF48C8 /* UserPreferences.swift in Sources */,
 				37177E4C289F12640025042E /* PathGroupOwnerViewController.swift in Sources */,
@@ -373,6 +400,7 @@
 				374ECDC82875A3940066E9DD /* Storage.swift in Sources */,
 				3789B5F428622E0D00058688 /* SubPathsTableViewController.swift in Sources */,
 				3789B5E028622B7A00058688 /* AppDelegate.swift in Sources */,
+				37137F7828AED89F00E28069 /* PropertyListArrayViewController.swift in Sources */,
 				3712D319286F7F2E00BCD034 /* TypeSelectionViewController.swift in Sources */,
 				37198B9F2872DDA6000C8CDF /* KeyboardToolsView.swift in Sources */,
 				37DE0FA22864902400E5EBBC /* FilePreviewDataSource.swift in Sources */,
@@ -382,6 +410,8 @@
 				375CF897289C394E00BB7C60 /* ToolbarItems.swift in Sources */,
 				372A570F28AA44D200781243 /* ApplicationsManager.swift in Sources */,
 				37C6E0D22867653A00BDDA16 /* PathsListSplitViewController.swift in Sources */,
+				3787DB0728ACB74D00ACA60B /* PropertyListViewController.swift in Sources */,
+				3787DB0A28ACE4EE00ACA60B /* PropertyListItemViewController.swift in Sources */,
 				37198B9C28721275000C8CDF /* Themes.swift in Sources */,
 				37C6E0D028673AFF00BDDA16 /* Search.swift in Sources */,
 				37EEA03A28A8C86B00FA8CEB /* ioapi.c in Sources */,

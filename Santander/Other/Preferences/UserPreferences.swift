@@ -19,9 +19,6 @@ enum UserPreferences {
     @Storage(key: "AlwaysShowSearchBar", defaultValue: true)
     static var alwaysShowSearchBar: Bool
     
-    @Storage(key: "usePlainStyleTableView", defaultValue: false)
-    static var usePlainStyleTableView: Bool
-    
     @Storage(key: "ShowInfoButton", defaultValue: false)
     static var showInfoButton: Bool
     

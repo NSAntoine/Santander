@@ -122,7 +122,7 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
             self.textView.goToLine(line - 1)
         }
         
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(.cancel())
         alert.addAction(goToLineAction)
         self.present(alert, animated: true)
     }

@@ -16,9 +16,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (getter=isDeletable, readonly, nonatomic) BOOL deletable;
 @property (getter=isBetaApp, readonly, nonatomic) BOOL betaApp;
 @property (getter=isRestricted, readonly, nonatomic) BOOL restricted;
+@property (getter=isContainerized, readonly, nonatomic) BOOL containerized;
 @property (readonly, nonatomic) NSSet <NSString *> *claimedURLSchemes;
 @property (readonly, nonatomic) NSString *teamID;
-@property (getter=isContainerized, readonly, nonatomic) BOOL containerized;
 @property (readonly, nonatomic) NSDictionary <NSString *, id> *entitlements;
 
 + (LSApplicationProxy*)applicationProxyForIdentifier:(id)identifier;

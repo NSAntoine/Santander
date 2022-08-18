@@ -49,11 +49,11 @@ class SettingsTableViewController: UITableViewController {
         
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
-            return setupCell(withComplimentaryView: settingsSwitch(forIndexPath: indexPath), text: "Large navigation titles")
+            return cellWithView(settingsSwitch(forIndexPath: indexPath), text: "Large navigation titles")
         case (0, 1):
-            return setupCell(withComplimentaryView: settingsSwitch(forIndexPath: indexPath), text: "Always show search bar")
+            return cellWithView(settingsSwitch(forIndexPath: indexPath), text: "Always show search bar")
         case (0, 2):
-            return setupCell(withComplimentaryView: settingsSwitch(forIndexPath: indexPath), text: "Show information button")
+            return cellWithView(settingsSwitch(forIndexPath: indexPath), text: "Show information button")
         case (1, 0):
             let cell = UITableViewCell()
             var conf = cell.defaultContentConfiguration()
@@ -63,11 +63,11 @@ class SettingsTableViewController: UITableViewController {
             cell.accessoryView = cell.colorCircleAccessoryView(color: UserPreferences.appTintColor.uiColor)
             return cell
         case (1, 1):
-            return setupCell(withComplimentaryView: setupStyleButton(), text: "Table View Style")
+            return cellWithView(setupStyleButton(), text: "Table View Style")
         case (1, 2):
-            return setupCell(withComplimentaryView: setupAppearanceButton(), text: "Appearance")
+            return cellWithView(setupAppearanceButton(), text: "Appearance")
         case (2, 0):
-            return setupCell(withComplimentaryView: setupLaunchPathButton(), text: "Launch Path")
+            return cellWithView(setupLaunchPathButton(), text: "Launch Path")
         case (2, 1):
             let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
             var conf = cell.defaultContentConfiguration()
@@ -167,22 +167,6 @@ class SettingsTableViewController: UITableViewController {
         return (indexPath.section, indexPath.row) == (1, 0) || (indexPath.section, indexPath.row) == (2, 1)
     }
     
-    func setupCell(withComplimentaryView view: UIView, text: String) -> UITableViewCell {
-        let cell = UITableViewCell()
-        var conf = cell.defaultContentConfiguration()
-        conf.text = text
-        cell.contentConfiguration = conf
-        view.translatesAutoresizingMaskIntoConstraints = false
-        cell.contentView.addSubview(view)
-        
-        NSLayoutConstraint.activate([
-            view.rightAnchor.constraint(equalTo: cell.contentView.rightAnchor, constant: -20),
-            view.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
-        ])
-        
-        return cell
-    }
-    
     func defaultsKey(forIndexPath indexPath: IndexPath) -> String {
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
@@ -200,7 +184,7 @@ class SettingsTableViewController: UITableViewController {
     fileprivate func changeCustomLaunchPathAlert() {
         let alert = UIAlertController(title: "Path", message: "Enter the other path you want to be opened at launch", preferredStyle: .alert)
         alert.addTextField()
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(.cancel())
         
         let applyAction = UIAlertAction(title: "Add", style: .default) { _ in
             guard let text = alert.textFields?.first?.text, !text.isEmpty else {

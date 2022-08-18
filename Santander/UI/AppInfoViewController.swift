@@ -8,6 +8,7 @@
 import UIKit
 import LaunchServicesPrivate
 
+/// A ViewController to display information about an app
 class AppInfoViewController: UITableViewController {
     let app: LSApplicationProxy
     // used to go to a path if selected in the current view controller
@@ -38,7 +39,7 @@ class AppInfoViewController: UITableViewController {
         case 0:
             return app.claimedURLSchemes.isEmpty ? 3 : 4
         case 1:
-            return 1
+            return 2
         case 2:
             return 4
         case 3:
@@ -74,6 +75,9 @@ class AppInfoViewController: UITableViewController {
         case (1, 0):
             conf.text = "Team ID"
             conf.secondaryText = app.teamID
+        case (1, 1):
+            conf.text = "Entitlements"
+            cell.accessoryType = .disclosureIndicator
         case (2, 0):
             conf.text = "Deletable"
             conf.secondaryText = app.isDeletable ? "Yes" : "No"
@@ -107,12 +111,20 @@ class AppInfoViewController: UITableViewController {
         case 3, 4:
             return true
         default:
-            return false
+            return (indexPath.section, indexPath.row) == (1, 1) // entitlements
         }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch (indexPath.section, indexPath.row) {
+        case (1, 1):
+            var dict: PropertyListViewController.PlistDictionaryType = [:]
+            for (key, value) in app.entitlements {
+                dict[key] = .init(item: value)
+            }
+            
+            let vc = PropertyListViewController(dictionary: dict, format: nil, title: "Entitlements", plistParent: .root)
+            self.navigationController?.pushViewController(vc, animated: true)
         case (3, 0):
             dismissAndGoToURL(app.containerURL())
         case (3, 1):

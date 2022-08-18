@@ -59,11 +59,11 @@ class TextEditorThemeSettingsViewController: SettingsTableViewController {
             cell.accessoryView = stepper
             conf.secondaryText = theme.font.font.pointSize.description
         case (1, 0):
-            return setupCell(withComplimentaryView: settingsSwitch(forIndexPath: indexPath), text: "Show Line Count")
+            return cellWithView(settingsSwitch(forIndexPath: indexPath), text: "Show Line Count")
         case (1, 1):
-            return setupCell(withComplimentaryView: settingsSwitch(forIndexPath: indexPath), text: "Wrap Lines")
+            return cellWithView(settingsSwitch(forIndexPath: indexPath), text: "Wrap Lines")
         case (1, 2):
-            return setupCell(withComplimentaryView: settingsSwitch(forIndexPath: indexPath), text: "Use Character Pairs")
+            return cellWithView(settingsSwitch(forIndexPath: indexPath), text: "Use Character Pairs")
         case (2, 0):
             conf.text = "Text Color"
             cell.accessoryView = cell.colorCircleAccessoryView(color: theme.textColor?.uiColor ?? .label)
