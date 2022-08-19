@@ -13,13 +13,13 @@ struct ApplicationsManager {
     let allApps: [LSApplicationProxy]
     static let shared = ApplicationsManager(allApps: LSApplicationWorkspace.default().allInstalledApplications())
     
-    func applicationForContainerURL(_ containerURL: URL) -> LSApplicationProxy? {
+    func application(forContainerURL containerURL: URL) -> LSApplicationProxy? {
         return allApps.first { app in
             app.containerURL() == containerURL
         }
     }
     
-    func applicationForBundleURL(_ bundleURL: URL) -> LSApplicationProxy? {
+    func application(forBundleURL bundleURL: URL) -> LSApplicationProxy? {
         return allApps.first { app in
             app.bundleURL() == bundleURL
         }

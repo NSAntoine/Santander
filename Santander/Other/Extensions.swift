@@ -128,9 +128,9 @@ extension URL {
     
     var applicationItem: LSApplicationProxy? {
         if self.pathExtension == "app" {
-            return ApplicationsManager.shared.applicationForBundleURL(self)
+            return ApplicationsManager.shared.application(forBundleURL: self)
         } else if self.deletingLastPathComponent().isApplicationsContainerURL {
-            return ApplicationsManager.shared.applicationForContainerURL(self)
+            return ApplicationsManager.shared.application(forContainerURL: self)
         }
         
         return nil

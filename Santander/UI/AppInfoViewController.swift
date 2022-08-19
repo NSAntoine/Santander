@@ -37,7 +37,7 @@ class AppInfoViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0:
-            return app.claimedURLSchemes.isEmpty ? 3 : 4
+            return app.claimedURLSchemes.isEmpty ? 4 : 5
         case 1:
             return 2
         case 2:
@@ -67,9 +67,12 @@ class AppInfoViewController: UITableViewController {
             conf.text = "Bundle ID"
             conf.secondaryText = app.applicationIdentifier()
         case (0, 2):
-            conf.text = "App type"
-            conf.secondaryText = app.applicationType
+            conf.text = "SDK Version"
+            conf.secondaryText = app.sdkVersion
         case (0, 3):
+            conf.text = "Type"
+            conf.secondaryText = app.applicationType
+        case (0, 4):
             conf.text = "URL schemes"
             conf.secondaryText = app.claimedURLSchemes.joined(separator: ", ")
         case (1, 0):
