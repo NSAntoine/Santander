@@ -19,13 +19,13 @@ class PropertyListViewController: UITableViewController, PropertyListItemViewCon
     lazy var keys = Array(plistDictionary.keys)
     var format: PropertyListSerialization.PropertyListFormat?
     var fileURL: URL?
-    var plistParent: PlistControllerParent
+    var canEdit: Bool
     
-    init(style: UITableView.Style = .insetGrouped, dictionary: PlistDictionaryType, format: PropertyListSerialization.PropertyListFormat?, title: String, fileURL: URL? = nil, plistParent: PlistControllerParent) {
+    init(style: UITableView.Style = .insetGrouped, dictionary: PlistDictionaryType, format: PropertyListSerialization.PropertyListFormat?, title: String, fileURL: URL? = nil, canEdit: Bool) {
         self.plistDictionary = dictionary
         self.format = format
         self.fileURL = fileURL
-        self.plistParent = plistParent
+        self.canEdit = canEdit
         
         super.init(style: style)
         self.title = title
@@ -39,7 +39,7 @@ class PropertyListViewController: UITableViewController, PropertyListItemViewCon
         
     }
     
-    convenience init?(style: UITableView.Style = .insetGrouped, fileURL: URL, parent: PlistControllerParent) {
+    convenience init?(style: UITableView.Style = .insetGrouped, fileURL: URL, canEdit: Bool) {
         let fmt: UnsafeMutablePointer<PropertyListSerialization.PropertyListFormat>? = .allocate(capacity: 4)
         defer {
             fmt?.deallocate()
@@ -56,7 +56,7 @@ class PropertyListViewController: UITableViewController, PropertyListItemViewCon
             newDict[key] = PropertyListItemType(item: value)
         }
         
-        self.init(dictionary: newDict, format: fmt?.pointee, title: fileURL.lastPathComponent, plistParent: parent)
+        self.init(dictionary: newDict, format: fmt?.pointee, title: fileURL.lastPathComponent, canEdit: canEdit)
         self.fileURL = fileURL
     }
     
@@ -111,7 +111,7 @@ class PropertyListViewController: UITableViewController, PropertyListItemViewCon
                 newDict[key] = .init(item: value)
             }
             
-            let vc = PropertyListViewController(dictionary: newDict, format: format, title: text, fileURL: fileURL, plistParent: .dictionary(self.plistDictionary.asAnyDictionary()))
+            let vc = PropertyListViewController(dictionary: newDict, format: format, title: text, fileURL: fileURL, canEdit: false)
             self.navigationController?.pushViewController(vc, animated: true)
         } else {
             let vc = PropertyListItemViewController(item: elem, itemKey: text)
@@ -151,45 +151,24 @@ class PropertyListViewController: UITableViewController, PropertyListItemViewCon
     }
     
     func writePlistToFile() {
-        guard let format = format, let fileURL = fileURL else {
+        // TODO: - Support for editing nested dicts!
+        guard let format = format, let fileURL = fileURL, canEdit else {
             return
         }
         
-        let selfAny: [String: Any] = plistDictionary.asAnyDictionary()
-        switch plistParent {
-        case .dictionary(var dict):
-            let indx = dict.firstIndex { (key, value) in
-                print(value, value as? [String: Any] == nil)
-                if let v = value as? [String: Any] {
-                    print(NSDictionary(dictionary: v), NSDictionary(dictionary: selfAny))
-                    return NSDictionary(dictionary: v).isEqual(to: selfAny)
-                }
-                return false
-            }
-            
-            guard let indx = indx else {
-                print("indx is NIL!")
-                return
-            }
-            
-            print(indx)
-            dict[dict.keys[indx]] = plistDictionary.asAnyDictionary()
-            do {
-                try PropertyListSerialization.data(fromPropertyList: dict, format: format, options: 0).write(to: fileURL, options: .atomic)
-            } catch {
-                self.errorAlert(error, title: "Unable to write to file \(fileURL.lastPathComponent)")
-            }
-            
-        case .root:
-            do {
-                try PropertyListSerialization.data(fromPropertyList: self.plistDictionary.asAnyDictionary(), format: format, options: 0).write(to: fileURL, options: .atomic)
-            } catch {
-                self.errorAlert(error, title: "Unable to write to file \(fileURL.lastPathComponent)")
-            }
+        do {
+            try PropertyListSerialization.data(fromPropertyList: self.plistDictionary.asAnyDictionary(), format: format, options: 0).write(to: fileURL, options: .atomic)
+        } catch {
+            self.errorAlert(error, title: "Unable to write to file \(fileURL.lastPathComponent)")
         }
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        guard canEdit else {
+            return nil
+        }
+        
         let deleteAction = UIContextualAction(style: .destructive, title: nil) { _, _, completion in
             
             self.plistDictionary[self.keys[indexPath.row]] = nil

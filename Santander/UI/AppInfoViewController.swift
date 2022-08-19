@@ -123,7 +123,7 @@ class AppInfoViewController: UITableViewController {
                 dict[key] = .init(item: value)
             }
             
-            let vc = PropertyListViewController(dictionary: dict, format: nil, title: "Entitlements", plistParent: .root)
+            let vc = PropertyListViewController(dictionary: dict, format: nil, title: "Entitlements", canEdit: false)
             self.navigationController?.pushViewController(vc, animated: true)
         case (3, 0):
             dismissAndGoToURL(app.containerURL())

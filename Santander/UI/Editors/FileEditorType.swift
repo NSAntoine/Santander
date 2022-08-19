@@ -15,8 +15,7 @@ struct FileEditor {
         if let audio = FileEditorType.audio.viewController(forPath: url) {
             return FileEditor(type: .audio, viewController: audio)
         } else {
-            let ext = url.pathExtension
-            if (ext == "plist" || ext == "xml"), let plistVc = FileEditorType.propertyList.viewController(forPath: url) {
+            if let plistVc = FileEditorType.propertyList.viewController(forPath: url) {
                 return FileEditor(type: .propertyList, viewController: plistVc)
             }
             
@@ -46,7 +45,7 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
         case .audio:
             return try? AudioPlayerViewController(fileURL: path)
         case .propertyList:
-            return PropertyListViewController(fileURL: path, parent: .root)
+            return PropertyListViewController(fileURL: path, canEdit: true)
         case .text:
             return try? TextFileEditorViewController(fileURL: path)
         }
