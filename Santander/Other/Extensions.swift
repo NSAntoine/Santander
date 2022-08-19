@@ -561,7 +561,7 @@ extension UITableViewCell {
     }
 }
 
-extension Dictionary<String, PropertyListItemType> {
+extension Dictionary<String, SerializedDocumentType> {
     func asAnyDictionary() -> [String: Any] {
         var dict: [String: Any] = [:]
         for (key, value) in self {

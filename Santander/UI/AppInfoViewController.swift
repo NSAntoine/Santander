@@ -118,12 +118,12 @@ class AppInfoViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch (indexPath.section, indexPath.row) {
         case (1, 1):
-            var dict: PropertyListViewController.PlistDictionaryType = [:]
+            var dict: SerializedDocumentViewController.SerializedDictionaryType = [:]
             for (key, value) in app.entitlements {
                 dict[key] = .init(item: value)
             }
             
-            let vc = PropertyListViewController(dictionary: dict, format: nil, title: "Entitlements", canEdit: false)
+            let vc = SerializedDocumentViewController(dictionary: dict, type: .plist(format: nil), title: "Entitlements", canEdit: false)
             self.navigationController?.pushViewController(vc, animated: true)
         case (3, 0):
             dismissAndGoToURL(app.containerURL())

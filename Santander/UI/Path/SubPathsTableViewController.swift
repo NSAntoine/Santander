@@ -406,7 +406,7 @@ class SubPathsTableViewController: UITableViewController {
             }
         } else if let preferred = FileEditor.preferred(forURL: path) {
             let navVC = UINavigationController(rootViewController: preferred.viewController)
-            if preferred.type != .propertyList {
+            if preferred.type != .propertyList && preferred.type != .json {
                 navVC.modalPresentationStyle = .fullScreen
             }
             self.present(navVC, animated: true)
@@ -691,7 +691,7 @@ class SubPathsTableViewController: UITableViewController {
                 let actions = allEditors.map { editor in
                     UIAction(title: editor.type.description) { _ in
                         let navVC = UINavigationController(rootViewController: editor.viewController)
-                        if editor.type != .propertyList {
+                        if editor.type != .propertyList && editor.type != .json {
                             navVC.modalPresentationStyle = .fullScreen
                         }
                         self.present(navVC, animated: true)

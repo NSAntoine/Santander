@@ -19,6 +19,10 @@ struct FileEditor {
                 return FileEditor(type: .propertyList, viewController: plistVc)
             }
             
+            if url.pathExtension == "json", let jsonVC = FileEditorType.json.viewController(forPath: url) {
+                return FileEditor(type: .json, viewController: jsonVC)
+            }
+            
             if let textEditorVc = FileEditorType.text.viewController(forPath: url) {
                 return FileEditor(type: .text, viewController: textEditorVc)
             }
@@ -38,14 +42,16 @@ struct FileEditor {
 }
 
 enum FileEditorType: CustomStringConvertible, CaseIterable {
-    case audio, propertyList, text
+    case audio, propertyList, json, text
     
     func viewController(forPath path: URL) -> UIViewController? {
         switch self {
         case .audio:
             return try? AudioPlayerViewController(fileURL: path)
         case .propertyList:
-            return PropertyListViewController(fileURL: path, canEdit: true)
+            return SerializedDocumentViewController(type: .plist(format: nil), fileURL: path, canEdit: true)
+        case .json:
+            return SerializedDocumentViewController(type: .json, fileURL: path, canEdit: true)
         case .text:
             return try? TextFileEditorViewController(fileURL: path)
         }
@@ -56,7 +62,9 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
         case .audio:
             return "Audio Player"
         case .propertyList:
-            return "Property List Editor"
+            return "Property List Viewer"
+        case .json:
+            return "JSON Viewer"
         case .text:
             return "Text Editor"
         }

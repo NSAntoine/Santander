@@ -7,21 +7,21 @@
 
 import UIKit
 
-class PropertyListItemViewController: UITableViewController {
-    var item: PropertyListItemType {
+class SerializedItemViewController: UITableViewController {
+    var item: SerializedDocumentType {
         didSet {
             self.delegate?.didChangeValue(ofItem: itemKey, to: item)
         }
     }
     var itemKey: String
     
-    weak var delegate: PropertyListItemViewControllerDelegate?
+    weak var delegate: SerializedItemViewControllerDelegate?
     
-    init(style: UITableView.Style = .insetGrouped, item: PropertyListItemType, itemKey: String) {
+    init(item: SerializedDocumentType, itemKey: String) {
         self.item = item
         self.itemKey = itemKey
         
-        super.init(style: style)
+        super.init(style: .userPreferred)
     }
     
     required init?(coder: NSCoder) {
@@ -230,7 +230,7 @@ class PropertyListItemViewController: UITableViewController {
     }
 }
 
-protocol PropertyListItemViewControllerDelegate: AnyObject {
+protocol SerializedItemViewControllerDelegate: AnyObject {
     func didChangeName(ofItem item: String, to newName: String)
-    func didChangeValue(ofItem item: String, to newValue: PropertyListItemType)
+    func didChangeValue(ofItem item: String, to newValue: SerializedDocumentType)
 }

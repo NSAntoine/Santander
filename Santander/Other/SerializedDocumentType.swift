@@ -1,5 +1,5 @@
 //
-//  PropertyListItemType.swift
+//  SerializedDocumentType.swift
 //  Santander
 //
 //  Created by Serena on 17/08/2022.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-enum PropertyListItemType: Equatable, CustomStringConvertible {
-    static func == (lhs: PropertyListItemType, rhs: PropertyListItemType) -> Bool {
+enum SerializedDocumentType: Equatable, CustomStringConvertible {
+    static func == (lhs: SerializedDocumentType, rhs: SerializedDocumentType) -> Bool {
         switch (lhs, rhs) {
         case (.string(let first), .string(let second)):         return first == second
         case (.bool(let first), .bool(let second)):             return first == second

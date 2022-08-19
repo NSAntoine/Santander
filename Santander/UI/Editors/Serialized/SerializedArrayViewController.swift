@@ -1,5 +1,5 @@
 //
-//  PropertyListArrayViewController.swift
+//  SerializedArrayViewController.swift
 //  Santander
 //
 //  Created by Serena on 18/08/2022.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class PropertyListArrayViewController: UITableViewController {
+class SerializedArrayViewController: UITableViewController {
     let array: NSArray
     
     init(style: UITableView.Style, array: NSArray, title: String) {
@@ -32,7 +32,7 @@ class PropertyListArrayViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
         var conf = cell.defaultContentConfiguration()
-        conf.text = PropertyListItemType(item: array[indexPath.row]).description
+        conf.text = SerializedDocumentType(item: array[indexPath.row]).description
         cell.contentConfiguration = conf
         return cell
     }
