@@ -45,7 +45,7 @@ class AppInfoViewController: UITableViewController {
         case 3:
             return 2
         case 4:
-            return 1
+            return 2
         default:
             fatalError("Unknown section! \(section)")
         }
@@ -102,6 +102,9 @@ class AppInfoViewController: UITableViewController {
         case (4, 0):
             conf.text = "Open"
             conf.textProperties.color = .systemBlue
+        case (4, 1):
+            conf.text = "Delete"
+            conf.textProperties.color = .systemRed
         default:
             fatalError("Unknown indexPath: \(indexPath)")
         }
@@ -137,6 +140,14 @@ class AppInfoViewController: UITableViewController {
                 try ApplicationsManager.shared.openApp(app)
             } catch {
                 self.errorAlert(error, title: "Unable to open \(app.localizedName())")
+            }
+        case (4, 1):
+            do {
+                try ApplicationsManager.shared.deleteApp(app)
+                self.dismiss(animated: true)
+                subPathsSender.tableView.reloadData()
+            } catch {
+                self.errorAlert(error, title: "Unable to delete app")
             }
         default:
             break

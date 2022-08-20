@@ -34,6 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (instancetype) defaultWorkspace;
 - (NSArray <LSApplicationProxy *>*)allInstalledApplications;
 - (BOOL)openApplicationWithBundleID:(NSString *)arg0 ;
+- (BOOL)uninstallApplication:(NSString *)arg0 withOptions:(_Nullable id)arg1 error:(NSError **)arg2 usingBlock:(_Nullable id)arg3;
 @end
 
 @interface UIImage (Private)
