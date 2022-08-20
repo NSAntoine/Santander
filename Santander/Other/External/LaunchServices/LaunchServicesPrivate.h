@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) NSSet <NSString *> *claimedURLSchemes;
 @property (readonly, nonatomic) NSString *teamID;
 @property (copy, nonatomic) NSString *sdkVersion;
+@property (readonly, nonatomic) NSDictionary <NSString *, id> *entitlements;
 
 + (LSApplicationProxy*)applicationProxyForIdentifier:(id)identifier;
 - (NSString *)applicationIdentifier;
