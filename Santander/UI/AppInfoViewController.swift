@@ -39,7 +39,7 @@ class AppInfoViewController: UITableViewController {
         case 0:
             return app.claimedURLSchemes.isEmpty ? 4 : 5
         case 1:
-            return 2
+            return 1
         case 2:
             return 4
         case 3:
@@ -78,12 +78,6 @@ class AppInfoViewController: UITableViewController {
         case (1, 0):
             conf.text = "Team ID"
             conf.secondaryText = app.teamID
-        case (1, 1):
-            conf.text = "Entitlements"
-            if #unavailable(iOS 15.0) {
-                cell.isUserInteractionEnabled = false
-            }
-            cell.accessoryType = .disclosureIndicator
         case (2, 0):
             conf.text = "Deletable"
             conf.secondaryText = app.isDeletable ? "Yes" : "No"
@@ -117,22 +111,12 @@ class AppInfoViewController: UITableViewController {
         case 3, 4:
             return true
         default:
-            return (indexPath.section, indexPath.row) == (1, 1) // entitlements
+            return false // entitlements
         }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch (indexPath.section, indexPath.row) {
-        case (1, 1):
-            if #available(iOS 15.0, *) {
-                var dict: SerializedDocumentViewController.SerializedDictionaryType = [:]
-                for (key, value) in app.entitlements {
-                    dict[key] = .init(item: value)
-                }
-                
-                let vc = SerializedDocumentViewController(dictionary: dict, type: .plist(format: nil), title: "Entitlements", canEdit: false)
-                self.navigationController?.pushViewController(vc, animated: true)
-            }
         case (3, 0):
             dismissAndGoToURL(app.containerURL())
         case (3, 1):
