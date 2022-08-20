@@ -80,6 +80,9 @@ class AppInfoViewController: UITableViewController {
             conf.secondaryText = app.teamID
         case (1, 1):
             conf.text = "Entitlements"
+            if #unavailable(iOS 15.0) {
+                cell.isUserInteractionEnabled = false
+            }
             cell.accessoryType = .disclosureIndicator
         case (2, 0):
             conf.text = "Deletable"
@@ -121,13 +124,15 @@ class AppInfoViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch (indexPath.section, indexPath.row) {
         case (1, 1):
-            var dict: SerializedDocumentViewController.SerializedDictionaryType = [:]
-            for (key, value) in app.entitlements {
-                dict[key] = .init(item: value)
+            if #available(iOS 15.0, *) {
+                var dict: SerializedDocumentViewController.SerializedDictionaryType = [:]
+                for (key, value) in app.entitlements {
+                    dict[key] = .init(item: value)
+                }
+                
+                let vc = SerializedDocumentViewController(dictionary: dict, type: .plist(format: nil), title: "Entitlements", canEdit: false)
+                self.navigationController?.pushViewController(vc, animated: true)
             }
-            
-            let vc = SerializedDocumentViewController(dictionary: dict, type: .plist(format: nil), title: "Entitlements", canEdit: false)
-            self.navigationController?.pushViewController(vc, animated: true)
         case (3, 0):
             dismissAndGoToURL(app.containerURL())
         case (3, 1):

@@ -19,7 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (getter=isContainerized, readonly, nonatomic) BOOL containerized;
 @property (readonly, nonatomic) NSSet <NSString *> *claimedURLSchemes;
 @property (readonly, nonatomic) NSString *teamID;
-@property (readonly, nonatomic) NSDictionary <NSString *, id> *entitlements;
+@property (readonly, nonatomic) NSDictionary <NSString *, id> *entitlements API_AVAILABLE(ios(15));
 @property (copy, nonatomic) NSString *sdkVersion;
 
 + (LSApplicationProxy*)applicationProxyForIdentifier:(id)identifier;
