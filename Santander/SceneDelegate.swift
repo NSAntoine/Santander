@@ -23,7 +23,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let subPathsVC: SubPathsTableViewController
         let window = UIWindow(windowScene: windowScene)
-        if UIDevice.current.userInterfaceIdiom == .pad {
+        if UIDevice.current.isiPad {
             let splitVC = UISplitViewController(style: .doubleColumn)
             let vc = PathListsSplitViewController(contents: [], title: "Santander")
             subPathsVC = vc

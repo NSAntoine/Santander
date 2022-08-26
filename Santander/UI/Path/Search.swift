@@ -48,7 +48,7 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
             token.representedObject as? ((URL) -> Bool)
         }
         
-        self.doDisplaySearchSuggestions = false
+        self.displayingSearchSuggestions = false
         let newFiltered = results.filter { url in
             let allConditionsMet = conditions.map { condition in
                 condition(url)

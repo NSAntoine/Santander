@@ -46,7 +46,7 @@ extension SubPathsTableViewController {
         trash.tintColor = .systemRed
         
         let shareAction = UIAction {
-            self.presentShareAction(items: self.selectedItems)
+            self.presentActivityVC(forItems: self.selectedItems)
         }
         
         let share = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), primaryAction: shareAction)
@@ -75,13 +75,6 @@ extension SubPathsTableViewController {
         }
         
         self.toolbarItems = items
-    }
-    
-    func presentShareAction(items: [Any]) {
-        let vc = UIActivityViewController(activityItems: items, applicationActivities: [])
-        vc.popoverPresentationController?.sourceView = self.view
-        vc.popoverPresentationController?.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
-        self.present(vc, animated: true)
     }
     
     fileprivate func makeToolbarMoreItemsMenu() -> UIMenu {

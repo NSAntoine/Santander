@@ -144,18 +144,20 @@ class PathListsSplitViewController: SubPathsTableViewController {
             return nil
         }
         
-        return sectionHeaderWithButton(
-            action: #selector(sectionButtonClicked(_:)),
-            sectionTag: section,
-            titleText: pathGroups[section].name) { button in
+        return sectionHeaderWithButton(sectionTag: section, titleText: pathGroups[section].name) { button in
                 button.setImage(UIImage(systemName: isEditing ? "trash" : "chevron.down"), for: .normal)
                 if self.isEditing {
                     button.tintColor = .systemRed
                 }
+                
+                let action = UIAction { _ in
+                    self.sectionButtonClicked(button)
+                }
+                
+                button.addAction(action, for: .touchUpInside)
             }
     }
     
-    @objc
     func sectionButtonClicked(_ sender: UIButton) {
         let section = sender.tag
         

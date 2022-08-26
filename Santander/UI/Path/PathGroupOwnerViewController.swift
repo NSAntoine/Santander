@@ -109,10 +109,11 @@ class PathGroupOwnerViewController: UITableViewController {
                 sourceVC?.permissions.groupOwnerName = groupName
             }
             sourceVC?.tableView.reloadData()
-            
         } catch {
             self.errorAlert(error, title: "Unable to change \(typeName(capitalizingFirstLetter: false)) of \(fileURL.lastPathComponent)")
         }
+        
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     func showError(_ error: Error) {

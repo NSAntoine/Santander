@@ -8,16 +8,12 @@
 import UIKit
 
 class SerializedItemViewController: UITableViewController {
-    var item: SerializedDocumentType {
-        didSet {
-            self.delegate?.didChangeValue(ofItem: itemKey, to: item)
-        }
-    }
+    var item: SerializedItemType
     var itemKey: String
     
     weak var delegate: SerializedItemViewControllerDelegate?
     
-    init(item: SerializedDocumentType, itemKey: String) {
+    init(item: SerializedItemType, itemKey: String) {
         self.item = item
         self.itemKey = itemKey
         
@@ -28,7 +24,16 @@ class SerializedItemViewController: UITableViewController {
         fatalError()
     }
     
+    
+    func setItem(to newValue: SerializedItemType) {
+        if self.delegate?.didChangeValue(ofItem: itemKey, to: newValue) ?? false {
+            item = newValue
+            tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .fade)
+        }
+    }
+    
     override func viewDidLoad() {
+        super.viewDidLoad()
         title = itemKey
     }
     
@@ -38,15 +43,6 @@ class SerializedItemViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
         return false
-    }
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        switch (indexPath.section, indexPath.row) {
-        case (0, 1):
-            presentEditAlert()
-        default:
-            break
-        }
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -59,8 +55,7 @@ class SerializedItemViewController: UITableViewController {
         // actions to change between true and false
         let actions = [true, false].map { bool in
             UIAction(title: bool.description, state: currentItemBoolValue == bool ? .on : .off) { _ in
-                self.item = .bool(bool)
-                self.tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .fade)
+                self.setItem(to: .bool(bool))
             }
         }
         
@@ -124,7 +119,6 @@ class SerializedItemViewController: UITableViewController {
             textField.text = int.description
             textField.inputAccessoryView = toolbarDoneView(doneAction: action)
         case .float(let float):
-            
             textField.text = float.description
             textField.keyboardType = .decimalPad
             textField.inputAccessoryView = toolbarDoneView(doneAction: action)
@@ -156,19 +150,17 @@ class SerializedItemViewController: UITableViewController {
         
         switch item {
         case .string(_):
-            self.item = .string(text)
+            setItem(to: .string(text))
         case .int(_):
             guard let num = Int(text) else { return }
-            self.item = .int(num)
+            setItem(to: .int(num))
         case .float(_):
             guard let num = Float(text) else { return }
-            self.item = .float(num)
+            setItem(to: .float(num))
         default:
             break
         }
         
-        self.delegate?.didChangeValue(ofItem: itemKey, to: self.item)
-        self.tableView.reloadRows(at: [indexPath], with: .fade)
         textField.resignFirstResponder()
     }
     
@@ -177,60 +169,18 @@ class SerializedItemViewController: UITableViewController {
             return
         }
         
-        self.delegate?.didChangeName(ofItem: itemKey, to: text)
-        self.itemKey = text
-        self.title = self.itemKey
-        self.tableView.reloadRows(at: [indexPath], with: .fade)
+        if self.delegate?.didChangeName(ofItem: itemKey, to: text) ?? false {
+            self.itemKey = text
+            self.title = self.itemKey
+            self.tableView.reloadRows(at: [indexPath], with: .fade)
+        }
+        
         textField.resignFirstResponder()
     }
     
-    func presentEditAlert() {
-        let alert = UIAlertController(title: "Set value", message: nil, preferredStyle: .alert)
-        alert.addAction(.cancel())
-        switch item {
-        case .string(let string):
-            alert.addTextField { textField in
-                textField.text = string
-            }
-        case .int(let int):
-            alert.addTextField { textField in
-                textField.text = int.description
-                textField.keyboardType = .numberPad
-            }
-        case .float(let float):
-            alert.addTextField { textField in
-                textField.text = float.description
-                textField.keyboardType = .decimalPad
-            }
-        default:
-            return
-        }
-        
-        let applyAction = UIAlertAction(title: "Set", style: .default) { _ in
-            guard let text = alert.textFields?.first?.text, !text.isEmpty else {
-                return
-            }
-            
-            switch self.item {
-            case .string(_):
-                self.item = .string(text)
-            case .int(_):
-                guard let num = Int(text) else { return }
-                self.item = .int(num)
-            case .float(_):
-                guard let num = Float(text) else { return }
-                self.item = .float(num)
-            default:
-                return // should never even get here
-            }
-        }
-        
-        alert.addAction(applyAction)
-        self.present(alert, animated: true)
-    }
 }
 
 protocol SerializedItemViewControllerDelegate: AnyObject {
-    func didChangeName(ofItem item: String, to newName: String)
-    func didChangeValue(ofItem item: String, to newValue: SerializedDocumentType)
+    func didChangeName(ofItem item: String, to newName: String) -> Bool
+    func didChangeValue(ofItem item: String, to newValue: SerializedItemType) -> Bool
 }

@@ -1,5 +1,5 @@
 //
-//  SerializedDocumentType.swift
+//  SerializedItemType.swift
 //  Santander
 //
 //  Created by Serena on 17/08/2022.
@@ -7,8 +7,8 @@
 
 import Foundation
 
-enum SerializedDocumentType: Equatable, CustomStringConvertible {
-    static func == (lhs: SerializedDocumentType, rhs: SerializedDocumentType) -> Bool {
+enum SerializedItemType: Equatable, CustomStringConvertible {
+    static func == (lhs: SerializedItemType, rhs: SerializedItemType) -> Bool {
         switch (lhs, rhs) {
         case (.string(let first), .string(let second)):         return first == second
         case (.bool(let first), .bool(let second)):             return first == second

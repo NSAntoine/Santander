@@ -49,7 +49,7 @@ class SubPathsTableViewController: UITableViewController {
     let showInfoButton: Bool = UserPreferences.showInfoButton
     
     /// Whether or not to display the search suggestions
-    var doDisplaySearchSuggestions: Bool = false
+    var displayingSearchSuggestions: Bool = false
     
     /// the Directory Monitor, used to observe changes
     /// if the path is a directory
@@ -131,7 +131,7 @@ class SubPathsTableViewController: UITableViewController {
         }
         self.navigationItem.searchController = searchController
 #if compiler(>=5.7)
-        if #available(iOS 16.0, *), UIDevice.current.userInterfaceIdiom == .pad {
+        if #available(iOS 16.0, *), UIDevice.current.isiPad {
             self.navigationItem.style = .browser
             self.navigationItem.renameDelegate = self
         }
@@ -163,7 +163,7 @@ class SubPathsTableViewController: UITableViewController {
     }
     /// Setup the snapshot to show the paths given
     func showPaths(animatingDifferences: Bool = false) {
-        self.doDisplaySearchSuggestions = false
+        self.displayingSearchSuggestions = false
         var snapshot = dataSource.snapshot()
         snapshot.deleteAllItems()
         snapshot.deleteSections([1, 2])
@@ -175,7 +175,7 @@ class SubPathsTableViewController: UITableViewController {
     
     /// Show the search suggestions
     func switchToSearchSuggestions() {
-        doDisplaySearchSuggestions = true
+        displayingSearchSuggestions = true
         var snapshot = dataSource.snapshot()
         snapshot.deleteAllItems()
         snapshot.appendSections([0, 1, 2])
@@ -212,7 +212,7 @@ class SubPathsTableViewController: UITableViewController {
             return
         }
         
-        if doDisplaySearchSuggestions {
+        if displayingSearchSuggestions {
             let searchTextField = self.navigationItem.searchController?.searchBar.searchTextField
             let tokensCount = searchTextField?.tokens.count
             
@@ -240,6 +240,7 @@ class SubPathsTableViewController: UITableViewController {
         } else {
             let selectedItem = contents[indexPath.row]
             goToPath(path: selectedItem)
+            tableView.deselectRow(at: indexPath, animated: true)
         }
     }
     
@@ -258,6 +259,10 @@ class SubPathsTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        
+        guard !displayingSearchSuggestions else {
+            return nil
+        }
         
         let selectedItem = self.contents[indexPath.row]
         let itemAlreadyFavourited = UserPreferences.favouritePaths.contains(selectedItem.path)
@@ -352,8 +357,8 @@ class SubPathsTableViewController: UITableViewController {
             "Applications": FileManager.default.urls(for: .applicationDirectory, in: .userDomainMask).first,
             "Documents" : FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
             "Downloads": FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first,
-            "/ (Root)" : .root,
-            "var": URL(fileURLWithPath: "/var")
+            "Library": FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first,
+            "/ (Root)" : .root
         ]
         
         for (locationName, locationURL) in commonLocations {
@@ -405,11 +410,13 @@ class SubPathsTableViewController: UITableViewController {
                 }
             }
         } else if let preferred = FileEditor.preferred(forURL: path) {
-            let navVC = UINavigationController(rootViewController: preferred.viewController)
-            if preferred.type != .propertyList && preferred.type != .json {
-                navVC.modalPresentationStyle = .fullScreen
+            let vcToPresent = UINavigationController(rootViewController: preferred.viewController)
+            
+            if preferred.type.presentAsFullScreen {
+                vcToPresent.modalPresentationStyle = .fullScreen
             }
-            self.present(navVC, animated: true)
+            
+            self.present(vcToPresent, animated: true)
         } else {
             openQuickLookPreview(forURL: path)
         }
@@ -499,6 +506,10 @@ class SubPathsTableViewController: UITableViewController {
             actionSheet.addAction(appInfoAction)
             actionSheet.addAction(pathInfoAction)
             actionSheet.addAction(.init(title: "Cancel", style: .cancel))
+            
+            actionSheet.popoverPresentationController?.sourceView = view
+            let bounds = view.bounds
+            actionSheet.popoverPresentationController?.sourceRect = CGRect(x: bounds.midX, y: bounds.midY, width: 0, height: 0)
             self.present(actionSheet, animated: true)
         } else {
             let navController = UINavigationController(
@@ -581,7 +592,7 @@ class SubPathsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         
-        if doDisplaySearchSuggestions {
+        if displayingSearchSuggestions {
             return nil // No context menu for search suggestions
         }
         
@@ -621,7 +632,7 @@ class SubPathsTableViewController: UITableViewController {
             }
             
             let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                self.presentShareAction(items: [item])
+                self.presentActivityVC(forItems: [item])
             }
             
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "rectangle.and.pencil.and.ellipsis")) { _ in
@@ -690,18 +701,21 @@ class SubPathsTableViewController: UITableViewController {
                 let allEditors = FileEditor.allEditors(forURL: item)
                 let actions = allEditors.map { editor in
                     UIAction(title: editor.type.description) { _ in
-                        let navVC = UINavigationController(rootViewController: editor.viewController)
-                        if editor.type != .propertyList && editor.type != .json {
-                            navVC.modalPresentationStyle = .fullScreen
+                        let vcToPresent = UINavigationController(rootViewController: editor.viewController)
+                        
+                        if editor.type.presentAsFullScreen {
+                            vcToPresent.modalPresentationStyle = .fullScreen
                         }
-                        self.present(navVC, animated: true)
+                        self.present(vcToPresent, animated: true)
                     }
                 }
                 
+                //TODO: - For insanely large files, this results in a crash, find a way around this.
+                // maybe use a UIAlertController as an actionSheet?
                 children.append(UIMenu(title: "Open in..", children: actions))
             }
             
-            if UIDevice.current.userInterfaceIdiom == .pad {
+            if UIDevice.current.isiPad {
                 var menu = UIMenu(title: "Add to group..", image: UIImage(systemName: "sidebar.leading"), children: [])
                 
                 for (index, group) in UserPreferences.pathGroups.enumerated() where group != .default {
@@ -833,7 +847,7 @@ class SubPathsTableViewController: UITableViewController {
     
     func setFilteredContents(_ newContents: [URL], animatingDifferences: Bool = false) {
         self.filteredSearchContents = newContents
-        if !doDisplaySearchSuggestions {
+        if !displayingSearchSuggestions {
             self.showPaths(animatingDifferences: animatingDifferences)
         }
     }

@@ -132,12 +132,16 @@ class TypesSelectionViewController: UITableViewController, UISearchBarDelegate {
     }
     
     override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return sectionHeaderWithButton(action: #selector(sectionButtonClicked(_:)), sectionTag: section, titleText: headerTitle(forSection: section)) { button in
+        return sectionHeaderWithButton(sectionTag: section, titleText: headerTitle(forSection: section)) { button in
             button.setImage(UIImage(systemName: "chevron.down"), for: .normal)
+            let action = UIAction { _ in
+                self.sectionButtonClicked(button)
+            }
+            
+            button.addAction(action, for: .touchUpInside)
         }
     }
     
-    @objc
     func sectionButtonClicked(_ sender: UIButton) {
         let section = sender.tag
         let isCollapsing: Bool = !(self.collapsedSections.contains(section))

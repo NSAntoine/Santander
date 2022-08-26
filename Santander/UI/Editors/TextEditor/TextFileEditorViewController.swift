@@ -84,7 +84,7 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
         
         view.addSubview(textView)
         
-        setupNavBar()
+        configureNavigationBarToNormal()
         
         NSLayoutConstraint.activate([
             textView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
@@ -129,14 +129,6 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
     
     func textViewDidChange(_ textView: TextView) {
         self.navigationItem.rightBarButtonItem?.isEnabled = !textIsSameAsOriginal
-    }
-    
-    func setupNavBar() {
-        let navigationBarAppearance = UINavigationBarAppearance()
-        navigationBarAppearance.configureWithDefaultBackground()
-        navigationController?.navigationBar.compactAppearance = navigationBarAppearance
-        navigationController?.navigationBar.compactAppearance = navigationBarAppearance
-        navigationController?.navigationBar.scrollEdgeAppearance = navigationBarAppearance
     }
     
     @objc

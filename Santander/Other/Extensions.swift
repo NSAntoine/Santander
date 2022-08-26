@@ -92,7 +92,27 @@ extension URL {
     
     /// The image to represent this URL in the UI.
     var displayImage: UIImage? {
-        return self.isDirectory ? UIImage(systemName: "folder.fill") : UIImage(systemName: "doc")
+        if isDirectory {
+            return UIImage(systemName: "folder.fill")
+        } else {
+            // `UTType.data` is a generic type,
+            // return the generic symbol for files for it.
+            guard let type = self.contentType, type != .data else {
+                return UIImage(systemName: "doc")
+            }
+            
+            if type.isOfType(.executable) {
+                return UIImage(systemName: "terminal")
+            } else if type.isOfType(.image) {
+                return UIImage(systemName: "photo")
+            } else if type.isOfType(.audio) {
+                return UIImage(systemName: "waveform")
+            } else if type.isOfType(.video) {
+                return UIImage(systemName: "play.rectangle")
+            }
+            
+            return UIImage(systemName: "doc")
+        }
     }
     
     func setPermissions(forOwner owner: Permission, group: Permission = [], others: Permission = []) throws {
@@ -138,14 +158,32 @@ extension URL {
 }
 
 extension UIViewController {
-    func errorAlert(_ errorDescription: String, title: String) {
+    func errorAlert(_ errorDescription: String, title: String, presentingFromIfAvailable presentingVC: UIViewController? = nil) {
         let alert = UIAlertController(title: title, message: "Error occured: \(errorDescription)", preferredStyle: .alert)
         alert.addAction(.init(title: "OK", style: .cancel))
-        self.present(alert, animated: true)
+        let vcToPresentFrom = presentingVC ?? self
+        vcToPresentFrom.present(alert, animated: true)
     }
     
-    func errorAlert(_ error: Error, title: String) {
-        self.errorAlert(error.localizedDescription, title: title)
+    func errorAlert(_ error: Error, title: String, presentingFromIfAvailable presentingVC: UIViewController? = nil) {
+        self.errorAlert(error.localizedDescription, title: title, presentingFromIfAvailable: presentingVC)
+    }
+    
+    func configureNavigationBarToNormal() {
+        let navigationBarAppearance = UINavigationBarAppearance()
+        navigationBarAppearance.configureWithDefaultBackground()
+        navigationController?.navigationBar.compactAppearance = navigationBarAppearance
+        navigationController?.navigationBar.scrollEdgeAppearance = navigationBarAppearance
+    }
+    
+    /// Presents the Activity View Controller, with code to make sure it doesn't crash on iPad
+    func presentActivityVC(forItems items: [Any]) {
+        let vc = UIActivityViewController(activityItems: items, applicationActivities: nil)
+        vc.popoverPresentationController?.sourceView = view
+        let bounds = view.bounds
+        
+        vc.popoverPresentationController?.sourceRect = CGRect(x: bounds.midX, y: bounds.midY, width: 0, height: 0)
+        self.present(vc, animated: true)
     }
 }
 
@@ -365,6 +403,11 @@ extension UTType {
             systemTypes(),
         ]
     }
+    
+    /// Checks whether the URL is the given UTT type, or a subtype of it
+    func isOfType(_ type: UTType) -> Bool {
+        return type == self || self.isSubtype(of: type)
+    }
 }
 
 extension UITableViewController {
@@ -375,7 +418,7 @@ extension UITableViewController {
         }
     }
     
-    func cellWithView(_ view: UIView, text: String) -> UITableViewCell {
+    func cellWithView(_ view: UIView, text: String, rightAnchorConstant: CGFloat = -20) -> UITableViewCell {
         let cell = UITableViewCell()
         var conf = cell.defaultContentConfiguration()
         conf.text = text
@@ -384,7 +427,7 @@ extension UITableViewController {
         cell.contentView.addSubview(view)
         
         NSLayoutConstraint.activate([
-            view.rightAnchor.constraint(equalTo: cell.contentView.rightAnchor, constant: -20),
+            view.rightAnchor.constraint(equalTo: cell.contentView.rightAnchor, constant: rightAnchorConstant),
             view.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
         ])
         
@@ -393,7 +436,6 @@ extension UITableViewController {
     
     /// A title view for a header, containing a button and a title
     func sectionHeaderWithButton(
-        action: Selector,
         sectionTag: Int,
         titleText: String?,
         buttonCustomization: (UIButton) -> Void
@@ -402,7 +444,6 @@ extension UITableViewController {
         let label = UILabel()
         let button = UIButton()
         buttonCustomization(button)
-        button.addTarget(self, action: action, for: .touchUpInside)
         
         button.tag = sectionTag
         
@@ -561,7 +602,7 @@ extension UITableViewCell {
     }
 }
 
-extension Dictionary<String, SerializedDocumentType> {
+extension Dictionary<String, SerializedItemType> {
     func asAnyDictionary() -> [String: Any] {
         var dict: [String: Any] = [:]
         for (key, value) in self {
@@ -569,5 +610,27 @@ extension Dictionary<String, SerializedDocumentType> {
         }
         
         return dict
+    }
+}
+
+extension UIDevice {
+    var isiPad: Bool {
+        return userInterfaceIdiom == .pad
+    }
+}
+
+extension DateFormatter {
+    /// A Date Formatter which could be used to format dates
+    /// used in EXIF metadata
+    static var EXIFDateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy:MM:dd HH:mm:ss"
+        return formatter
+    }
+    
+    static var IPTCDateFormatter: DateFormatter {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyyMMdd"
+        return formatter
     }
 }

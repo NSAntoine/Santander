@@ -85,6 +85,18 @@ class AudioPlayerViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    /// Initializes a new AudioPlayerViewController with the given file URL and data
+    init(fileURL: URL, data: Data) throws {
+        self.fileURL = fileURL
+        self.asset = AVAsset(url: fileURL)
+        self.player = try AVAudioPlayer(data: data)
+        
+        self.player.enableRate = true
+        self.player.rate = playbackSpeedRate
+        
+        super.init(nibName: nil, bundle: nil)
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }

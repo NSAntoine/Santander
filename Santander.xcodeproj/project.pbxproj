@@ -8,6 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		3712D319286F7F2E00BCD034 /* TypeSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3712D318286F7F2E00BCD034 /* TypeSelectionViewController.swift */; };
+		3713292328B5F108009E4AEA /* Runestone in Frameworks */ = {isa = PBXBuildFile; productRef = 3713292228B5F108009E4AEA /* Runestone */; };
+		3713292528B60163009E4AEA /* ImageMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3713292428B60163009E4AEA /* ImageMetadata.swift */; };
+		3713292928B61F98009E4AEA /* ImageMetadataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3713292828B61F98009E4AEA /* ImageMetadataViewController.swift */; };
+		3713292B28B74D34009E4AEA /* ImageLocationEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3713292A28B74D34009E4AEA /* ImageLocationEditorViewController.swift */; };
 		37137F7828AED89F00E28069 /* SerializedArrayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37137F7728AED89F00E28069 /* SerializedArrayViewController.swift */; };
 		37177E4C289F12640025042E /* PathGroupOwnerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37177E4B289F12640025042E /* PathGroupOwnerViewController.swift */; };
 		37198B9A28721069000C8CDF /* TextEditorThemeSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37198B9928721069000C8CDF /* TextEditorThemeSettingsViewController.swift */; };
@@ -26,7 +30,7 @@
 		3787DB0528ABECF200ACA60B /* FileEditorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3787DB0428ABECF200ACA60B /* FileEditorType.swift */; };
 		3787DB0728ACB74D00ACA60B /* SerializedDocumentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3787DB0628ACB74D00ACA60B /* SerializedDocumentViewController.swift */; };
 		3787DB0A28ACE4EE00ACA60B /* SerializedItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3787DB0928ACE4EE00ACA60B /* SerializedItemViewController.swift */; };
-		3787DB0C28ACE5E200ACA60B /* SerializedDocumentType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3787DB0B28ACE5E200ACA60B /* SerializedDocumentType.swift */; };
+		3787DB0C28ACE5E200ACA60B /* SerializedItemType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3787DB0B28ACE5E200ACA60B /* SerializedItemType.swift */; };
 		3789B5E028622B7A00058688 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3789B5DF28622B7A00058688 /* AppDelegate.swift */; };
 		3789B5E228622B7A00058688 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3789B5E128622B7A00058688 /* SceneDelegate.swift */; };
 		3789B5E928622B7C00058688 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 3789B5E828622B7C00058688 /* Assets.xcassets */; };
@@ -36,7 +40,6 @@
 		37934DB728707F4500D1248A /* TextFileEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37934DB628707F4500D1248A /* TextFileEditorViewController.swift */; };
 		37963F132869C96C00C4B72A /* PathType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37963F122869C96C00C4B72A /* PathType.swift */; };
 		37963F17286A0F0B00C4B72A /* DirectoryMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37963F16286A0F0B00C4B72A /* DirectoryMonitor.swift */; };
-		37BB871428932E9600ADA5E3 /* Runestone in Frameworks */ = {isa = PBXBuildFile; productRef = 37BB871328932E9600ADA5E3 /* Runestone */; };
 		37C6E0C52865CF7C00BDDA16 /* SettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C42865CF7C00BDDA16 /* SettingsTableViewController.swift */; };
 		37C6E0C828662C4100BDDA16 /* DragAndDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */; };
 		37C6E0CA28662C6800BDDA16 /* PathsSortMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C928662C6800BDDA16 /* PathsSortMethods.swift */; };
@@ -46,6 +49,7 @@
 		37CA828828AA4638000236D7 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37CA828728AA4638000236D7 /* CoreServices.framework */; };
 		37CA828A28AA675B000236D7 /* AppInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CA828928AA675B000236D7 /* AppInfoViewController.swift */; };
 		37DE0FA22864902400E5EBBC /* FilePreviewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */; };
+		37ECADA728B23ECC00B95733 /* ImageFileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ECADA628B23ECB00B95733 /* ImageFileViewController.swift */; };
 		37EEA02828A8BF2700FA8CEB /* Compression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA02728A8BF2700FA8CEB /* Compression.swift */; };
 		37EEA03928A8C86B00FA8CEB /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA02F28A8C86A00FA8CEB /* unzip.c */; };
 		37EEA03A28A8C86B00FA8CEB /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA03728A8C86B00FA8CEB /* ioapi.c */; };
@@ -67,6 +71,9 @@
 
 /* Begin PBXFileReference section */
 		3712D318286F7F2E00BCD034 /* TypeSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeSelectionViewController.swift; sourceTree = "<group>"; };
+		3713292428B60163009E4AEA /* ImageMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageMetadata.swift; sourceTree = "<group>"; };
+		3713292828B61F98009E4AEA /* ImageMetadataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageMetadataViewController.swift; sourceTree = "<group>"; };
+		3713292A28B74D34009E4AEA /* ImageLocationEditorViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLocationEditorViewController.swift; sourceTree = "<group>"; };
 		37137F7728AED89F00E28069 /* SerializedArrayViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerializedArrayViewController.swift; sourceTree = "<group>"; };
 		37177E4B289F12640025042E /* PathGroupOwnerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathGroupOwnerViewController.swift; sourceTree = "<group>"; };
 		37198B9928721069000C8CDF /* TextEditorThemeSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextEditorThemeSettingsViewController.swift; sourceTree = "<group>"; };
@@ -88,7 +95,7 @@
 		3787DB0428ABECF200ACA60B /* FileEditorType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileEditorType.swift; sourceTree = "<group>"; };
 		3787DB0628ACB74D00ACA60B /* SerializedDocumentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializedDocumentViewController.swift; sourceTree = "<group>"; };
 		3787DB0928ACE4EE00ACA60B /* SerializedItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerializedItemViewController.swift; sourceTree = "<group>"; };
-		3787DB0B28ACE5E200ACA60B /* SerializedDocumentType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerializedDocumentType.swift; sourceTree = "<group>"; };
+		3787DB0B28ACE5E200ACA60B /* SerializedItemType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerializedItemType.swift; sourceTree = "<group>"; };
 		3789B5DC28622B7A00058688 /* Santander.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Santander.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3789B5DF28622B7A00058688 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		3789B5E128622B7A00058688 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -109,6 +116,7 @@
 		37CA828728AA4638000236D7 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		37CA828928AA675B000236D7 /* AppInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfoViewController.swift; sourceTree = "<group>"; };
 		37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewDataSource.swift; sourceTree = "<group>"; };
+		37ECADA628B23ECB00B95733 /* ImageFileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFileViewController.swift; sourceTree = "<group>"; };
 		37EEA02728A8BF2700FA8CEB /* Compression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Compression.swift; sourceTree = "<group>"; };
 		37EEA02E28A8C86A00FA8CEB /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		37EEA02F28A8C86A00FA8CEB /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
@@ -126,7 +134,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				37BB871428932E9600ADA5E3 /* Runestone in Frameworks */,
+				3713292328B5F108009E4AEA /* Runestone in Frameworks */,
 				37CA828828AA4638000236D7 /* CoreServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -134,6 +142,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3713292628B618AD009E4AEA /* Image */ = {
+			isa = PBXGroup;
+			children = (
+				37ECADA628B23ECB00B95733 /* ImageFileViewController.swift */,
+				3713292A28B74D34009E4AEA /* ImageLocationEditorViewController.swift */,
+				3713292828B61F98009E4AEA /* ImageMetadataViewController.swift */,
+			);
+			path = Image;
+			sourceTree = "<group>";
+		};
 		372A570928AA436400781243 /* LaunchServices */ = {
 			isa = PBXGroup;
 			children = (
@@ -152,6 +170,17 @@
 			path = Preferences;
 			sourceTree = "<group>";
 		};
+		3758315C28B4D2E9001E63F2 /* TextEditor */ = {
+			isa = PBXGroup;
+			children = (
+				37198B9928721069000C8CDF /* TextEditorThemeSettingsViewController.swift */,
+				37934DB628707F4500D1248A /* TextFileEditorViewController.swift */,
+				37198B9B28721275000C8CDF /* Themes.swift */,
+				37198B9E2872DDA6000C8CDF /* KeyboardToolsView.swift */,
+			);
+			path = TextEditor;
+			sourceTree = "<group>";
+		};
 		3771D3782862328400E200B6 /* Other */ = {
 			isa = PBXGroup;
 			children = (
@@ -159,10 +188,11 @@
 				372A570E28AA44D200781243 /* ApplicationsManager.swift */,
 				37EEA02428A8BE4E00FA8CEB /* External */,
 				3771D37A2862329D00E200B6 /* Extensions.swift */,
-				3787DB0B28ACE5E200ACA60B /* SerializedDocumentType.swift */,
+				3787DB0B28ACE5E200ACA60B /* SerializedItemType.swift */,
 				37963F122869C96C00C4B72A /* PathType.swift */,
 				375CF898289C4FF000BB7C60 /* PathMetadata.swift */,
 				375CF89C289CF3A600BB7C60 /* Permissions.swift */,
+				3713292428B60163009E4AEA /* ImageMetadata.swift */,
 				374ECDC62875A3710066E9DD /* Preferences */,
 				37C6E0C928662C6800BDDA16 /* PathsSortMethods.swift */,
 				37963F16286A0F0B00C4B72A /* DirectoryMonitor.swift */,
@@ -228,13 +258,11 @@
 		37934DB528707F3200D1248A /* Editors */ = {
 			isa = PBXGroup;
 			children = (
-				37198B9928721069000C8CDF /* TextEditorThemeSettingsViewController.swift */,
-				37934DB628707F4500D1248A /* TextFileEditorViewController.swift */,
+				3758315C28B4D2E9001E63F2 /* TextEditor */,
 				374ECDC92875F5350066E9DD /* AudioPlayerViewController.swift */,
 				3787DB0828ACE4C900ACA60B /* Serialized */,
 				3787DB0428ABECF200ACA60B /* FileEditorType.swift */,
-				37198B9B28721275000C8CDF /* Themes.swift */,
-				37198B9E2872DDA6000C8CDF /* KeyboardToolsView.swift */,
+				3713292628B618AD009E4AEA /* Image */,
 			);
 			path = Editors;
 			sourceTree = "<group>";
@@ -323,7 +351,7 @@
 			);
 			name = Santander;
 			packageProductDependencies = (
-				37BB871328932E9600ADA5E3 /* Runestone */,
+				3713292228B5F108009E4AEA /* Runestone */,
 			);
 			productName = Santander;
 			productReference = 3789B5DC28622B7A00058688 /* Santander.app */;
@@ -354,7 +382,7 @@
 			);
 			mainGroup = 3789B5D328622B7A00058688;
 			packageReferences = (
-				37BB871228932E9600ADA5E3 /* XCRemoteSwiftPackageReference "Runestone" */,
+				3713292128B5F108009E4AEA /* XCRemoteSwiftPackageReference "Runestone" */,
 			);
 			productRefGroup = 3789B5DD28622B7A00058688 /* Products */;
 			projectDirPath = "";
@@ -386,13 +414,16 @@
 				37C6E0CE28665B2A00BDDA16 /* PathOperationViewController.swift in Sources */,
 				3771D37B2862329D00E200B6 /* Extensions.swift in Sources */,
 				37EEA03928A8C86B00FA8CEB /* unzip.c in Sources */,
-				3787DB0C28ACE5E200ACA60B /* SerializedDocumentType.swift in Sources */,
+				3787DB0C28ACE5E200ACA60B /* SerializedItemType.swift in Sources */,
 				374ECDCA2875F5350066E9DD /* AudioPlayerViewController.swift in Sources */,
 				37C6E0C52865CF7C00BDDA16 /* SettingsTableViewController.swift in Sources */,
 				37C6E0CA28662C6800BDDA16 /* PathsSortMethods.swift in Sources */,
 				37934DB728707F4500D1248A /* TextFileEditorViewController.swift in Sources */,
+				3713292B28B74D34009E4AEA /* ImageLocationEditorViewController.swift in Sources */,
+				3713292928B61F98009E4AEA /* ImageMetadataViewController.swift in Sources */,
 				375CF89F289D969A00BB7C60 /* PathPermissionsViewController.swift in Sources */,
 				3787DB0528ABECF200ACA60B /* FileEditorType.swift in Sources */,
+				3713292528B60163009E4AEA /* ImageMetadata.swift in Sources */,
 				37C6E0C828662C4100BDDA16 /* DragAndDrop.swift in Sources */,
 				37932F052863205F00BF48C8 /* UserPreferences.swift in Sources */,
 				37177E4C289F12640025042E /* PathGroupOwnerViewController.swift in Sources */,
@@ -417,6 +448,7 @@
 				37EEA03A28A8C86B00FA8CEB /* ioapi.c in Sources */,
 				375CF89D289CF3A600BB7C60 /* Permissions.swift in Sources */,
 				37CA828A28AA675B000236D7 /* AppInfoViewController.swift in Sources */,
+				37ECADA728B23ECC00B95733 /* ImageFileViewController.swift in Sources */,
 				3771D37F2862493E00E200B6 /* PathInformationTableViewController.swift in Sources */,
 				37198B9A28721069000C8CDF /* TextEditorThemeSettingsViewController.swift in Sources */,
 				375CF899289C4FF000BB7C60 /* PathMetadata.swift in Sources */,
@@ -647,7 +679,7 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		37BB871228932E9600ADA5E3 /* XCRemoteSwiftPackageReference "Runestone" */ = {
+		3713292128B5F108009E4AEA /* XCRemoteSwiftPackageReference "Runestone" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/simonbs/Runestone";
 			requirement = {
@@ -658,9 +690,9 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		37BB871328932E9600ADA5E3 /* Runestone */ = {
+		3713292228B5F108009E4AEA /* Runestone */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 37BB871228932E9600ADA5E3 /* XCRemoteSwiftPackageReference "Runestone" */;
+			package = 3713292128B5F108009E4AEA /* XCRemoteSwiftPackageReference "Runestone" */;
 			productName = Runestone;
 		};
 /* End XCSwiftPackageProductDependency section */

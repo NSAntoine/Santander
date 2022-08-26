@@ -9,11 +9,13 @@ import UIKit
 
 class SerializedArrayViewController: UITableViewController {
     let array: NSArray
+    let type: SerializedDocumentViewerType
     
-    init(style: UITableView.Style, array: NSArray, title: String) {
+    init(array: NSArray, type: SerializedDocumentViewerType, title: String?) {
         self.array = array
+        self.type = type
         
-        super.init(style: style)
+        super.init(style: .userPreferred)
         self.title = title
     }
     
@@ -32,12 +34,41 @@ class SerializedArrayViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell()
         var conf = cell.defaultContentConfiguration()
-        conf.text = SerializedDocumentType(item: array[indexPath.row]).description
+        let item = array[indexPath.row]
+        
+        if item as? NSArray != nil {
+            conf.text = "Array (Index \(indexPath.row))"
+            cell.accessoryType = .disclosureIndicator
+        } else if item as? [String: Any] != nil {
+            conf.text = "Dictionary (Index \(indexPath.row))"
+            cell.accessoryType = .disclosureIndicator
+        } else {
+            conf.text = SerializedItemType(item: item).description
+        }
+        
         cell.contentConfiguration = conf
         return cell
     }
     
     override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-        return false
+        return true
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if let arr = array[indexPath.row] as? NSArray {
+            let title = "Array (Index \(indexPath.row))"
+            navigationController?.pushViewController(SerializedArrayViewController(array: arr, type: type, title: title), animated: true)
+        } else if let dict = array[indexPath.row] as? [String: Any] {
+            var serializedDict: SerializedDocumentViewController.SerializedDictionaryType = [:]
+            for (key, value) in dict {
+                serializedDict[key] = .init(item: value)
+            }
+            
+            let title = "Dictionary (Index \(indexPath.row))"
+            let vc = SerializedDocumentViewController(dictionary: serializedDict, type: type, title: title, canEdit: false)
+            navigationController?.pushViewController(vc, animated: true)
+        } else {
+            tableView.deselectRow(at: indexPath, animated: true)
+        }
     }
 }
