@@ -166,49 +166,38 @@ class AudioPlayerViewController: UIViewController {
             }
         )
         
+        let buttonsStackView = UIStackView(arrangedSubviews: [backwardButton, playButton, forwardButton])
+        buttonsStackView.spacing = 40
+        
+        let labelsStackView = UIStackView(arrangedSubviews: [titleLabel, artistLabel])
+        labelsStackView.axis = .vertical
         
         durationLabel.translatesAutoresizingMaskIntoConstraints = false
         playbackSlider.translatesAutoresizingMaskIntoConstraints = false
-        titleLabel.translatesAutoresizingMaskIntoConstraints = false
-        artistLabel.translatesAutoresizingMaskIntoConstraints = false
-        playButton.translatesAutoresizingMaskIntoConstraints = false
+        buttonsStackView.translatesAutoresizingMaskIntoConstraints = false
+        labelsStackView.translatesAutoresizingMaskIntoConstraints = false
         loopButton.translatesAutoresizingMaskIntoConstraints = false
         currentProgressLabel.translatesAutoresizingMaskIntoConstraints = false
-        forwardButton.translatesAutoresizingMaskIntoConstraints = false
-        backwardButton.translatesAutoresizingMaskIntoConstraints = false
         
         // Mark: adding the subviews
-        self.view.addSubview(playButton)
-        self.view.addSubview(titleLabel)
-        self.view.addSubview(artistLabel)
-        self.view.addSubview(playbackSlider)
-        self.view.addSubview(durationLabel)
-        self.view.addSubview(currentProgressLabel)
-        self.view.addSubview(loopButton)
-        self.view.addSubview(forwardButton)
-        self.view.addSubview(backwardButton)
+        view.addSubview(buttonsStackView)
+        view.addSubview(durationLabel)
+        view.addSubview(labelsStackView)
+        view.addSubview(playbackSlider)
+        view.addSubview(currentProgressLabel)
+        view.addSubview(loopButton)
         
         NSLayoutConstraint.activate([
-            playButton.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            playButton.centerYAnchor.constraint(equalTo: self.view.centerYAnchor, constant: 210),
+            playbackSlider.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 120),
+            playbackSlider.rightAnchor.constraint(equalTo: view.layoutMarginsGuide.rightAnchor),
+            playbackSlider.leftAnchor.constraint(equalTo: view.layoutMarginsGuide.leftAnchor),
             
-            forwardButton.centerXAnchor.constraint(equalTo: self.playButton.centerXAnchor, constant: 70),
-            forwardButton.centerYAnchor.constraint(equalTo: playButton.centerYAnchor),
-            
-            backwardButton.centerXAnchor.constraint(equalTo: self.playButton.centerXAnchor, constant: -70),
-            backwardButton.centerYAnchor.constraint(equalTo: playButton.centerYAnchor),
-            
-            playbackSlider.centerYAnchor.constraint(equalTo: self.view.centerYAnchor, constant: 120),
-            playbackSlider.rightAnchor.constraint(equalTo: self.view.rightAnchor, constant: -20),
-            playbackSlider.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 20),
-            
-            artistLabel.rightAnchor.constraint(equalTo: playbackSlider.rightAnchor),
-            artistLabel.leftAnchor.constraint(equalTo: playbackSlider.leftAnchor),
-            artistLabel.bottomAnchor.constraint(equalTo: playbackSlider.topAnchor, constant: -20),
-            
-            titleLabel.rightAnchor.constraint(equalTo: playbackSlider.rightAnchor),
-            titleLabel.leftAnchor.constraint(equalTo: playbackSlider.leftAnchor),
-            titleLabel.bottomAnchor.constraint(equalTo: artistLabel.topAnchor), // Put title label above artist label
+            buttonsStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            buttonsStackView.centerYAnchor.constraint(equalTo: playbackSlider.centerYAnchor, constant: 80),
+  
+            labelsStackView.rightAnchor.constraint(equalTo: playbackSlider.rightAnchor),
+            labelsStackView.leftAnchor.constraint(equalTo: playbackSlider.leftAnchor),
+            labelsStackView.bottomAnchor.constraint(equalTo: playbackSlider.topAnchor, constant: -10),
             
             durationLabel.rightAnchor.constraint(equalTo: titleLabel.rightAnchor),
             durationLabel.topAnchor.constraint(equalTo: playbackSlider.bottomAnchor),
@@ -245,7 +234,8 @@ class AudioPlayerViewController: UIViewController {
         displayLink.isPaused = false
     }
     
-    @objc func sychronizeSliderProgress() {
+    @objc
+    func sychronizeSliderProgress() {
         if !playbackSlider.isTracking {
             MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPMediaItemPropertyPlaybackDuration] = player.duration
             MPNowPlayingInfoCenter.default().nowPlayingInfo?[MPNowPlayingInfoPropertyElapsedPlaybackTime] = player.currentTime
@@ -270,12 +260,8 @@ class AudioPlayerViewController: UIViewController {
     func format(timeInterval: TimeInterval) -> String? {
         let formatter = DateComponentsFormatter()
         
-        // show all units if 0
-        if timeInterval != 0 {
-            formatter.zeroFormattingBehavior = .dropTrailing
-        } else {
-            formatter.zeroFormattingBehavior = .pad
-        }
+        // show all units that we'll allow
+        formatter.zeroFormattingBehavior = []
         
         formatter.allowedUnits = [.second, .minute]
         // if longer than an hour or long as an hour, allow hours
