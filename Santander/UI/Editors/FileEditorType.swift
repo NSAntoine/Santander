@@ -105,13 +105,4 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
             return false
         }
     }
-    
-    var presentWithNavigationController: Bool {
-        switch self {
-        case .text:
-            return !UIDevice.current.isiPad
-        default:
-            return true
-        }
-    }
 }

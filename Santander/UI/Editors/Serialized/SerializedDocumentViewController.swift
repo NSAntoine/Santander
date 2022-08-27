@@ -7,19 +7,23 @@
 
 import UIKit
 
+typealias SerializedDictionaryType = [String: SerializedItemType]
+
 /// A ViewController which displays the contents of a PropertyList or JSON file
 class SerializedDocumentViewController: UITableViewController, SerializedItemViewControllerDelegate {
-    typealias SerializedDictionaryType = [String: SerializedItemType]
     
-    var serializedDict: SerializedDictionaryType {
-        willSet {
-            keys = Array(newValue.keys)
-        }
+    var serializedDict: SerializedDictionaryType
+    
+    var filteredDict: SerializedDictionaryType = [:]
+    
+    var keys: [String] {
+        let keysArr = Array(isSearching ? filteredDict.keys : serializedDict.keys)
+        return keysArr
     }
     
-    lazy var keys = Array(serializedDict.keys)
     var fileURL: URL?
     var canEdit: Bool
+    var isSearching: Bool = false
     let type: SerializedDocumentViewerType
     
     init(dictionary: SerializedDictionaryType, type: SerializedDocumentViewerType, title: String, fileURL: URL? = nil, canEdit: Bool) {
@@ -36,10 +40,11 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .done, primaryAction: UIAction(withClosure: dismissVC))
-        // TODO: - Search
-        // let searchController = UISearchController()
-//        self.navigationItem.searchController = searchController
+        navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .done, primaryAction: UIAction(withClosure: dismissVC))
+        let searchController = UISearchController()
+        searchController.searchBar.delegate = self
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = !UserPreferences.alwaysShowSearchBar
     }
     
     convenience init?(type: SerializedDocumentViewerType, fileURL: URL, data: Data, canEdit: Bool) {
@@ -50,12 +55,7 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
                 return nil
             }
             
-            var newDict: SerializedDocumentViewController.SerializedDictionaryType = [:]
-            
-            for (key, value) in json {
-                newDict[key] = SerializedItemType(item: value)
-            }
-            
+            let newDict = json.asSerializedDictionary()
             self.init(dictionary: newDict, type: .json, title: fileURL.lastPathComponent, fileURL: fileURL, canEdit: canEdit)
         case .plist(_):
             let fmt: UnsafeMutablePointer<PropertyListSerialization.PropertyListFormat>? = .allocate(capacity: 4)
@@ -67,11 +67,7 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
                 return nil
             }
             
-            var newDict: SerializedDocumentViewController.SerializedDictionaryType = [:]
-            
-            for (key, value) in plist {
-                newDict[key] = SerializedItemType(item: value)
-            }
+            let newDict = plist.asSerializedDictionary()
             
             self.init(dictionary: newDict, type: .plist(format: fmt?.pointee), title: fileURL.lastPathComponent, fileURL: fileURL, canEdit: canEdit)
         }
@@ -86,7 +82,7 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return serializedDict.keys.count
+        return keys.count
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -95,7 +91,7 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
         let text = keys[indexPath.row]
         
         conf.text = text
-        let elem = serializedDict[text]
+        let elem = dictElement(forKey: text)
         
         switch elem {
         case .dictionary(_), .array(_):
@@ -117,7 +113,7 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
     /// Present the SerializedDocumentViewController for a specified indexPath
     func presentViewController(forIndexPath indexPath: IndexPath) {
         let text = keys[indexPath.row]
-        let elem = serializedDict[text]!
+        let elem = dictElement(forKey: text)!
         
         if case .array(let arr) = elem {
             let vc = SerializedArrayViewController(array: arr, type: type, title: text)
@@ -137,6 +133,7 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
             if #available(iOS 15.0, *) {
                 navVC.sheetPresentationController?.detents = [.medium()]
             }
+            
             self.present(navVC, animated: true)
         }
     }
@@ -164,7 +161,11 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
         newDict[item] = newValue
         
         let didSucceed = writeToFile(newDict: newDict)
-        tableView.reloadData()
+        if isSearching {
+            tableView.reloadData()
+        } else {
+            updateFilteredDict(reloadData: true, searchText: nil)
+        }
         return didSucceed
     }
     
@@ -206,6 +207,12 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
         }
     }
     
+    /// Returns the element to be used for the given key
+    /// in the dictionary
+    func dictElement(forKey key: String) -> SerializedItemType? {
+        return isSearching ? filteredDict[key] : serializedDict[key]
+    }
+    
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
         
         guard canEdit else {
@@ -217,6 +224,7 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
             var newDict = self.serializedDict
             newDict[self.keys[indexPath.row]] = nil
             if self.writeToFile(newDict: newDict) {
+                self.updateFilteredDict(reloadData: false, searchText: nil)
                 self.tableView.deleteRows(at: [indexPath], with: .fade)
                 completion(true)
             } else {
@@ -233,4 +241,31 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
 enum SerializedDocumentViewerType {
     case json
     case plist(format: PropertyListSerialization.PropertyListFormat?)
+}
+
+extension SerializedDocumentViewController: UISearchBarDelegate {
+    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
+        isSearching = false
+        tableView.reloadData()
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        isSearching = !searchText.isEmpty
+
+        updateFilteredDict(reloadData: true, searchText: searchText)
+    }
+    
+    func updateFilteredDict(reloadData: Bool, searchText text: String?) {
+        if isSearching {
+            let searchText = text ?? navigationItem.searchController?.searchBar.text ?? ""
+            filteredDict = serializedDict.filter { (key, value) in
+                return key.localizedCaseInsensitiveContains(searchText) ||
+                value.description.localizedCaseInsensitiveContains(searchText)
+            }
+        }
+        
+        if reloadData {
+            tableView.reloadData()
+        }
+    }
 }

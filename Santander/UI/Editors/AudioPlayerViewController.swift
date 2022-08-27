@@ -73,11 +73,10 @@ class AudioPlayerViewController: UIViewController {
             .withTintColor(.systemGray, renderingMode: .alwaysOriginal)
     }
     
-    /// Initializes a new AudioPlayerViewController with the given audio file URL
-    init(fileURL: URL) throws {
+    init(fileURL: URL, player: AVAudioPlayer) {
         self.fileURL = fileURL
         self.asset = AVAsset(url: fileURL)
-        self.player = try AVAudioPlayer(contentsOf: fileURL)
+        self.player = player
         
         self.player.enableRate = true
         self.player.rate = playbackSpeedRate
@@ -85,16 +84,14 @@ class AudioPlayerViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    /// Initializes a new AudioPlayerViewController with the given audio file URL
+    convenience init(fileURL: URL) throws {
+        self.init(fileURL: fileURL, player: try AVAudioPlayer(contentsOf: fileURL))
+    }
+    
     /// Initializes a new AudioPlayerViewController with the given file URL and data
-    init(fileURL: URL, data: Data) throws {
-        self.fileURL = fileURL
-        self.asset = AVAsset(url: fileURL)
-        self.player = try AVAudioPlayer(data: data)
-        
-        self.player.enableRate = true
-        self.player.rate = playbackSpeedRate
-        
-        super.init(nibName: nil, bundle: nil)
+    convenience init(fileURL: URL, data: Data) throws {
+        self.init(fileURL: fileURL, player: try AVAudioPlayer(data: data))
     }
     
     required init?(coder: NSCoder) {
@@ -109,8 +106,9 @@ class AudioPlayerViewController: UIViewController {
         
         displayLink.add(to: .main, forMode: .default)
         
-        addItemSystemToMediaPlayer()
+        addItemToSystemMediaPlayer()
         
+        player.delegate = self
         let playAction = UIAction(image: playButtonImage) { _ in
             self.play()
         }
@@ -322,7 +320,7 @@ class AudioPlayerViewController: UIViewController {
         })
     }
     
-    func addItemSystemToMediaPlayer() {
+    func addItemToSystemMediaPlayer() {
         let center = MPNowPlayingInfoCenter.default()
         
         UIApplication.shared.beginReceivingRemoteControlEvents()

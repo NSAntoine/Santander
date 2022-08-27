@@ -59,10 +59,7 @@ class SerializedArrayViewController: UITableViewController {
             let title = "Array (Index \(indexPath.row))"
             navigationController?.pushViewController(SerializedArrayViewController(array: arr, type: type, title: title), animated: true)
         } else if let dict = array[indexPath.row] as? [String: Any] {
-            var serializedDict: SerializedDocumentViewController.SerializedDictionaryType = [:]
-            for (key, value) in dict {
-                serializedDict[key] = .init(item: value)
-            }
+            let serializedDict = dict.asSerializedDictionary()
             
             let title = "Dictionary (Index \(indexPath.row))"
             let vc = SerializedDocumentViewController(dictionary: serializedDict, type: type, title: title, canEdit: false)

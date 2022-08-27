@@ -613,6 +613,17 @@ extension Dictionary<String, SerializedItemType> {
     }
 }
 
+extension Dictionary<String, Any> {
+    func asSerializedDictionary() -> SerializedDictionaryType {
+        var dict: SerializedDictionaryType = [:]
+        for (key, value) in self {
+            dict[key] = SerializedItemType(item: value)
+        }
+        
+        return dict
+    }
+}
+
 extension UIDevice {
     var isiPad: Bool {
         return userInterfaceIdiom == .pad
