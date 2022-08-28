@@ -699,7 +699,7 @@ class SubPathsTableViewController: UITableViewController {
             
             if !item.isDirectory {
                 let allEditors = FileEditor.allEditors(forURL: item)
-                let actions = allEditors.map { editor in
+                var actions = allEditors.map { editor in
                     UIAction(title: editor.type.description) { _ in
                         let vcToPresent = UINavigationController(rootViewController: editor.viewController)
                         
@@ -709,6 +709,13 @@ class SubPathsTableViewController: UITableViewController {
                         self.present(vcToPresent, animated: true)
                     }
                 }
+                
+                // always have a QuickLook action
+                let qlAction = UIAction(title: "QuickLook") { _ in
+                    self.openQuickLookPreview(forURL: item)
+                }
+                
+                actions.append(qlAction)
                 
                 //TODO: - For insanely large files, this results in a crash, find a way around this.
                 // maybe use a UIAlertController as an actionSheet?

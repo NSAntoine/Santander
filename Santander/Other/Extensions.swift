@@ -107,8 +107,8 @@ extension URL {
                 return UIImage(systemName: "photo")
             } else if type.isOfType(.audio) {
                 return UIImage(systemName: "waveform")
-            } else if type.isOfType(.video) {
-                return UIImage(systemName: "play.rectangle")
+            } else if type.isOfType(.movie) || type.isOfType(.video) {
+                return UIImage(systemName: "play")
             }
             
             return UIImage(systemName: "doc")
@@ -404,7 +404,8 @@ extension UTType {
         ]
     }
     
-    /// Checks whether the URL is the given UTT type, or a subtype of it
+    /// Checks whether the type is equal to the type given in the parameters
+    /// or a parameter of said type
     func isOfType(_ type: UTType) -> Bool {
         return type == self || self.isSubtype(of: type)
     }

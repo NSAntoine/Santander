@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AVKit
 
 struct FileEditor {
     let type: FileEditorType
@@ -16,14 +17,21 @@ struct FileEditor {
             return nil
         }
         
-        if let audio = FileEditorType.audio.viewController(forPath: url, data: data) {
+        let type = url.contentType
+        if type?.isOfType(.audio) ?? false, let audio = FileEditorType.audio.viewController(forPath: url, data: data) {
             return FileEditor(type: .audio, viewController: audio)
         }
         
-        if let imageVC = FileEditorType.image.viewController(forPath: url, data: data) {
+        if type?.isOfType(.image) ?? false, let imageVC = FileEditorType.image.viewController(forPath: url, data: data) {
             return FileEditor(type: .image, viewController: imageVC)
         }
         
+        if (type?.isOfType(.video) ?? false || type?.isOfType(.movie) ?? false),
+            let videoPlayer = FileEditorType.video.viewController(forPath: url, data: data) {
+            return FileEditor(type: .video, viewController: videoPlayer)
+        }
+        
+            
         if let plistVc = FileEditorType.propertyList.viewController(forPath: url, data: data) {
             return FileEditor(type: .propertyList, viewController: plistVc)
         }
@@ -54,7 +62,7 @@ struct FileEditor {
 }
 
 enum FileEditorType: CustomStringConvertible, CaseIterable {
-    case audio, image, propertyList, json, text
+    case audio, image, video, propertyList, json, text
     
     /// Returns the view controller to be used for the file editor type
     /// the Data parameter is used so that, when looping over all editor types,
@@ -79,6 +87,15 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
             }
             
             return ImageFileViewController(fileURL: path, image: image)
+        case .video:
+            let type = path.contentType
+            guard (type?.isOfType(.movie) ?? false || type?.isOfType(.video) ?? false) else {
+                return nil
+            }
+            
+            let controller = AVPlayerViewController()
+            controller.player = AVPlayer(url: path)
+            return controller
         }
     }
     
@@ -88,6 +105,8 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
             return "Audio Player"
         case .image:
             return "Image Viewer"
+        case .video:
+            return "Video Player"
         case .propertyList:
             return "Property List Viewer"
         case .json:
@@ -99,7 +118,7 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
     
     var presentAsFullScreen: Bool {
         switch self {
-        case .audio, .text, .image:
+        case .audio, .text, .image, .video:
             return true
         case .propertyList, .json:
             return false

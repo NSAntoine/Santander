@@ -181,8 +181,8 @@ class AudioPlayerViewController: UIViewController {
         
         // Mark: adding the subviews
         view.addSubview(buttonsStackView)
-        view.addSubview(durationLabel)
         view.addSubview(labelsStackView)
+        view.addSubview(durationLabel)
         view.addSubview(playbackSlider)
         view.addSubview(currentProgressLabel)
         view.addSubview(loopButton)
