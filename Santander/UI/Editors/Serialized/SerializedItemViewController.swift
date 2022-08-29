@@ -17,7 +17,7 @@ class SerializedItemViewController: UITableViewController {
         self.item = item
         self.itemKey = itemKey
         
-        super.init(style: .userPreferred)
+        super.init(style: .grouped)
     }
     
     required init?(coder: NSCoder) {
@@ -28,7 +28,7 @@ class SerializedItemViewController: UITableViewController {
     func setItem(to newValue: SerializedItemType) {
         if self.delegate?.didChangeValue(ofItem: itemKey, to: newValue) ?? false {
             item = newValue
-            tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .fade)
+            tableView.reloadRows(at: [IndexPath(row: 0, section: 1)], with: .fade)
         }
     }
     
@@ -38,7 +38,7 @@ class SerializedItemViewController: UITableViewController {
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+        return 3
     }
     
     override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
@@ -46,7 +46,7 @@ class SerializedItemViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 3
+        return 1
     }
     
     /// The button to present the options for changing the value of a bool
@@ -70,9 +70,10 @@ class SerializedItemViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
         var conf = cell.defaultContentConfiguration()
-        switch (indexPath.section, indexPath.row) {
-        case (0, 0):
-            let textField = UITextField()
+        
+        switch indexPath.section {
+        case 0:
+            let textField = UITextField(frame: cell.frame)
             textField.text = itemKey
             textField.returnKeyType = .done
             
@@ -80,18 +81,46 @@ class SerializedItemViewController: UITableViewController {
                 self.itemKeyTextFieldDone(textField, indexPath: indexPath)
             }
             textField.addAction(action, for: .editingDidEndOnExit)
-            return cellWithView(textField, text: "Key")
-        case (0, 1):
+            cell.contentView.addSubview(textField)
+            
+            textField.translatesAutoresizingMaskIntoConstraints = false
+            NSLayoutConstraint.activate([
+                textField.leadingAnchor.constraint(equalTo: cell.contentView.layoutMarginsGuide.leadingAnchor),
+                textField.centerYAnchor.constraint(equalTo: cell.contentView.centerYAnchor)
+            ])
+            
+            return cell
+        case 1:
             switch item {
             case .bool(let bool):
                 return cellWithView(makeBoolChangeButton(currentItemBoolValue: bool), text: "Value")
-            case .string(_), .int(_), .float(_):
+            case .string(let string):
+                let textView = UITextView(frame: cell.frame)
+                textView.text = string
+                textView.font = .systemFont(ofSize: UIFont.systemFontSize)
+                textView.backgroundColor = cell.backgroundColor
+                textView.autoresizingMask = [.flexibleHeight, .flexibleWidth]
+                textView.isScrollEnabled = true
+                
+                let editTextAction = UIAction {
+                    guard let text = textView.text else {
+                        return
+                    }
+                    
+                    self.setItem(to: .string(text))
+                    textView.resignFirstResponder()
+                }
+                
+                textView.inputAccessoryView = toolbarDoneView(doneAction: editTextAction)
+                cell.contentView.addSubview(textView)
+                return cell
+            case .int(_), .float(_):
                 return cellWithView(valueTextField(atIndexPath: indexPath), text: "Value")
             default:
                 conf.text = "Value"
                 conf.secondaryText = item.description
             }
-        case (0, 2):
+        case 2:
             conf.text = "Type"
             conf.secondaryText = item.typeDescription
         default:
@@ -100,6 +129,19 @@ class SerializedItemViewController: UITableViewController {
         
         cell.contentConfiguration = conf
         return cell
+    }
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        switch section {
+        case 0:
+            return "Key"
+        case 1:
+            return "Value"
+        case 2:
+            return "Type"
+        default:
+            return nil
+        }
     }
     
     func valueTextField(atIndexPath indexPath: IndexPath) -> UITextField {

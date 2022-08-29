@@ -129,12 +129,7 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
         } else {
             let vc = SerializedItemViewController(item: elem, itemKey: text)
             vc.delegate = self
-            let navVC = UINavigationController(rootViewController: vc)
-            if #available(iOS 15.0, *) {
-                navVC.sheetPresentationController?.detents = [.medium()]
-            }
-            
-            self.present(navVC, animated: true)
+            navigationController?.pushViewController(vc, animated: true)
         }
     }
     
