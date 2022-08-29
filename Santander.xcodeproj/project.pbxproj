@@ -25,6 +25,7 @@
 		375CF89D289CF3A600BB7C60 /* Permissions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375CF89C289CF3A600BB7C60 /* Permissions.swift */; };
 		375CF89F289D969A00BB7C60 /* PathPermissionsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 375CF89E289D969A00BB7C60 /* PathPermissionsViewController.swift */; };
 		375D568D28A5B01600E25591 /* entitlements.plist in Resources */ = {isa = PBXBuildFile; fileRef = 375D568C28A5B01600E25591 /* entitlements.plist */; };
+		376F749D28BC8A33000E5D77 /* AudioPlayerToolbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376F749C28BC8A33000E5D77 /* AudioPlayerToolbarView.swift */; };
 		3771D37B2862329D00E200B6 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771D37A2862329D00E200B6 /* Extensions.swift */; };
 		3771D37F2862493E00E200B6 /* PathInformationTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3771D37E2862493E00E200B6 /* PathInformationTableViewController.swift */; };
 		3787DB0528ABECF200ACA60B /* FileEditorType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3787DB0428ABECF200ACA60B /* FileEditorType.swift */; };
@@ -89,6 +90,7 @@
 		375CF89C289CF3A600BB7C60 /* Permissions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Permissions.swift; sourceTree = "<group>"; };
 		375CF89E289D969A00BB7C60 /* PathPermissionsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathPermissionsViewController.swift; sourceTree = "<group>"; };
 		375D568C28A5B01600E25591 /* entitlements.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = entitlements.plist; sourceTree = "<group>"; };
+		376F749C28BC8A33000E5D77 /* AudioPlayerToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerToolbarView.swift; sourceTree = "<group>"; };
 		3771D37A2862329D00E200B6 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		3771D37E2862493E00E200B6 /* PathInformationTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathInformationTableViewController.swift; sourceTree = "<group>"; };
 		3787DAFC28AB905B00ACA60B /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -181,6 +183,15 @@
 			path = TextEditor;
 			sourceTree = "<group>";
 		};
+		376F749E28BC8A4F000E5D77 /* Audio */ = {
+			isa = PBXGroup;
+			children = (
+				374ECDC92875F5350066E9DD /* AudioPlayerViewController.swift */,
+				376F749C28BC8A33000E5D77 /* AudioPlayerToolbarView.swift */,
+			);
+			path = Audio;
+			sourceTree = "<group>";
+		};
 		3771D3782862328400E200B6 /* Other */ = {
 			isa = PBXGroup;
 			children = (
@@ -259,7 +270,7 @@
 			isa = PBXGroup;
 			children = (
 				3758315C28B4D2E9001E63F2 /* TextEditor */,
-				374ECDC92875F5350066E9DD /* AudioPlayerViewController.swift */,
+				376F749E28BC8A4F000E5D77 /* Audio */,
 				3787DB0828ACE4C900ACA60B /* Serialized */,
 				3787DB0428ABECF200ACA60B /* FileEditorType.swift */,
 				3713292628B618AD009E4AEA /* Image */,
@@ -427,6 +438,7 @@
 				37C6E0C828662C4100BDDA16 /* DragAndDrop.swift in Sources */,
 				37932F052863205F00BF48C8 /* UserPreferences.swift in Sources */,
 				37177E4C289F12640025042E /* PathGroupOwnerViewController.swift in Sources */,
+				376F749D28BC8A33000E5D77 /* AudioPlayerToolbarView.swift in Sources */,
 				37963F132869C96C00C4B72A /* PathType.swift in Sources */,
 				374ECDC82875A3940066E9DD /* Storage.swift in Sources */,
 				3789B5F428622E0D00058688 /* SubPathsTableViewController.swift in Sources */,

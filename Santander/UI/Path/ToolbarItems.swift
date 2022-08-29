@@ -8,7 +8,7 @@
 import UIKit
 
 
-extension SubPathsTableViewController {
+extension SubPathsTableViewController: AudioPlayerToolbarDelegate {
     
     @objc
     func setupOrUpdateToolbar() {
@@ -58,23 +58,17 @@ extension SubPathsTableViewController {
         
         self.toolbarItems = items
         self.navigationController?.setToolbarHidden(false, animated: true)
+        self.navigationController?.toolbar.viewWithTag(100)?.removeFromSuperview() // if necessary
     }
     
     @objc
-    func hideToolbar() {
+    func hideToolbarItems() {
+        self.toolbarItems = []
         self.navigationController?.setToolbarHidden(true, animated: true)
-    }
-    
-    private func disableToolbarItems() {
-        guard let items = toolbarItems else {
-            return
-        }
         
-        for item in items {
-            item.isEnabled = !selectedItems.isEmpty
-        }
-        
-        self.toolbarItems = items
+        // since we're hiding the toolbar items, (copy, move, etc)
+        // lets see if we can bring the audio toolbar back if possible
+        setupAudioToolbarIfPossible()
     }
     
     fileprivate func makeToolbarMoreItemsMenu() -> UIMenu {
@@ -135,5 +129,45 @@ extension SubPathsTableViewController {
         
         self.navigationItem.leftBarButtonItem = UIBarButtonItem(title: allItemsSelected ? "Deselect All" : "Select All", primaryAction: action)
         setupOrUpdateToolbar()
+    }
+    
+    func setupAudioToolbarIfPossible() {
+        guard let audioPlayerController = audioPlayerController, let toolbar = navigationController?.toolbar else {
+            return
+        }
+        
+        navigationController?.setToolbarHidden(false, animated: true)
+        
+        let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
+        blurView.frame = toolbar.bounds
+        
+        let audioToolbarView = AudioPlayerToolbarView(audioPlayerController, parentViewController: self, frame: blurView.bounds)
+        audioToolbarView.delegate = self
+        blurView.contentView.addSubview(audioToolbarView)
+        blurView.tag = 100
+        blurView.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(toolbarAudioPreviewWasTapped)))
+        toolbar.addSubview(blurView)
+    }
+    
+    @objc
+    func toolbarAudioPreviewWasTapped() {
+        guard let vc = audioPlayerController else {
+            return
+        }
+        
+        // TERRIBLE WORKAROUND: - if the user goes to another ViewController
+        // self.present simply won't work
+        // so we just present from the keyWindow lol
+        UIApplication.shared.sceneKeyWindow?.rootViewController?.present(UINavigationController(rootViewController: vc), animated: true)
+    }
+    
+    func audioToolbarDidClickCancelButton(_ toolbar: AudioPlayerToolbarView) {
+        // Why do we need to use rootNav?
+        // for the same reason we must use the terrible workaround in `toolbarAudioPreviewWasTapped`
+        let rootNav = UIApplication.shared.sceneKeyWindow?.rootViewController as? UINavigationController
+        rootNav?.toolbar?.viewWithTag(100)?.removeFromSuperview()
+        rootNav?.setToolbarHidden(true, animated: true)
+        
+        toolbar.audioPlayerController.player.stop()
     }
 }

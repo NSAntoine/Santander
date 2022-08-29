@@ -27,6 +27,9 @@ class AudioPlayerViewController: UIViewController {
     /// Whether or not to loop, once the item is finished playing
     var doLoop: Bool = false
     
+    /// The callback to execute when the player starts / stops playing the audio
+    var playbackCallback: (() -> Void)? = nil
+    
     var playbackSpeedRate: Float = UserPreferences.audioVCSpeed {
         didSet {
             UserPreferences.audioVCSpeed = playbackSpeedRate
@@ -66,10 +69,16 @@ class AudioPlayerViewController: UIViewController {
         return image
     }
     
+    func playButtonSymbolName() -> String {
+        player.isPlaying ? "pause.fill" : "play.fill"
+    }
+    
     /// The image to display for the Play / Pause button
-    var playButtonImage: UIImage? {
+    func playButtonImage(withLargerSize largerSize: Bool = true) -> UIImage? {
         let conf = UIImage.SymbolConfiguration(pointSize: 45, weight: .medium, scale: .medium)
-        return UIImage(systemName: player.isPlaying ? "pause.fill" : "play.fill", withConfiguration: conf)?
+        
+        let imageSymbolName = playButtonSymbolName()
+        return UIImage(systemName: imageSymbolName, withConfiguration: largerSize ? conf : nil)?
             .withTintColor(.systemGray, renderingMode: .alwaysOriginal)
     }
     
@@ -109,7 +118,7 @@ class AudioPlayerViewController: UIViewController {
         addItemToSystemMediaPlayer()
         
         player.delegate = self
-        let playAction = UIAction(image: playButtonImage) { _ in
+        let playAction = UIAction(image: playButtonImage()) { _ in
             self.play()
         }
         
@@ -222,10 +231,11 @@ class AudioPlayerViewController: UIViewController {
         }
         
         setPlayButtonImage()
+        playbackCallback?()
     }
     
     func setPlayButtonImage() {
-        playButton.setImage(playButtonImage, for: .normal)
+        playButton.setImage(playButtonImage(), for: .normal)
     }
     
     @objc
@@ -313,12 +323,14 @@ class AudioPlayerViewController: UIViewController {
         MPRemoteCommandCenter.shared().playCommand.addTarget { event in
             self.player.play()
             self.setPlayButtonImage()
+            self.playbackCallback?()
             return .success
         }
         
-        MPRemoteCommandCenter.shared().pauseCommand.addTarget  {event in
+        MPRemoteCommandCenter.shared().pauseCommand.addTarget { event in
             self.player.pause()
             self.setPlayButtonImage()
+            self.playbackCallback?()
             return .success
         }
         

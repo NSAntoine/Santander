@@ -41,7 +41,7 @@ class PathListsSplitViewController: SubPathsTableViewController {
         dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
     }
     
-    override func hideToolbar() {}
+    override func hideToolbarItems() {}
     
     override func setupOrUpdateToolbar() {
         self.toolbarItems = [

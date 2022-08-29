@@ -118,9 +118,9 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
     
     var presentAsFullScreen: Bool {
         switch self {
-        case .audio, .text, .image, .video:
+        case .text, .image, .video:
             return true
-        case .propertyList, .json:
+        case .propertyList, .audio, .json:
             return false
         }
     }

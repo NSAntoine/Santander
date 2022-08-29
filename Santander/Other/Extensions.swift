@@ -101,14 +101,16 @@ extension URL {
                 return UIImage(systemName: "doc")
             }
             
-            if type.isOfType(.executable) {
-                return UIImage(systemName: "terminal")
+            if type.isOfType(.text) {
+                return UIImage(systemName: "doc.text")
             } else if type.isOfType(.image) {
                 return UIImage(systemName: "photo")
             } else if type.isOfType(.audio) {
                 return UIImage(systemName: "waveform")
             } else if type.isOfType(.movie) || type.isOfType(.video) {
                 return UIImage(systemName: "play")
+            } else if type.isOfType(.executable) {
+                return UIImage(systemName: "terminal")
             }
             
             return UIImage(systemName: "doc")
@@ -644,5 +646,14 @@ extension DateFormatter {
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyyMMdd"
         return formatter
+    }
+}
+
+extension UIApplication {
+    var sceneKeyWindow: UIWindow? {
+        return UIApplication.shared
+        .connectedScenes
+        .flatMap { ($0 as? UIWindowScene)?.windows ?? [] }
+        .first { $0.isKeyWindow }
     }
 }

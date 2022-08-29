@@ -49,6 +49,7 @@ class SettingsTableViewController: UITableViewController {
         
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
+            // TODO: - For anything that uses a switch, start using accessory views instead
             return cellWithView(settingsSwitch(forIndexPath: indexPath), text: "Large navigation titles")
         case (0, 1):
             return cellWithView(settingsSwitch(forIndexPath: indexPath), text: "Always show search bar")

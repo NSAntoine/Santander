@@ -55,6 +55,9 @@ class SubPathsTableViewController: UITableViewController {
     /// if the path is a directory
     var directoryMonitor: DirectoryMonitor?
     
+    /// The Audio Player View Controller to display
+    var audioPlayerController: AudioPlayerViewController?
+    
     /// The label which displays that the user doesn't have permission to view a directory,
     /// or that the directory / group is empty
     /// (if those conditions apply)
@@ -417,6 +420,17 @@ class SubPathsTableViewController: UITableViewController {
             }
             
             self.present(vcToPresent, animated: true)
+            
+            // if it's the audio viewcontroller & the file URL is different than the current property audio controller
+            // set the current audioVC property to it
+            if let audioVC = preferred.viewController as? AudioPlayerViewController {
+                // if music is already playing, then stop it
+                self.audioPlayerController?.player.stop()
+                // then set the current audio controller to the file tapped
+                self.audioPlayerController = audioVC
+                self.setupAudioToolbarIfPossible()
+            }
+            
         } else {
             openQuickLookPreview(forURL: path)
         }
@@ -836,7 +850,7 @@ class SubPathsTableViewController: UITableViewController {
         if editing {
             setupOrUpdateToolbar()
         } else {
-            hideToolbar()
+            hideToolbarItems()
             selectedItems = []
         }
     }
