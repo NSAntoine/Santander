@@ -162,6 +162,8 @@ class SubPathsTableViewController: UITableViewController {
             }
             
             directoryMonitor?.startMonitoring()
+            // set the last opened path here
+            UserPreferences.lastOpenedPath = currentPath.path
         }
     }
     /// Setup the snapshot to show the paths given
@@ -451,7 +453,6 @@ class SubPathsTableViewController: UITableViewController {
         // if we're going to a directory, or a search result,
         // go to the directory path
         if path.isDirectory {
-            UserPreferences.lastOpenedPath = path.path
             let parentDirectory = path.deletingLastPathComponent()
             
             // if the parent directory is the current directory or we're in the favourites sheet
