@@ -15,6 +15,10 @@ class ImageFileViewController: UIViewController {
     let image: UIImage
     var metadata: ImageMetadata?
     
+    /// The signature of the function used to set the wallpaper
+    /// by SpringBoardUIServices
+    typealias SetWallpaperFunction = @convention(c) (_: NSDictionary, _: NSDictionary, _: Int, _: Int) -> Int
+    
     init(fileURL: URL, image: UIImage) {
         self.fileURL = fileURL
         self.image = image
@@ -132,16 +136,24 @@ class ImageFileViewController: UIViewController {
     }
     
     func setImageAsWallpaper() {
-        typealias SetWallpaperFunction = @convention(c) (_: NSDictionary, _: NSDictionary, _: Int, _: Int) -> Int
-        dlopen("/System/Library/PrivateFrameworks/SpringBoardFoundation.framework/SpringBoardFoundation", RTLD_LAZY)
+        // for SBFWallpaperOptions
+        let sbF = dlopen("/System/Library/PrivateFrameworks/SpringBoardFoundation.framework/SpringBoardFoundation", RTLD_LAZY)
+        // for SBSUIWallpaperSetImages
         let sbServer = dlopen("/System/Library/PrivateFrameworks/SpringBoardUIServices.framework/SpringBoardUIServices", RTLD_LAZY)
         
-        guard let options = NSClassFromString("SBFWallpaperOptions")?.alloc() /*as? NSObject*/ else {
+        defer {
+            dlclose(sbF)
+            dlclose(sbServer)
+        }
+        
+        guard let options = NSClassFromString("SBFWallpaperOptions")?.alloc(),
+              let pointer = dlsym(sbServer, "SBSUIWallpaperSetImages"),
+              let setWallpaperFunc = unsafeBitCast(pointer, to: (SetWallpaperFunction)?.self)
+        else {
             errorAlert(nil, title: "Unable to set image as wallpaper")
             return
         }
         
-        let funcPointer = unsafeBitCast(dlsym(sbServer, "SBSUIWallpaperSetImages"), to: SetWallpaperFunction.self)
         let imagesDict = [
             "light": image,
             "dark": image
@@ -152,9 +164,10 @@ class ImageFileViewController: UIViewController {
             "dark": options
         ]
         
-        let result = funcPointer(NSDictionary(dictionary: imagesDict), NSDictionary(dictionary: optionsDict), 3, UIUserInterfaceStyle.dark.rawValue)
-        let alert = UIAlertController(title: "Result", message: "Result: \(result)", preferredStyle: .alert)
-        alert.addAction(.cancel())
-        self.present(alert, animated: true)
+        let result = setWallpaperFunc(NSDictionary(dictionary: imagesDict), NSDictionary(dictionary: optionsDict), 3, UIUserInterfaceStyle.dark.rawValue)
+        // 1 is success
+        if result != 1 {
+            errorAlert(nil, title: "Unable to set image as wallpaper")
+        }
     }
 }
