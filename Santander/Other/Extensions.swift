@@ -160,8 +160,13 @@ extension URL {
 }
 
 extension UIViewController {
-    func errorAlert(_ errorDescription: String, title: String, presentingFromIfAvailable presentingVC: UIViewController? = nil) {
-        let alert = UIAlertController(title: title, message: "Error occured: \(errorDescription)", preferredStyle: .alert)
+    func errorAlert(_ errorDescription: String?, title: String, presentingFromIfAvailable presentingVC: UIViewController? = nil) {
+        var message: String? = nil
+        if let errorDescription = errorDescription {
+            message = "Error occured: \(errorDescription)"
+        }
+        
+        let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
         alert.addAction(.init(title: "OK", style: .cancel))
         let vcToPresentFrom = presentingVC ?? self
         vcToPresentFrom.present(alert, animated: true)

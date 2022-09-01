@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import ObjectiveC
 import PDFKit // Hacky workaround, but PDFView is the best way to display the image due to the built in scroll view support
 
 /// The ViewController displaying an image
@@ -110,7 +111,50 @@ class ImageFileViewController: UIViewController {
         }
         
         let shareMenuButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), primaryAction: shareMenuAction)
-        self.toolbarItems = [shareMenuButton]
+        let saveImageAction = UIAction(title: "Save Image") { _ in
+            UIImageWriteToSavedPhotosAlbum(self.image, self, #selector(self.didSaveImage(_:error:context:)), nil)
+        }
+        
+        let setAsWallpaperAction = UIAction(title: "Set as wallpaper") { _ in
+            self.setImageAsWallpaper()
+        }
+        
+        let actionsMenu = UIMenu(children: [saveImageAction, setAsWallpaperAction])
+        self.toolbarItems = [shareMenuButton, .flexibleSpace(), UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: actionsMenu)]
         self.navigationController?.setToolbarHidden(false, animated: true)
+    }
+    
+    @objc
+    func didSaveImage(_ im: UIImage, error: Error?, context: UnsafeMutableRawPointer?) {
+        if let error = error {
+            errorAlert(error, title: "Unable to save image to camera roll")
+        }
+    }
+    
+    func setImageAsWallpaper() {
+        typealias SetWallpaperFunction = @convention(c) (_: NSDictionary, _: NSDictionary, _: Int, _: Int) -> Int
+        dlopen("/System/Library/PrivateFrameworks/SpringBoardFoundation.framework/SpringBoardFoundation", RTLD_LAZY)
+        let sbServer = dlopen("/System/Library/PrivateFrameworks/SpringBoardUIServices.framework/SpringBoardUIServices", RTLD_LAZY)
+        
+        guard let options = NSClassFromString("SBFWallpaperOptions")?.alloc() /*as? NSObject*/ else {
+            errorAlert(nil, title: "Unable to set image as wallpaper")
+            return
+        }
+        
+        let funcPointer = unsafeBitCast(dlsym(sbServer, "SBSUIWallpaperSetImages"), to: SetWallpaperFunction.self)
+        let imagesDict = [
+            "light": image,
+            "dark": image
+        ]
+        
+        let optionsDict = [
+            "light" : options,
+            "dark": options
+        ]
+        
+        let result = funcPointer(NSDictionary(dictionary: imagesDict), NSDictionary(dictionary: optionsDict), 3, UIUserInterfaceStyle.dark.rawValue)
+        let alert = UIAlertController(title: "Result", message: "Result: \(result)", preferredStyle: .alert)
+        alert.addAction(.cancel())
+        self.present(alert, animated: true)
     }
 }
