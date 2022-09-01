@@ -166,7 +166,7 @@ extension UIViewController {
             message = "Error occured: \(errorDescription)"
         }
         
-        let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(.init(title: "OK", style: .cancel))
         let vcToPresentFrom = presentingVC ?? self
         vcToPresentFrom.present(alert, animated: true)
