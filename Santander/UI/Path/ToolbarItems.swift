@@ -51,7 +51,7 @@ extension SubPathsTableViewController: AudioPlayerToolbarDelegate {
         
         let share = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), primaryAction: shareAction)
         let moreItems = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: makeToolbarMoreItemsMenu())
-        let items = [trash, share, moreItems].map { item in
+        let items = [trash, .flexibleSpace(), share, .flexibleSpace(), moreItems].map { item in
             item.isEnabled = !selectedItems.isEmpty
             return item
         }
@@ -169,5 +169,6 @@ extension SubPathsTableViewController: AudioPlayerToolbarDelegate {
         rootNav?.setToolbarHidden(true, animated: true)
         
         toolbar.audioPlayerController.player.stop()
+        self.audioPlayerController = nil
     }
 }
