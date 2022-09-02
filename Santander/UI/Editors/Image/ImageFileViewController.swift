@@ -119,11 +119,16 @@ class ImageFileViewController: UIViewController {
             UIImageWriteToSavedPhotosAlbum(self.image, self, #selector(self.didSaveImage(_:error:context:)), nil)
         }
         
-        let setAsWallpaperAction = UIAction(title: "Set as wallpaper") { _ in
-            self.setImageAsWallpaper()
+        // the places to set the wallpaper, represented by a UIAction
+        let setWallpaperActions = WallpaperLoction.allCases.map { location in
+            return UIAction(title: location.description) { _ in
+                self.setImageAsWallpaper(to: location)
+            }
         }
         
-        let actionsMenu = UIMenu(children: [saveImageAction, setAsWallpaperAction])
+        let setAsWallpaperMenu = UIMenu(title: "Set as wallpaper for..", children: setWallpaperActions)
+        
+        let actionsMenu = UIMenu(children: [saveImageAction, setAsWallpaperMenu])
         self.toolbarItems = [shareMenuButton, .flexibleSpace(), UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: actionsMenu)]
         self.navigationController?.setToolbarHidden(false, animated: true)
     }
@@ -135,7 +140,7 @@ class ImageFileViewController: UIViewController {
         }
     }
     
-    func setImageAsWallpaper() {
+    func setImageAsWallpaper(to location: WallpaperLoction) {
         // for SBFWallpaperOptions
         let sbF = dlopen("/System/Library/PrivateFrameworks/SpringBoardFoundation.framework/SpringBoardFoundation", RTLD_LAZY)
         // for SBSUIWallpaperSetImages
@@ -164,10 +169,29 @@ class ImageFileViewController: UIViewController {
             "dark": options
         ]
         
-        let result = setWallpaperFunc(NSDictionary(dictionary: imagesDict), NSDictionary(dictionary: optionsDict), 3, UIUserInterfaceStyle.dark.rawValue)
+        let result = setWallpaperFunc(NSDictionary(dictionary: imagesDict), NSDictionary(dictionary: optionsDict), location.rawValue, UIUserInterfaceStyle.dark.rawValue)
         // 1 is success
         if result != 1 {
             errorAlert(nil, title: "Unable to set image as wallpaper")
+        }
+    }
+    
+    /// The places where an image can be set as the Wallpaper
+    /// The integer values here are passed directly to `SBSUIWallpaperSetImages`
+    enum WallpaperLoction: Int, CustomStringConvertible, CaseIterable {
+        case lockScreen = 1
+        case homeScreen = 2
+        case both = 3
+        
+        var description: String {
+            switch self {
+            case .lockScreen:
+                return "Lock Screen"
+            case .homeScreen:
+                return "Home Screen"
+            case .both:
+                return "Both"
+            }
         }
     }
 }
