@@ -57,7 +57,7 @@ jobs:
           permasigner -d -p ${{ github.workspace }}/Santander.ipa -o ${{ github.workspace }}/Santander.deb -e ${{ github.workspace }}/entitlements.plist
       
       - name: Build Permasigned deb
-        uses: permasigner/action@v1
+        uses: permasigner/action@v1.0.0
         with:
           input: "${GITHUB_WORKSPACE}/Santander.ipa"
           entitlements: "${GITHUB_WORKSPACE}/entitlements.plist"
