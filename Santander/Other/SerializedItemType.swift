@@ -15,6 +15,8 @@ enum SerializedItemType: Equatable, CustomStringConvertible {
         case (.int(let first), .int(let second)):               return first == second
         case (.float(let first), .float(let second)):           return first == second
         case (.array(let first), .array(let second)):           return first == second
+        case (.data(let first), .data(let second)):             return first == second
+        case (.date(let first), .date(let second)):             return first == second
         case (.dictionary(let first), .dictionary(let second)):
             return NSDictionary(dictionary: first) == NSDictionary(dictionary: second)
         default:
@@ -28,7 +30,8 @@ enum SerializedItemType: Equatable, CustomStringConvertible {
     case float(Float)
     case array(NSArray)
     case dictionary([String: Any])
-    case data(NSData)
+    case data(Data)
+    case date(Date)
     case other(Any)
     
     init(item: Any) {
@@ -52,7 +55,9 @@ enum SerializedItemType: Equatable, CustomStringConvertible {
         } else if let item = item as? Dictionary<String, Any> {
             self = .dictionary(item)
         } else if let item = item as? NSData {
-            self = .data(item)
+            self = .data(item as Data)
+        } else if let item = item as? NSDate {
+            self = .date(item as Date)
         } else {
             self = .other(item)
         }
@@ -72,6 +77,8 @@ enum SerializedItemType: Equatable, CustomStringConvertible {
             return (nsArray as? Array<Any>)?.description ?? nsArray.description
         case .dictionary(let nsDictionary):
             return nsDictionary.description
+        case .date(let date):
+            return date.listFormatted()
         case .data(let data):
             return "Data (Size: \(data.count))"
         case .other(let any):
@@ -95,6 +102,8 @@ enum SerializedItemType: Equatable, CustomStringConvertible {
             return "Array"
         case .dictionary(_):
             return "Dictionary"
+        case .date(_):
+            return "Date"
         case .other(_):
             return "Unknown Type"
         }
@@ -114,8 +123,10 @@ enum SerializedItemType: Equatable, CustomStringConvertible {
             return nsArray
         case .dictionary(let nsDictionary):
             return nsDictionary
-        case .data(let nsData):
-            return nsData
+        case .data(let data):
+            return data
+        case .date(let date):
+            return date
         case .other(let any):
             return any
         }

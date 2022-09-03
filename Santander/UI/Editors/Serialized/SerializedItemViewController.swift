@@ -116,6 +116,16 @@ class SerializedItemViewController: UITableViewController {
                 return cell
             case .int(_), .float(_):
                 return cellWithView(valueTextField(atIndexPath: indexPath), text: "Value")
+            case .date(let date):
+                let datePicker = UIDatePicker()
+                datePicker.date = date
+                
+                let action = UIAction {
+                    self.setItem(to: .date(datePicker.date))
+                }
+                
+                datePicker.addAction(action, for: .editingDidEnd)
+                return cellWithView(datePicker, text: "Value")
             default:
                 conf.text = "Value"
                 conf.secondaryText = item.description
