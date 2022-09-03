@@ -14,7 +14,6 @@
         <array>
             <string>IOUserClient</string>
         </array>
-        
         <key>com.apple.private.mobileinstall.allowedSPI</key>
         <array>
             <string>Uninstall</string>
