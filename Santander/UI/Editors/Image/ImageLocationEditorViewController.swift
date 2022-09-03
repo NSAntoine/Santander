@@ -66,6 +66,7 @@ class ImageLocationEditorViewController: UIViewController, MKMapViewDelegate {
         
         configureNavigationBarToNormal()
         setRightBarButton()
+        setupToolbar()
     }
     
     func setRightBarButton() {
@@ -88,7 +89,10 @@ class ImageLocationEditorViewController: UIViewController, MKMapViewDelegate {
         
         if !editing {
             // finalize editing, set location chosen
-            setImageLocation()
+            setImageLocation(nullify: false)
+        } else {
+            // add back annotation, if necessary
+            mapView.addAnnotation(annotation)
         }
     }
     
@@ -110,11 +114,20 @@ class ImageLocationEditorViewController: UIViewController, MKMapViewDelegate {
     }
     
     /// Sets the image location in the metadata
-    func setImageLocation() {
+    func setImageLocation(nullify: Bool) {
         let coordinate = annotation.coordinate
-        var newGPSDict = (metadata.dictionary[kCGImagePropertyGPSDictionary as String] as? [String: Any]) ?? [:]
-        newGPSDict[kCGImagePropertyGPSLatitude as String] = coordinate.latitude
-        newGPSDict[kCGImagePropertyGPSLongitude as String] = coordinate.longitude
+        var newGPSDict = (metadata.dictionary[kCGImagePropertyGPSDictionary as String] as? [String: Any?]) ?? [:]
+        if nullify {
+            newGPSDict[kCGImagePropertyGPSLatitude as String] = nil
+            newGPSDict[kCGImagePropertyGPSLongitude as String] = nil
+            metadata.location.lat = nil
+            metadata.location.long = nil
+        } else {
+            newGPSDict[kCGImagePropertyGPSLatitude as String] = coordinate.latitude
+            newGPSDict[kCGImagePropertyGPSLongitude as String] = coordinate.longitude
+            metadata.location.lat = coordinate.latitude
+            metadata.location.long = coordinate.longitude
+        }
         
         var copy = metadata.dictionary
         copy[kCGImagePropertyGPSDictionary as String] = newGPSDict
@@ -126,38 +139,40 @@ class ImageLocationEditorViewController: UIViewController, MKMapViewDelegate {
         } else {
             metadataSenderVC.metadata = .init(dictionary: copy)
             metadataSenderVC.tableView.reloadData()
+            if nullify {
+                mapView.removeAnnotation(annotation)
+            }
         }
+        self.setupToolbar()
     }
     
-    func mapView (_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+    func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
         moveAnnotation(mapView)
     }
     
-    /// Sets up the "Set" toolbar button
-    func setupToolbarButton() {
-        if let toolbar = navigationController?.toolbar {
-            let visualEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
-            visualEffectView.frame = toolbar.bounds
-            
-            let action = UIAction {
-                self.setImageLocation()
+    func setupToolbar() {
+        // here, we setup the trash button
+        // in case the user wants to nullify the location
+        // of the image
+        
+        let action = UIAction {
+            // confirm if the user wants to remove it
+            let alert = UIAlertController(title: "Remove image location?", message: nil, preferredStyle: .actionSheet)
+            let removeAction = UIAlertAction(title: "Remove", style: .destructive) { _ in
+                self.setImageLocation(nullify: true)
             }
             
-            let button = UIButton(type: .system, primaryAction: action)
-            button.setTitle("Set Location", for: .normal)
-            button.titleLabel?.font = .systemFont(ofSize: UIFont.systemFontSize + 10)
-            button.translatesAutoresizingMaskIntoConstraints = false
-            
-            visualEffectView.contentView.addSubview(button)
-            NSLayoutConstraint.activate([
-                button.centerXAnchor.constraint(equalTo: visualEffectView.contentView.centerXAnchor),
-                button.centerYAnchor.constraint(equalTo: visualEffectView.contentView.centerYAnchor)
-            ])
-            
-            toolbar.addSubview(visualEffectView)
-            
-            navigationController?.setToolbarHidden(false, animated: true)
+            alert.addAction(removeAction)
+            alert.addAction(.cancel())
+            self.present(alert, animated: true)
         }
         
+        let trashButton = UIBarButtonItem(image: UIImage(systemName: "trash"), primaryAction: action)
+        // enable trash button only if location isnt nil
+        trashButton.isEnabled = metadata.location.coordinate != nil
+        trashButton.tintColor = .systemRed
+        
+        navigationController?.setToolbarHidden(false, animated: true)
+        self.toolbarItems = [trashButton]
     }
 }

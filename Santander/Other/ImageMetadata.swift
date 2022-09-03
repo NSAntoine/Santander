@@ -16,7 +16,7 @@ class ImageMetadata {
     let pixelWidth: Int?
     let pixelHeight: Int?
     
-    let location: ImageLocation
+    var location: ImageLocation
     let exifInfo: ImageExifInfo?
     let cameraInfo: ImageCameraInfo?
     let dateTimeTaken: Date?
@@ -90,8 +90,8 @@ class ImageMetadata {
 }
 
 struct ImageLocation {
-    let lat: CLLocationDegrees?
-    let long: CLLocationDegrees?
+    var lat: CLLocationDegrees?
+    var long: CLLocationDegrees?
     
     var coordinate: CLLocationCoordinate2D? {
         guard let lat = lat, let long = long else {

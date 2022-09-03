@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		3712D319286F7F2E00BCD034 /* TypeSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3712D318286F7F2E00BCD034 /* TypeSelectionViewController.swift */; };
-		3713292328B5F108009E4AEA /* Runestone in Frameworks */ = {isa = PBXBuildFile; productRef = 3713292228B5F108009E4AEA /* Runestone */; };
 		3713292528B60163009E4AEA /* ImageMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3713292428B60163009E4AEA /* ImageMetadata.swift */; };
 		3713292928B61F98009E4AEA /* ImageMetadataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3713292828B61F98009E4AEA /* ImageMetadataViewController.swift */; };
 		3713292B28B74D34009E4AEA /* ImageLocationEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3713292A28B74D34009E4AEA /* ImageLocationEditorViewController.swift */; };
@@ -55,6 +54,7 @@
 		37EEA03928A8C86B00FA8CEB /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA02F28A8C86A00FA8CEB /* unzip.c */; };
 		37EEA03A28A8C86B00FA8CEB /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA03728A8C86B00FA8CEB /* ioapi.c */; };
 		37EEA03B28A8C86B00FA8CEB /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA03828A8C86B00FA8CEB /* zip.c */; };
+		CEDAF42028C36B2900DF03E6 /* Runestone in Frameworks */ = {isa = PBXBuildFile; productRef = CEDAF41F28C36B2900DF03E6 /* Runestone */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -136,7 +136,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				3713292328B5F108009E4AEA /* Runestone in Frameworks */,
+				CEDAF42028C36B2900DF03E6 /* Runestone in Frameworks */,
 				37CA828828AA4638000236D7 /* CoreServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -362,7 +362,7 @@
 			);
 			name = Santander;
 			packageProductDependencies = (
-				3713292228B5F108009E4AEA /* Runestone */,
+				CEDAF41F28C36B2900DF03E6 /* Runestone */,
 			);
 			productName = Santander;
 			productReference = 3789B5DC28622B7A00058688 /* Santander.app */;
@@ -393,7 +393,7 @@
 			);
 			mainGroup = 3789B5D328622B7A00058688;
 			packageReferences = (
-				3713292128B5F108009E4AEA /* XCRemoteSwiftPackageReference "Runestone" */,
+				CEDAF41E28C36B2900DF03E6 /* XCRemoteSwiftPackageReference "Runestone" */,
 			);
 			productRefGroup = 3789B5DD28622B7A00058688 /* Products */;
 			projectDirPath = "";
@@ -693,20 +693,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		3713292128B5F108009E4AEA /* XCRemoteSwiftPackageReference "Runestone" */ = {
+		CEDAF41E28C36B2900DF03E6 /* XCRemoteSwiftPackageReference "Runestone" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/simonbs/Runestone";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.2.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		3713292228B5F108009E4AEA /* Runestone */ = {
+		CEDAF41F28C36B2900DF03E6 /* Runestone */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 3713292128B5F108009E4AEA /* XCRemoteSwiftPackageReference "Runestone" */;
+			package = CEDAF41E28C36B2900DF03E6 /* XCRemoteSwiftPackageReference "Runestone" */;
 			productName = Runestone;
 		};
 /* End XCSwiftPackageProductDependency section */
