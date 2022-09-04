@@ -18,5 +18,7 @@
             <string>UninstallForLaunchServices</string>
             <string>Lookup</string>
         </array>
+        <key>com.apple.private.security.storage.AppDataContainers</key>
+        <true/>
     </dict>
 </plist>
