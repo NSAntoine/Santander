@@ -27,7 +27,7 @@ struct ApplicationsManager {
     
     func application(forDataContainerURL dataContainerURL: URL) -> LSApplicationProxy? {
         return allApps.first { app in
-            app.dataContainerURL() == dataContainerURL
+            app.bundleContainerURL == dataContainerURL
         }
     }
     

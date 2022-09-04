@@ -21,12 +21,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (readonly, nonatomic) NSString *teamID;
 @property (copy, nonatomic) NSString *sdkVersion;
 @property (readonly, nonatomic) NSDictionary <NSString *, id> *entitlements;
+@property (readonly, nonatomic) NSURL* _Nullable bundleContainerURL;
 
 + (LSApplicationProxy*)applicationProxyForIdentifier:(id)identifier;
 - (NSString *)applicationIdentifier;
 - (NSURL *)containerURL;
 - (NSURL *)bundleURL;
-- (NSURL * _Nullable)dataContainerURL;
 - (NSString *)localizedName;
 @end
 
