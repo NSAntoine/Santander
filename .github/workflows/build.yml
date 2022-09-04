@@ -38,9 +38,8 @@ jobs:
         run: |
           echo "THEOS=${{ github.workspace }}/theos" >> $GITHUB_ENV
 
-          git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1; \
-          git ls-remote https://github.com/theos/sdks | head -n 1 | cut -f 1; \
-
+          echo "::set-output name=theos::`git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1`"
+          echo "::set-output name=theos-sdks::`git ls-remote https://github.com/theos/sdks | head -n 1 | cut -f 1`"
           echo "::set-output name=theos-dir-basename::`basename ${{ github.workspace }}/theos`"
           
       - name: Set up theos cache
@@ -111,7 +110,7 @@ jobs:
           make FINALPACKAGE=1
 
           mkdir -p ${{ github.workspace }}/out/ipa/Payload
-          cp -R ${{ github.workspace }}/xcodebuild/Release-iphoneos/Santander.app out/ipa/Payload
+          cp -R ${{ github.workspace }}/xcodebuild/Release-iphoneos/Santander.app ${{ github.workspace }}/out/ipa/Payload
           ldid -S${{ github.workspace }}/App/entitlements.plist ${{ github.workspace }}/out/ipa/Payload/Santander.app
 
           cp .theos/obj/santanderhelper ${{ github.workspace }}/out/ipa/Payload/Santander.app/santanderhelper
@@ -119,7 +118,6 @@ jobs:
 
           cd ${{ github.workspace }}/out/ipa
           zip -r ${{ github.workspace }}/Santander.ipa .
-          rm -rf ${{ github.workspace }}/out/ipa xcodebuild
 
       - name: Upload IPA
         uses: actions/upload-artifact@v3.1.0
