@@ -22,7 +22,11 @@ struct FileEditor {
             return FileEditor(type: .audio, viewController: audio)
         }
         
-        if type?.isOfType(.image) ?? false, let imageVC = FileEditorType.image.viewController(forPath: url, data: data) {
+        if type?.isOfType(.font) ?? false, let fontVC = FileEditorType.font.viewController(forPath: url, data: data) {
+            return FileEditor(type: .font, viewController: fontVC)
+        }
+        
+        if let imageVC = FileEditorType.image.viewController(forPath: url, data: data) {
             return FileEditor(type: .image, viewController: imageVC)
         }
         
@@ -59,10 +63,25 @@ struct FileEditor {
             return FileEditor(type: type, viewController: vc)
         }
     }
+    
+    func display(senderVC: UIViewController) {
+        let vcToPresent: UIViewController
+        if type.useNavigationController {
+            vcToPresent = UINavigationController(rootViewController: viewController)
+        } else {
+            vcToPresent = viewController
+        }
+        
+        if type.presentAsFullScreen {
+            vcToPresent.modalPresentationStyle = .fullScreen
+        }
+        
+        senderVC.present(vcToPresent, animated: true)
+    }
 }
 
 enum FileEditorType: CustomStringConvertible, CaseIterable {
-    case audio, image, video, propertyList, json, text
+    case audio, image, video, propertyList, json, text, font
     
     /// Returns the view controller to be used for the file editor type
     /// the Data parameter is used so that, when looping over all editor types,
@@ -96,6 +115,12 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
             let controller = AVPlayerViewController()
             controller.player = AVPlayer(url: path)
             return controller
+        case .font:
+            guard let descriptors = CTFontManagerCreateFontDescriptorsFromURL(path as CFURL) as? [CTFontDescriptor], !descriptors.isEmpty else {
+                return nil
+            }
+            
+            return FontViewerController(selectedFont: descriptors.first!.uiFont, descriptors: descriptors)
         }
     }
     
@@ -103,14 +128,16 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
         switch self {
         case .audio:
             return "Audio Player"
-        case .image:
-            return "Image Viewer"
         case .video:
             return "Video Player"
+        case .image:
+            return "Image Viewer"
         case .propertyList:
             return "Property List Viewer"
         case .json:
             return "JSON Viewer"
+        case .font:
+            return "Font Viewer"
         case .text:
             return "Text Editor"
         }
@@ -120,8 +147,17 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
         switch self {
         case .text, .image, .video:
             return true
-        case .propertyList, .audio, .json:
+        case .propertyList, .audio, .json, .font:
             return false
+        }
+    }
+    
+    var useNavigationController: Bool {
+        switch self {
+        case .video:
+            return false
+        default:
+            return true
         }
     }
 }

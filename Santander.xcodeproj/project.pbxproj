@@ -54,7 +54,9 @@
 		37EEA03928A8C86B00FA8CEB /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA02F28A8C86A00FA8CEB /* unzip.c */; };
 		37EEA03A28A8C86B00FA8CEB /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA03728A8C86B00FA8CEB /* ioapi.c */; };
 		37EEA03B28A8C86B00FA8CEB /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA03828A8C86B00FA8CEB /* zip.c */; };
+		CECF6EDA28C37F660080B805 /* FontViewerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECF6ED928C37F660080B805 /* FontViewerController.swift */; };
 		CEDAF42028C36B2900DF03E6 /* Runestone in Frameworks */ = {isa = PBXBuildFile; productRef = CEDAF41F28C36B2900DF03E6 /* Runestone */; };
+		CEF54FF528C3D4E30078A146 /* FontInformationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF54FF428C3D4E30078A146 /* FontInformationViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -129,6 +131,8 @@
 		37EEA03528A8C86A00FA8CEB /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
 		37EEA03728A8C86B00FA8CEB /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
 		37EEA03828A8C86B00FA8CEB /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		CECF6ED928C37F660080B805 /* FontViewerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontViewerController.swift; sourceTree = "<group>"; };
+		CEF54FF428C3D4E30078A146 /* FontInformationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontInformationViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -274,6 +278,7 @@
 				3787DB0828ACE4C900ACA60B /* Serialized */,
 				3787DB0428ABECF200ACA60B /* FileEditorType.swift */,
 				3713292628B618AD009E4AEA /* Image */,
+				CEF54FF228C3D4CE0078A146 /* Font */,
 			);
 			path = Editors;
 			sourceTree = "<group>";
@@ -342,6 +347,15 @@
 				37EEA03828A8C86B00FA8CEB /* zip.c */,
 			);
 			path = Compression;
+			sourceTree = "<group>";
+		};
+		CEF54FF228C3D4CE0078A146 /* Font */ = {
+			isa = PBXGroup;
+			children = (
+				CECF6ED928C37F660080B805 /* FontViewerController.swift */,
+				CEF54FF428C3D4E30078A146 /* FontInformationViewController.swift */,
+			);
+			path = Font;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -440,6 +454,7 @@
 				37177E4C289F12640025042E /* PathGroupOwnerViewController.swift in Sources */,
 				376F749D28BC8A33000E5D77 /* AudioPlayerToolbarView.swift in Sources */,
 				37963F132869C96C00C4B72A /* PathType.swift in Sources */,
+				CECF6EDA28C37F660080B805 /* FontViewerController.swift in Sources */,
 				374ECDC82875A3940066E9DD /* Storage.swift in Sources */,
 				3789B5F428622E0D00058688 /* SubPathsTableViewController.swift in Sources */,
 				3789B5E028622B7A00058688 /* AppDelegate.swift in Sources */,
@@ -450,6 +465,7 @@
 				37963F17286A0F0B00C4B72A /* DirectoryMonitor.swift in Sources */,
 				37EEA02828A8BF2700FA8CEB /* Compression.swift in Sources */,
 				37EEA03B28A8C86B00FA8CEB /* zip.c in Sources */,
+				CEF54FF528C3D4E30078A146 /* FontInformationViewController.swift in Sources */,
 				375CF897289C394E00BB7C60 /* ToolbarItems.swift in Sources */,
 				372A570F28AA44D200781243 /* ApplicationsManager.swift in Sources */,
 				37C6E0D22867653A00BDDA16 /* PathsListSplitViewController.swift in Sources */,

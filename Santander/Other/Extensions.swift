@@ -144,7 +144,8 @@ extension URL {
         // so deleting the app id from the URL gives us the URL for app containers
         return self == URL.home.deletingLastPathComponent()
         #else
-        return self == URL(fileURLWithPath: "/private/var/containers/Bundle/Application")
+        return self == URL(fileURLWithPath: "/private/var/containers/Bundle/Application") ||
+        self == URL(fileURLWithPath: "/private/var/mobile/Containers/Data")
         #endif
     }
     
@@ -660,5 +661,11 @@ extension UIApplication {
         .connectedScenes
         .flatMap { ($0 as? UIWindowScene)?.windows ?? [] }
         .first { $0.isKeyWindow }
+    }
+}
+
+extension CTFontDescriptor {
+    var uiFont: UIFont {
+        return CTFontCreateWithFontDescriptor(self, UserPreferences.fontViewerFontSize, nil) as UIFont
     }
 }

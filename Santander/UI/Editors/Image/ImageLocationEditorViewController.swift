@@ -120,13 +120,11 @@ class ImageLocationEditorViewController: UIViewController, MKMapViewDelegate {
         if nullify {
             newGPSDict[kCGImagePropertyGPSLatitude as String] = nil
             newGPSDict[kCGImagePropertyGPSLongitude as String] = nil
-            metadata.location.lat = nil
-            metadata.location.long = nil
+            metadata.location = ImageLocation(lat: nil, long: nil)
         } else {
             newGPSDict[kCGImagePropertyGPSLatitude as String] = coordinate.latitude
             newGPSDict[kCGImagePropertyGPSLongitude as String] = coordinate.longitude
-            metadata.location.lat = coordinate.latitude
-            metadata.location.long = coordinate.longitude
+            metadata.location = ImageLocation(lat: coordinate.latitude, long: coordinate.longitude)
         }
         
         var copy = metadata.dictionary

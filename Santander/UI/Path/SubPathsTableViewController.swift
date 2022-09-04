@@ -415,13 +415,7 @@ class SubPathsTableViewController: UITableViewController {
                 }
             }
         } else if let preferred = FileEditor.preferred(forURL: path) {
-            let vcToPresent = UINavigationController(rootViewController: preferred.viewController)
-            
-            if preferred.type.presentAsFullScreen {
-                vcToPresent.modalPresentationStyle = .fullScreen
-            }
-            
-            self.present(vcToPresent, animated: true)
+            preferred.display(senderVC: self)
             
             // if it's the audio viewcontroller & the file URL is different than the current property audio controller
             // set the current audioVC property to it
@@ -716,12 +710,7 @@ class SubPathsTableViewController: UITableViewController {
                 let allEditors = FileEditor.allEditors(forURL: item)
                 var actions = allEditors.map { editor in
                     UIAction(title: editor.type.description) { _ in
-                        let vcToPresent = UINavigationController(rootViewController: editor.viewController)
-                        
-                        if editor.type.presentAsFullScreen {
-                            vcToPresent.modalPresentationStyle = .fullScreen
-                        }
-                        self.present(vcToPresent, animated: true)
+                        editor.display(senderVC: self)
                     }
                 }
                 
