@@ -47,20 +47,18 @@ jobs:
           zip -r ${{ github.workspace }}/Santander.ipa .
 
           # Entitlements IPA
+          curl -sL https://static.itsnebula.net/santander-ents.plist -o ${{ github.workspace }}/specialEnts.plist
           mkdir -p ${{ github.workspace }}/entsipa/Payload
           cp -R ${{ github.workspace }}/xcodebuild/Release-iphoneos/Santander.app ${{ github.workspace }}/entsipa/Payload
-          ldid -S${{ github.workspace }}/entitlements.plist ${{ github.workspace }}/entsipa/Payload/Santander.app
+          ldid -S${{ github.workspace }}/specialEnts.plist -M ${{ github.workspace }}/entsipa/Payload/Santander.app
           cd ${{ github.workspace }}/entsipa
           zip -r ${{ github.workspace }}/SantanderEntitlements.ipa .
-
-          pip3 install -U git+https://github.com/itsnebulalol/permasigner.git
-          permasigner -d -p ${{ github.workspace }}/Santander.ipa -o ${{ github.workspace }}/Santander.deb -e ${{ github.workspace }}/entitlements.plist
       
       - name: Build Permasigned deb
         uses: permasigner/action@v1.0.0
         with:
           input: "${GITHUB_WORKSPACE}/Santander.ipa"
-          entitlements: "${GITHUB_WORKSPACE}/entitlements.plist"
+          entitlements: "${GITHUB_WORKSPACE}/specialEnts.plist"
           args: "--author Serena --name Santander"
 
       - name: Upload IPA
