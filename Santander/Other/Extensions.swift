@@ -138,25 +138,25 @@ extension URL {
         return arr
     }
     
+    var isApplicationsContainerURL: Bool {
+        #if targetEnvironment(simulator)
+        // on the simulator, the home URL is the app's container,
+        // so deleting the app id from the URL gives us the URL for app containers
+        return self == URL.home.deletingLastPathComponent()
+        #else
+        return self == URL(fileURLWithPath: "/private/var/containers/Bundle/Application") ||
+        self == URL(fileURLWithPath: "/private/var/mobile/Containers/Data")
+        #endif
+    }
+    
     var applicationItem: LSApplicationProxy? {
         if self.pathExtension == "app" {
             return ApplicationsManager.shared.application(forBundleURL: self)
+        } else if self.deletingLastPathComponent().isApplicationsContainerURL {
+            return ApplicationsManager.shared.application(forContainerURL: self) ?? ApplicationsManager.shared.application(forDataContainerURL: self)
         }
         
-        switch self.deletingLastPathComponent().path {
-#if targetEnvironment(simulator)
-        case URL.home.deletingLastPathComponent().path:
-            return ApplicationsManager.shared.application(forContainerURL: self)
-#else
-        case "/private/var/containers/Bundle/Application", "/var/mobile/Containers/Data/Application":
-            return ApplicationsManager.shared.application(forContainerURL: self)
-        case "/private/var/mobile/Containers/Data":
-            return ApplicationsManager.shared.application(forDataContainerURL: self)
-#endif
-        default:
-            return nil
-        }
-        
+        return nil
     }
 }
 
