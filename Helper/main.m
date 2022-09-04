@@ -16,8 +16,8 @@ int main(int argc, char *argv[], char *envp[]) {
 		if([cmd isEqualToString:@"delete"]) {
             if(argc <= 2) return -3;
 			NSString* path = [NSString stringWithUTF8String:argv[2]];
-            NSLog(@"[SantanderHelper] called delete: %d", path)
-            
+            NSLog(@"[SantanderHelper] called delete: %@", path);
+
             delete(path);
         }
 
