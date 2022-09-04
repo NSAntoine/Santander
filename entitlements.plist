@@ -20,5 +20,7 @@
         </array>
         <key>com.apple.private.security.storage.*</key>
         <true/>
+        <key>com.apple.rootless.storage.*</key>
+	    <true/>
     </dict>
 </plist>
