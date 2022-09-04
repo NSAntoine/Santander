@@ -662,3 +662,9 @@ extension UIApplication {
         .first { $0.isKeyWindow }
     }
 }
+
+extension CTFontDescriptor {
+    var uiFont: UIFont {
+        return CTFontCreateWithFontDescriptor(self, UserPreferences.fontViewerFontSize, nil) as UIFont
+    }
+}

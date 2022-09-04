@@ -96,12 +96,11 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
         switch elem {
         case .dictionary(_), .array(_):
             cell.accessoryType = .disclosureIndicator
-            conf.secondaryText = elem?.typeDescription
         default:
-            conf.secondaryText = elem?.description
             cell.accessoryType = .detailButton
         }
         
+        conf.secondaryText = valueDescription(forElement: elem)
         cell.contentConfiguration = conf
         return cell
     }
@@ -119,10 +118,7 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
             let vc = SerializedArrayViewController(array: arr, type: type, title: text)
             self.navigationController?.pushViewController(vc, animated: true)
         } else if case .dictionary(let dict) = elem {
-            var newDict: SerializedDictionaryType = [:]
-            for (key, value) in dict {
-                newDict[key] = .init(item: value)
-            }
+            let newDict = dict.asSerializedDictionary()
             
             let vc = SerializedDocumentViewController(dictionary: newDict, type: type, title: text, fileURL: fileURL, canEdit: false)
             self.navigationController?.pushViewController(vc, animated: true)
@@ -250,12 +246,21 @@ extension SerializedDocumentViewController: UISearchBarDelegate {
         updateFilteredDict(reloadData: true, searchText: searchText)
     }
     
+    func valueDescription(forElement element: SerializedItemType?) -> String? {
+        switch element {
+        case .array(_), .dictionary(_):
+            return element?.typeDescription
+        default:
+            return element?.description
+        }
+    }
+    
     func updateFilteredDict(reloadData: Bool, searchText text: String?) {
         if isSearching {
             let searchText = text ?? navigationItem.searchController?.searchBar.text ?? ""
             filteredDict = serializedDict.filter { (key, value) in
                 return key.localizedCaseInsensitiveContains(searchText) ||
-                value.description.localizedCaseInsensitiveContains(searchText)
+                valueDescription(forElement: value)?.localizedCaseInsensitiveContains(searchText) ?? false
             }
         }
         

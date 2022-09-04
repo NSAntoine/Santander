@@ -59,6 +59,9 @@ enum UserPreferences {
     @Storage(key: "userPreferredTableViewStyle", defaultValue: UITableView.Style.insetGrouped.rawValue)
     static var preferredTableViewStyle: Int
     
+    @Storage(key: "FontViewerFontSize", defaultValue: 30)
+    static var fontViewerFontSize: CGFloat
+    
     static var pathGroups: [PathGroup] {
         get {
             guard let data = UserDefaults.standard.data(forKey: "UserPathGroups"),
