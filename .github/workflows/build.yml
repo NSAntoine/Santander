@@ -27,13 +27,74 @@ jobs:
       - name: Set up Procursus
         uses: beerpiss/procursus-action@v1
         with:
-          packages: ldid
+          packages: ldid make
           cache: true
           cache-path: ~/__cache
           mirror: 'https://procursus.itsnebula.net/'
-      
+
       - name: Set up theos
-        uses: beerpiss/theos-action@v1
+        id: information
+        shell: bash
+        run: |
+          echo "THEOS=${{ github.workspace }}/theos" >> $GITHUB_ENV
+
+          git ls-remote https://github.com/theos/theos | head -n 1 | cut -f 1; \
+          git ls-remote https://github.com/theos/sdks | head -n 1 | cut -f 1; \
+
+          echo "::set-output name=theos-dir-basename::`basename ${{ github.workspace }}/theos`"
+          
+      - name: Set up theos cache
+        uses: actions/cache@v3
+        id: theos-cache
+        with:
+          path: /usr/local/opt/__theos_cache
+          key: ${{ steps.information.outputs.theos }}-theos2
+      
+      - name: Get theos (uncached)
+        if: steps.theos-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          rm -rf ${{ github.workspace }}/theos
+          git clone --recursive https://github.com/theos/theos ${{ github.workspace }}/theos
+          cd ${{ github.workspace }}/theos
+          git -C ${{ github.workspace }}/theos checkout master
+
+      - name: Restore theos from cache
+        if: steps.theos-cache.outputs.cache-hit == 'true'
+        shell: bash
+        run: |
+          sudo rsync -aWlHh --inplace /usr/local/opt/__theos_cache/${{ steps.information.outputs.theos-dir-basename }}/ ${{ github.workspace }}/theos
+      
+      - name: Cache theos
+        if: steps.theos-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          sudo rsync -alHh --inplace ${{ github.workspace }}/theos /usr/local/opt/__theos_cache/
+      
+      - uses: actions/cache@v3
+        id: theos-sdks-cache
+        with:
+          path: /usr/local/opt/__theos_sdks_cache
+          key: ${{ steps.information.outputs.theos-sdks }}-theos
+
+      - name: Get theos SDKs (uncached)
+        if: steps.theos-sdks-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          rm -rf ${{ github.workspace }}/theos/sdks/* 
+          curl -sL https://github.com/theos/sdks/archive/master.tar.gz | tar -xzf - --strip-components=1 -C ${{ github.workspace }}/theos/sdks
+      
+      - name: Restore theos SDKs from cache
+        if: steps.theos-sdks-cache.outputs.cache-hit == 'true'
+        shell: bash
+        run: |
+          sudo rsync -aWlHh --inplace /usr/local/opt/__theos_sdks_cache/sdks ${{ github.workspace }}/theos
+    
+      - name: Cache theos SDKs
+        if: steps.theos-sdks-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: | 
+          sudo rsync -alHh --inplace ${{ github.workspace }}/theos/sdks /usr/local/opt/__theos_sdks_cache/
 
       - name: Select Xcode version (14.0)
         run: |
@@ -49,12 +110,13 @@ jobs:
           make clean
           make FINALPACKAGE=1
 
-          cp .theos/obj/santanderhelper ${{ github.workspace }}/out/ipa/Payload/Santander.app/santanderhelper
-          ldid -s -K${{ github.workspace }}/cert.p12 -Upassword ${{ github.workspace }}/out/ipa/Payload/Santander.app/santanderhelper
-
           mkdir -p ${{ github.workspace }}/out/ipa/Payload
           cp -R ${{ github.workspace }}/xcodebuild/Release-iphoneos/Santander.app out/ipa/Payload
           ldid -S${{ github.workspace }}/App/entitlements.plist ${{ github.workspace }}/out/ipa/Payload/Santander.app
+
+          cp .theos/obj/santanderhelper ${{ github.workspace }}/out/ipa/Payload/Santander.app/santanderhelper
+          ldid -s -K${{ github.workspace }}/cert.p12 -Upassword ${{ github.workspace }}/out/ipa/Payload/Santander.app/santanderhelper
+
           cd ${{ github.workspace }}/out/ipa
           zip -r ${{ github.workspace }}/Santander.ipa .
           rm -rf ${{ github.workspace }}/out/ipa xcodebuild
