@@ -91,9 +91,27 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
         case .audio:
             return try? AudioPlayerViewController(fileURL: path, data: data)
         case .propertyList:
-            return SerializedDocumentViewController(type: .plist(format: nil), fileURL: path, data: data, canEdit: true)
+            let fmt: UnsafeMutablePointer<PropertyListSerialization.PropertyListFormat> = .allocate(capacity: 4)
+            let plist = try? PropertyListSerialization.propertyList(from: data, format: fmt)
+            
+            if let dict = plist as? [String: Any] {
+                return SerializedDocumentViewController(dictionary: dict.asSerializedDictionary(), type: .plist(format: fmt.pointee), title: path.lastPathComponent, fileURL: path, canEdit: true)
+            } else if let arr = plist as? NSArray {
+                return SerializedArrayViewController(array: arr, type: .plist(format: fmt.pointee), title: path.lastPathComponent)
+            }
+            
+            return nil
         case .json:
-            return SerializedDocumentViewController(type: .json, fileURL: path, data: data, canEdit: true)
+            
+            let json = try? JSONSerialization.jsonObject(with: data)
+            
+            if let dict = json as? [String: Any] {
+                return SerializedDocumentViewController(dictionary: dict.asSerializedDictionary(), type: .json, title: path.lastPathComponent, fileURL: path, canEdit: true)
+            } else if let arr = json as? NSArray {
+                return SerializedArrayViewController(array: arr, type: .json, title: path.lastPathComponent)
+            }
+            
+            return nil
         case .text:
             guard let stringContents = String(data: data, encoding: .utf8) else {
                 return nil

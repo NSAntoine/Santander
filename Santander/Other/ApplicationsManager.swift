@@ -25,6 +25,12 @@ struct ApplicationsManager {
         }
     }
     
+    func application(forDataContainerURL dataContainerURL: URL) -> LSApplicationProxy? {
+        return allApps.first { app in
+            app.bundleContainerURL == dataContainerURL
+        }
+    }
+    
     func deleteApp(_ app: LSApplicationProxy) throws {
         let errorPointer: NSErrorPointer = nil
         let didSucceed = LSApplicationWorkspace.default().uninstallApplication(app.applicationIdentifier(), withOptions: nil, error: errorPointer, usingBlock: nil)
