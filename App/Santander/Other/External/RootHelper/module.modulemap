@@ -1,0 +1,3 @@
+module RootHelper {
+    header "roothelper.h"
+}

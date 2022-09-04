@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		330E14A628C561E100DF9348 /* util.m in Sources */ = {isa = PBXBuildFile; fileRef = 330E14A528C561E100DF9348 /* util.m */; };
+		330E14A928C5648E00DF9348 /* roothelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 330E14A828C5648E00DF9348 /* roothelper.m */; };
 		3712D319286F7F2E00BCD034 /* TypeSelectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3712D318286F7F2E00BCD034 /* TypeSelectionViewController.swift */; };
 		3713292528B60163009E4AEA /* ImageMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3713292428B60163009E4AEA /* ImageMetadata.swift */; };
 		3713292928B61F98009E4AEA /* ImageMetadataViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3713292828B61F98009E4AEA /* ImageMetadataViewController.swift */; };
@@ -73,6 +75,11 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		330E14A528C561E100DF9348 /* util.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = util.m; sourceTree = "<group>"; };
+		330E14A728C5629600DF9348 /* util.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = util.h; sourceTree = "<group>"; };
+		330E14A828C5648E00DF9348 /* roothelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = roothelper.m; sourceTree = "<group>"; };
+		330E14AA28C5665400DF9348 /* roothelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = roothelper.h; sourceTree = "<group>"; };
+		330E14AB28C56C2E00DF9348 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		3712D318286F7F2E00BCD034 /* TypeSelectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeSelectionViewController.swift; sourceTree = "<group>"; };
 		3713292428B60163009E4AEA /* ImageMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageMetadata.swift; sourceTree = "<group>"; };
 		3713292828B61F98009E4AEA /* ImageMetadataViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageMetadataViewController.swift; sourceTree = "<group>"; };
@@ -148,6 +155,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		330E14A428C560C400DF9348 /* RootHelper */ = {
+			isa = PBXGroup;
+			children = (
+				330E14A528C561E100DF9348 /* util.m */,
+				330E14A728C5629600DF9348 /* util.h */,
+				330E14A828C5648E00DF9348 /* roothelper.m */,
+				330E14AA28C5665400DF9348 /* roothelper.h */,
+				330E14AB28C56C2E00DF9348 /* module.modulemap */,
+			);
+			path = RootHelper;
+			sourceTree = "<group>";
+		};
 		3713292628B618AD009E4AEA /* Image */ = {
 			isa = PBXGroup;
 			children = (
@@ -311,6 +330,7 @@
 		37EEA02428A8BE4E00FA8CEB /* External */ = {
 			isa = PBXGroup;
 			children = (
+				330E14A428C560C400DF9348 /* RootHelper */,
 				372A570928AA436400781243 /* LaunchServices */,
 				37EEA03C28A912B900FA8CEB /* Compression */,
 			);
@@ -445,6 +465,7 @@
 				37C6E0CA28662C6800BDDA16 /* PathsSortMethods.swift in Sources */,
 				37934DB728707F4500D1248A /* TextFileEditorViewController.swift in Sources */,
 				3713292B28B74D34009E4AEA /* ImageLocationEditorViewController.swift in Sources */,
+				330E14A628C561E100DF9348 /* util.m in Sources */,
 				3713292928B61F98009E4AEA /* ImageMetadataViewController.swift in Sources */,
 				375CF89F289D969A00BB7C60 /* PathPermissionsViewController.swift in Sources */,
 				3787DB0528ABECF200ACA60B /* FileEditorType.swift in Sources */,
@@ -481,6 +502,7 @@
 				37198B9A28721069000C8CDF /* TextEditorThemeSettingsViewController.swift in Sources */,
 				375CF899289C4FF000BB7C60 /* PathMetadata.swift in Sources */,
 				3789B5E228622B7A00058688 /* SceneDelegate.swift in Sources */,
+				330E14A928C5648E00DF9348 /* roothelper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -11,6 +11,7 @@
 import UIKit
 import UniformTypeIdentifiers
 import LaunchServicesPrivate
+import RootHelper
 
 extension URL {
     
@@ -499,8 +500,12 @@ extension UITableViewController {
                 try FileManager.default.removeItem(at: url)
                 completionHandler(true)
             } catch {
-                self.errorAlert(error, title: "Failed to delete \"\(url.lastPathComponent)\"")
-                completionHandler(false)
+                if RootHelper.delete(url.absoluteString) == 0 {
+                    completionHandler(true)
+                } else {
+                    self.errorAlert(error, title: "Failed to delete \"\(url.lastPathComponent)\"")
+                    completionHandler(false)
+                }
             }
         }
         
