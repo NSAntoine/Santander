@@ -1,0 +1,9 @@
+Package: me.nebula.santanderroothelper
+Name: santanderroothelper
+Version: 1.0.0
+Architecture: iphoneos-arm
+Description: Root helper for the Santander file manager.
+Maintainer: Nebula
+Author: Nebula
+Section: System
+Tag: role::hacker

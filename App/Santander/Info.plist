@@ -60,5 +60,9 @@
 			<dict/>
 		</dict>
 	</array>
+	<key>TSRootBinaries</key>
+	<array>
+		<string>santanderhelper</string>
+	</array>
 </dict>
 </plist>

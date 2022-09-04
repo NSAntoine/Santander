@@ -24,57 +24,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       
-      - name: Set up Procursus
-        uses: beerpiss/procursus-action@v1
-        with:
-          packages: ldid
-          cache: true
-          cache-path: ~/__cache
-          mirror: 'https://repo.quiprr.dev/procursus/'
-      
       - name: Select Xcode version (14.0)
         run: |
           sudo xcode-select --switch /Applications/Xcode_14.0.app
       
       - name: Build IPA
         run: |
-          xcodebuild build -scheme Santander -configuration "Release" CODE_SIGNING_ALLOWED="NO" CODE_SIGNING_REQUIRED="NO" CODE_SIGN_IDENTITY="" BUILD_DIR=${{ github.workspace }}/xcodebuild
-          
-          # No entitlements IPA
-          mkdir -p ${{ github.workspace }}/ipadir/Payload
-          cp -R ${{ github.workspace }}/xcodebuild/Release-iphoneos/Santander.app ${{ github.workspace }}/ipadir/Payload
-          cd ${{ github.workspace }}/ipadir
-          zip -r ${{ github.workspace }}/Santander.ipa .
-
-          # Entitlements IPA
-          curl -sL https://static.itsnebula.net/santander-ents.plist -o ${{ github.workspace }}/specialEnts.plist
-          mkdir -p ${{ github.workspace }}/entsipa/Payload
-          cp -R ${{ github.workspace }}/xcodebuild/Release-iphoneos/Santander.app ${{ github.workspace }}/entsipa/Payload
-          ldid -S${{ github.workspace }}/specialEnts.plist -M ${{ github.workspace }}/entsipa/Payload/Santander.app
-          cd ${{ github.workspace }}/entsipa
-          zip -r ${{ github.workspace }}/SantanderEntitlements.ipa .
-      
-      - name: Build Permasigned deb
-        uses: permasigner/action@v1.0.0
-        with:
-          input: "${GITHUB_WORKSPACE}/Santander.ipa"
-          entitlements: "${GITHUB_WORKSPACE}/specialEnts.plist"
-          args: "--author Serena --name Santander"
+          chmod +x build.sh
+          ./build.sh
 
       - name: Upload IPA
         uses: actions/upload-artifact@v3.1.0
         with:
           name: Santander
-          path: ${{ github.workspace }}/Santander.ipa
-
-      - name: Upload IPA with Entitlements
-        uses: actions/upload-artifact@v3.1.0
-        with:
-          name: SantanderEntitlements
-          path: ${{ github.workspace }}/SantanderEntitlements.ipa
-
-      - name: Upload Permasigned deb
-        uses: actions/upload-artifact@v3.1.0
-        with:
-          name: SantanderJailbroken
-          path: ${{ github.workspace }}/permasigner-out/*
+          path: out/Santander.ipa
