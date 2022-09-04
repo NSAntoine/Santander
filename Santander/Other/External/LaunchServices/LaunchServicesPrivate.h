@@ -26,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)applicationIdentifier;
 - (NSURL *)containerURL;
 - (NSURL *)bundleURL;
+- (NSURL * _Nullable)dataContainerURL;
 - (NSString *)localizedName;
 @end
 

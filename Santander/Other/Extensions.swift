@@ -153,13 +153,7 @@ extension URL {
         if self.pathExtension == "app" {
             return ApplicationsManager.shared.application(forBundleURL: self)
         } else if self.deletingLastPathComponent().isApplicationsContainerURL {
-            if self.path.hasPrefix("/private/var/containers/Bundle/Application") {
-                var urlToReturnFrom = URL(fileURLWithPath: "/private/var/mobile/Containers/Data")
-                urlToReturnFrom.appendPathComponent(self.lastPathComponent)
-                return ApplicationsManager.shared.application(forBundleURL: urlToReturnFrom)
-            } else {
-                return ApplicationsManager.shared.application(forContainerURL: self)
-            }
+            return ApplicationsManager.shared.application(forContainerURL: self) ?? ApplicationsManager.shared.application(forDataContainerURL: self)
         }
         
         return nil
