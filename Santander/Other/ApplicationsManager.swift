@@ -11,7 +11,7 @@ import LaunchServicesPrivate
 /// A Swift Wrapper to manage Applications
 struct ApplicationsManager {
     let allApps: [LSApplicationProxy]
-    static let shared = ApplicationsManager(allApps: LSApplicationWorkspace.default().allInstalledApplications())
+    static let shared = ApplicationsManager(allApps: LSApplicationWorkspace.default().allApplications())
     
     func application(forContainerURL containerURL: URL) -> LSApplicationProxy? {
         return allApps.first { app in
