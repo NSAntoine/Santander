@@ -164,10 +164,10 @@ extension URL {
 fileprivate let applicationPaths: [String] = [URL.home.deletingLastPathComponent().path]
 #else
 fileprivate let applicationPaths: [String] = [
-    "/var/containers/Bundle/Application",
-    "/var/mobile/Containers/Data",
-    "/var/mobile/Containers/Data/Application",
-    "/var/mobile/Containers/Shared/AppGroup"
+    "/private/var/containers/Bundle/Application",
+    "/private/var/mobile/Containers/Data",
+    "/private/var/mobile/Containers/Data/Application",
+    "/private/var/mobile/Containers/Shared/AppGroup"
 ]
 #endif
 
