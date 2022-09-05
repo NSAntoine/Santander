@@ -152,13 +152,24 @@ extension URL {
     var applicationItem: LSApplicationProxy? {
         if self.pathExtension == "app" {
             return ApplicationsManager.shared.application(forBundleURL: self)
-        } else if self.deletingLastPathComponent().isApplicationsContainerURL {
+        } else if applicationPaths.contains(deletingLastPathComponent().path) {
             return ApplicationsManager.shared.application(forContainerURL: self) ?? ApplicationsManager.shared.application(forDataContainerURL: self)
         }
         
         return nil
     }
 }
+
+#if targetEnvironment(simulator)
+fileprivate let applicationPaths: [String] = [URL.home.deletingLastPathComponent().path]
+#else
+fileprivate let applicationPaths: [String] = [
+    "/var/containers/Bundle/Application",
+    "/var/mobile/Containers/Data",
+    "/var/mobile/Containers/Data/Application",
+    "/var/mobile/Containers/Shared/AppGroup"
+]
+#endif
 
 extension UIViewController {
     func errorAlert(_ errorDescription: String?, title: String, presentingFromIfAvailable presentingVC: UIViewController? = nil) {
