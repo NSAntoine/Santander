@@ -40,9 +40,12 @@ jobs:
           cp -R ${{ github.workspace }}/xcodebuild/Release-iphoneos/Santander.app ${{ github.workspace }}/ipadir/Payload
           cd ${{ github.workspace }}/ipadir
           zip -r ${{ github.workspace }}/Santander.ipa .
-
-          pip3 install -U git+https://github.com/itsnebulalol/permasigner.git
-          permasigner -d -p ${{ github.workspace }}/Santander.ipa -o ${{ github.workspace }}/Santander.deb -e ${{ github.workspace }}/entitlements.plist
+      - name: Permasign built IPA
+        uses: permasigner/action@v1.1.0
+        with:
+          input: "${{ github.workspace }}/Santander.ipa"
+          output: "${{ github.workspace }}/Santander.deb"
+          entitlements: "${{ github.workspace }}/entitlements.plist"
       - name: Upload IPA
         uses: actions/upload-artifact@v3.1.0
         with:
