@@ -10,6 +10,8 @@
         <true/>
         <key>com.apple.security.app-sandbox</key>
         <false/>
+        <key>get-task-allow</key>
+        <true/>
         <key>com.apple.security.iokit-user-client-class</key>
         <array>
             <string>IOUserClient</string>
