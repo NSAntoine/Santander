@@ -72,6 +72,9 @@ class SubPathsTableViewController: UITableViewController {
         }
     }
     
+    /// Whether or not the current path contains subpaths that are app UUIDs
+    var containsAppUUIDs: Bool?
+    
     typealias DataSourceType = UITableViewDiffableDataSource<Int, SubPathsRowItem>
     lazy var dataSource = DataSourceType(tableView: self.tableView) { tableView, indexPath, itemIdentifier in
         switch itemIdentifier {
@@ -131,6 +134,7 @@ class SubPathsTableViewController: UITableViewController {
         self.navigationItem.hidesSearchBarWhenScrolling = !UserPreferences.alwaysShowSearchBar
         if let currentPath = currentPath {
             searchController.searchBar.scopeButtonTitles = [currentPath.lastPathComponent, "Subdirectories"]
+            self.containsAppUUIDs = currentPath.containsAppUUIDSubpaths
         }
         self.navigationItem.searchController = searchController
 #if compiler(>=5.7)
@@ -566,11 +570,18 @@ class SubPathsTableViewController: UITableViewController {
         // if we're displaying an app, whether it's a .app
         // or an app in the containers URL
         // display the properties of the app instead
-        if let app = fsItem.applicationItem {
+
+        // for performance, we check first for if the current path contains app UUIDs (if the pathExt isn't .app)
+        // otherwise, if currentPath is nil, check for if the parent dir of the path contains app UUIDs
+        // performance is worse if we *always* do the first,
+        // but `containsAppUUIDs` isn't nil as long as `currentPath` isn't nil.
+        if fsItem.pathExtension == "app" || (containsAppUUIDs ?? fsItem.deletingLastPathComponent().containsAppUUIDSubpaths),
+           let app = fsItem.applicationItem {
             cellConf.text = app.localizedName()
             cellConf.image = ApplicationsManager.shared.icon(forApplication: app)
             cellConf.secondaryText = fsItem.lastPathComponent
             cell.accessoryType = .disclosureIndicator
+            cellConf.textProperties.color = tableView.tintColor ?? .systemBlue
             return cell
         }
         
