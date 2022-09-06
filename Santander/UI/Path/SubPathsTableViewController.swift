@@ -567,10 +567,6 @@ class SubPathsTableViewController: UITableViewController {
             cell.contentConfiguration = cellConf
         }
         
-        // if we're displaying an app, whether it's a .app
-        // or an app in the containers URL
-        // display the properties of the app instead
-
         // for performance, we check first for if the current path contains app UUIDs (if the pathExt isn't .app)
         // otherwise, if currentPath is nil, check for if the parent dir of the path contains app UUIDs
         // performance is worse if we *always* do the first,

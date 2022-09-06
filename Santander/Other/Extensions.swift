@@ -101,19 +101,11 @@ extension URL {
                 return UIImage(systemName: "doc")
             }
             
-            if type.isOfType(.text) {
-                return UIImage(systemName: "doc.text")
-            } else if type.isOfType(.image) {
-                return UIImage(systemName: "photo")
-            } else if type.isOfType(.audio) {
-                return UIImage(systemName: "waveform")
-            } else if type.isOfType(.movie) || type.isOfType(.video) {
-                return UIImage(systemName: "play")
-            } else if type.isOfType(.executable) {
-                return UIImage(systemName: "terminal")
-            }
+            let imageName = UTType.iconsDictionary.first { (key, _) in
+                type.isOfType(key)
+            }?.value
             
-            return UIImage(systemName: "doc")
+            return UIImage(systemName: imageName ?? "doc")
         }
     }
     
@@ -412,6 +404,16 @@ extension UTType {
             systemTypes(),
         ]
     }
+    
+    /// A Dictionary containing the systemName for icons for of certain UTTypes
+    static let iconsDictionary: [UTType: String] = [
+        .text: "doc.text",
+        .image: "photo",
+        .audio: "waveform",
+        .video: "play",
+        .movie: "play",
+        .executable: "terminal"
+    ]
     
     /// Checks whether the type is equal to the type given in the parameters
     /// or a parameter of said type

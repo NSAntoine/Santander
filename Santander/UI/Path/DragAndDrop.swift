@@ -61,9 +61,7 @@ extension SubPathsTableViewController: UITableViewDropDelegate, UITableViewDragD
         let selectedItem = contents[indexPath.row]
         let itemProvider = NSItemProvider()
         
-        guard let typeID = selectedItem.contentType?.identifier else {
-            return [] // if we can't get the identifier, bail
-        }
+        let typeID = selectedItem.contentType?.identifier ?? UTType.content.identifier
         
         itemProvider.registerFileRepresentation(
             forTypeIdentifier: typeID,
