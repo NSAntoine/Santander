@@ -13,8 +13,37 @@ enum UserPreferences {
     @Storage(key: "UseLargeNavTitles", defaultValue: true)
     static var useLargeNavigationTitles: Bool
     
-    @Storage(key: "FavPaths", defaultValue: [])
-    static var favouritePaths: [String]
+    /// Bookmarked paths saved by the user, stored as Data.
+    /// see URL.bookmarkData
+    @Storage(key: "BookmarksData", defaultValue: [])
+    static private var _bookmarksData: [Data]
+    
+    /// Bookmarked paths by saved the user
+    static var bookmarks: Set<URL> {
+        get {
+            var dataArr = self._bookmarksData
+            let arr = dataArr.compactMap { data in
+                var isStale: Bool = false
+                let url = try? URL(resolvingBookmarkData: data, bookmarkDataIsStale: &isStale)
+                
+                // replace if stale
+                if isStale, let indx = dataArr.firstIndex(of: data), let urlData = try? url?.bookmarkData() {
+                    dataArr[indx] = urlData
+                    self._bookmarksData = dataArr
+                }
+                
+                return url
+            }
+            
+            return Set(arr)
+        }
+        
+        set {
+            _bookmarksData = newValue.compactMap { url in
+                try? url.bookmarkData()
+            }
+        }
+    }
     
     @Storage(key: "AlwaysShowSearchBar", defaultValue: true)
     static var alwaysShowSearchBar: Bool

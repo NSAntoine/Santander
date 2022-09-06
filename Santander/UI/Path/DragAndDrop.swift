@@ -4,7 +4,7 @@
 //
 //  Created by Serena on 24/06/2022
 //
-	
+
 
 import UIKit
 import UniformTypeIdentifiers
@@ -21,27 +21,18 @@ extension SubPathsTableViewController: UITableViewDropDelegate, UITableViewDragD
                     return
                 }
                 
-                if self.isFavouritePathsSheet {
-                    // importing to Favorites
-                    UserPreferences.favouritePaths.append(url.path)
-                    self.unfilteredContents = UserPreferences.favouritePaths.map { URL(fileURLWithPath: $0) }
-                    var snapshot = self.dataSource.snapshot()
-                    snapshot.appendItems([.path(url)])
-                    self.dataSource.apply(snapshot)
-                } else {
-                    // copying to the current path
-                    guard let currentPath = self.currentPath else {
-                        return
-                    }
-                    
-                    let newPath = currentPath.appendingPathComponent(url.lastPathComponent)
-                    
-                    do {
-                        try FileManager.default.copyItem(at: url, to: newPath)
-                    } catch {
-                        DispatchQueue.main.async {
-                            self.errorAlert("Error: \(error.localizedDescription)", title: "Failed to copy item")
-                        }
+                // copying to the current path
+                guard let currentPath = self.currentPath else {
+                    return
+                }
+                
+                let newPath = currentPath.appendingPathComponent(url.lastPathComponent)
+                
+                do {
+                    try FileManager.default.copyItem(at: url, to: newPath)
+                } catch {
+                    DispatchQueue.main.async {
+                        self.errorAlert("Error: \(error.localizedDescription)", title: "Failed to copy item")
                     }
                 }
             }
@@ -49,11 +40,11 @@ extension SubPathsTableViewController: UITableViewDropDelegate, UITableViewDragD
     }
     
     func tableView(_ tableView: UITableView, canHandle session: UIDropSession) -> Bool {
-        return currentPath != nil || isFavouritePathsSheet
+        return currentPath != nil
     }
     
     func tableView(_ tableView: UITableView, itemsForBeginning session: UIDragSession, at indexPath: IndexPath) -> [UIDragItem] {
-        // if doDisplaySearchSuggestions is true, that means a search suggestion is being dragged
+        // if displayingSearchSuggestions is true, that means a search suggestion is being dragged
         guard !displayingSearchSuggestions else {
             return []
         }

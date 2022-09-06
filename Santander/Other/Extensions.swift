@@ -74,13 +74,8 @@ extension URL {
         return try? FileManager.default.destinationOfSymbolicLink(atPath: self.path)
     }
     
-    static var root: URL {
-        return URL(fileURLWithPath: "/")
-    }
-    
-    static var home: URL {
-        return URL(fileURLWithPath: NSHomeDirectory())
-    }
+    static var root: URL = URL(fileURLWithPath: "/")
+    static var home: URL = URL(fileURLWithPath: NSHomeDirectory())
     
     var isSymlink: Bool {
         return (try? FileManager.default.destinationOfSymbolicLink(atPath: self.path)) != nil
