@@ -54,6 +54,7 @@
 		37EEA03928A8C86B00FA8CEB /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA02F28A8C86A00FA8CEB /* unzip.c */; };
 		37EEA03A28A8C86B00FA8CEB /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA03728A8C86B00FA8CEB /* ioapi.c */; };
 		37EEA03B28A8C86B00FA8CEB /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA03828A8C86B00FA8CEB /* zip.c */; };
+		CE5DFE8328C7BC89003E1095 /* BinaryExecutionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5DFE8228C7BC89003E1095 /* BinaryExecutionViewController.swift */; };
 		CECF6EDA28C37F660080B805 /* FontViewerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECF6ED928C37F660080B805 /* FontViewerController.swift */; };
 		CEDAF42028C36B2900DF03E6 /* Runestone in Frameworks */ = {isa = PBXBuildFile; productRef = CEDAF41F28C36B2900DF03E6 /* Runestone */; };
 		CEF54FF528C3D4E30078A146 /* FontInformationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF54FF428C3D4E30078A146 /* FontInformationViewController.swift */; };
@@ -131,8 +132,11 @@
 		37EEA03528A8C86A00FA8CEB /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
 		37EEA03728A8C86B00FA8CEB /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
 		37EEA03828A8C86B00FA8CEB /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		CE5DFE8228C7BC89003E1095 /* BinaryExecutionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryExecutionViewController.swift; sourceTree = "<group>"; };
 		CECF6ED928C37F660080B805 /* FontViewerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontViewerController.swift; sourceTree = "<group>"; };
 		CEF54FF428C3D4E30078A146 /* FontInformationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontInformationViewController.swift; sourceTree = "<group>"; };
+		CEFA0D7928C7CCAA003A0764 /* NSTask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSTask.h; sourceTree = "<group>"; };
+		CEFA0D7A28C7CCE1003A0764 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -273,6 +277,7 @@
 		37934DB528707F3200D1248A /* Editors */ = {
 			isa = PBXGroup;
 			children = (
+				CE5DFE8228C7BC89003E1095 /* BinaryExecutionViewController.swift */,
 				3758315C28B4D2E9001E63F2 /* TextEditor */,
 				376F749E28BC8A4F000E5D77 /* Audio */,
 				3787DB0828ACE4C900ACA60B /* Serialized */,
@@ -311,6 +316,7 @@
 		37EEA02428A8BE4E00FA8CEB /* External */ = {
 			isa = PBXGroup;
 			children = (
+				CEFA0D7828C7CC5B003A0764 /* NSTask */,
 				372A570928AA436400781243 /* LaunchServices */,
 				37EEA03C28A912B900FA8CEB /* Compression */,
 			);
@@ -356,6 +362,15 @@
 				CEF54FF428C3D4E30078A146 /* FontInformationViewController.swift */,
 			);
 			path = Font;
+			sourceTree = "<group>";
+		};
+		CEFA0D7828C7CC5B003A0764 /* NSTask */ = {
+			isa = PBXGroup;
+			children = (
+				CEFA0D7928C7CCAA003A0764 /* NSTask.h */,
+				CEFA0D7A28C7CCE1003A0764 /* module.modulemap */,
+			);
+			path = NSTask;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -464,6 +479,7 @@
 				37DE0FA22864902400E5EBBC /* FilePreviewDataSource.swift in Sources */,
 				37963F17286A0F0B00C4B72A /* DirectoryMonitor.swift in Sources */,
 				37EEA02828A8BF2700FA8CEB /* Compression.swift in Sources */,
+				CE5DFE8328C7BC89003E1095 /* BinaryExecutionViewController.swift in Sources */,
 				37EEA03B28A8C86B00FA8CEB /* zip.c in Sources */,
 				CEF54FF528C3D4E30078A146 /* FontInformationViewController.swift in Sources */,
 				375CF897289C394E00BB7C60 /* ToolbarItems.swift in Sources */,

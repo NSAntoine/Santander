@@ -1,0 +1,3 @@
+module NSTaskiOS {
+    header "NSTask.h"
+}

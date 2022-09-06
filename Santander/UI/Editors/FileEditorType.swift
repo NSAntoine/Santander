@@ -18,6 +18,10 @@ struct FileEditor {
         }
         
         let type = url.contentType
+        if type == .unixExecutable {
+            return FileEditor(type: .executable, viewController: BinaryExecutionViewController(executableURL: url))
+        }
+        
         if type?.isOfType(.audio) ?? false, let audio = FileEditorType.audio.viewController(forPath: url, data: data) {
             return FileEditor(type: .audio, viewController: audio)
         }
@@ -81,7 +85,7 @@ struct FileEditor {
 }
 
 enum FileEditorType: CustomStringConvertible, CaseIterable {
-    case audio, image, video, propertyList, json, text, font
+    case audio, image, video, propertyList, json, text, font, executable
     
     /// Returns the view controller to be used for the file editor type
     /// the Data parameter is used so that, when looping over all editor types,
@@ -139,6 +143,8 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
             }
             
             return FontViewerController(selectedFont: descriptors.first!.uiFont, descriptors: descriptors)
+        case .executable:
+            return BinaryExecutionViewController(executableURL: path)
         }
     }
     
@@ -158,12 +164,14 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
             return "Font Viewer"
         case .text:
             return "Text Editor"
+        case .executable:
+            return "Executable Runner"
         }
     }
     
     var presentAsFullScreen: Bool {
         switch self {
-        case .text, .image, .video:
+        case .text, .image, .video, .executable:
             return true
         case .propertyList, .audio, .json, .font:
             return false
