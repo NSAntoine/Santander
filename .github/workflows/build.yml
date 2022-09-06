@@ -41,7 +41,7 @@ jobs:
           cd ${{ github.workspace }}/ipadir
           zip -r ${{ github.workspace }}/Santander.ipa .
       - name: Permasign built IPA
-        uses: permasign/action@v1.1.0
+        uses: permasigner/action@v1.1.0
         with:
           input: "${{ github.worksapce }}/Santander.ipa"
           output: "${{ github.worksapce }}/Santander.deb"
