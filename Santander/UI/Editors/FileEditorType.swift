@@ -121,7 +121,14 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
                 return nil
             }
             
-            return TextFileEditorViewController(fileURL: path, contents: stringContents)
+            let textVC = TextFileEditorViewController(fileURL: path, contents: stringContents)
+            if UIDevice.current.isiPad {
+                let splitVC = UISplitViewController(style: .doubleColumn)
+                splitVC.setViewController(textVC, for: .secondary)
+                return splitVC
+            }
+            
+            return textVC
         case .image:
             guard let image = UIImage(data: data) else {
                 return nil
@@ -182,6 +189,8 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
         switch self {
         case .video:
             return false
+        case .text:
+            return !UIDevice.current.isiPad
         default:
             return true
         }

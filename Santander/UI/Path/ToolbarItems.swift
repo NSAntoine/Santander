@@ -169,6 +169,7 @@ extension SubPathsTableViewController: AudioPlayerToolbarDelegate {
         rootNav?.setToolbarHidden(true, animated: true)
         
         toolbar.audioPlayerController.player.stop()
+        toolbar.audioPlayerController.removeFromSystemMediaPlayer()
         self.audioPlayerController = nil
     }
 }

@@ -92,6 +92,8 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
             textView.topAnchor.constraint(equalTo: self.view.topAnchor),
             textView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
         ])
+        
+        splitViewController?.preferredDisplayMode = .secondaryOnly
     }
     
     func makeRightBarMenuItemsMenu() -> UIMenu {
@@ -172,10 +174,16 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
         let settings = TextEditorThemeSettingsViewController(style: .insetGrouped, theme: self.theme)
         settings.delegate = self
         let navVC = UINavigationController(rootViewController: settings)
-        if #available(iOS 15.0, *) {
-            navVC.sheetPresentationController?.detents = [.medium(), .large()]
+        
+        if UIDevice.current.isiPad {
+            splitViewController?.setViewController(navVC, for: .primary)
+            splitViewController?.preferredDisplayMode = .oneBesideSecondary
+        } else {
+            if #available(iOS 15.0, *) {
+                navVC.sheetPresentationController?.detents = [.medium(), .large()]
+            }
+            self.present(navVC, animated: true)
         }
-        self.present(navVC, animated: true)
     }
     
     func themeDidChange(to newTheme: CodableTheme) {

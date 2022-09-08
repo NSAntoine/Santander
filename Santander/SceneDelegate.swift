@@ -15,6 +15,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         (window?.rootViewController as? UINavigationController)?.visibleViewController as? SubPathsTableViewController
     }
     
+    func performShortcut(_ shortcut: UIApplicationShortcutItem) {
+        switch shortcut.type {
+        case "com.serena.santander.bookmarks":
+            let vc = UINavigationController(rootViewController: SubPathsTableViewController.bookmarks())
+            window?.rootViewController?.present(vc, animated: true)
+        default:
+            break
+        }
+    }
+    
+    func windowScene(_ windowScene: UIWindowScene,performActionFor shortcutItem: UIApplicationShortcutItem, completionHandler: @escaping (Bool) -> Void) {
+        self.performShortcut(shortcutItem)
+        completionHandler(true)
+    }
+    
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         // Use this method to optionally configure and attach the UIWindow `window` to the provided UIWindowScene `scene`.
         // If using a storyboard, the `window` property will automatically be initialized and attached to the scene.
@@ -40,7 +55,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window.overrideUserInterfaceStyle = UIUserInterfaceStyle(rawValue: UserPreferences.preferredInterfaceStyle) ?? .unspecified
         }
         
-        (window.rootViewController as? UISplitViewController)?.show(.primary) // Needed on iPad so that the SplitViewController displays no matter orientation
+        // Needed on iPad so that the SplitViewController displays no matter orientation
+        window.rootViewController?.splitViewController?.show(.primary)
         self.window = window
         
         if let launchPath = UserPreferences.launchPath, FileManager.default.fileExists(atPath: launchPath) {
@@ -50,6 +66,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window.makeKeyAndVisible()
         // handle incoming URLs
         self.scene(scene, openURLContexts: connectionOptions.urlContexts)
+        // handle possible shortcut clicked
+        if let shortcut = connectionOptions.shortcutItem {
+            self.performShortcut(shortcut)
+        }
     }
     
     func sceneDidDisconnect(_ scene: UIScene) {

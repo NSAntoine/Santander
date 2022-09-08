@@ -43,6 +43,17 @@
 			</array>
 		</dict>
 	</dict>
+	<key>UIApplicationShortcutItems</key>
+	<array>
+		<dict>
+			<key>UIApplicationShortcutItemIconType</key>
+			<string>UIApplicationShortcutIconTypeBookmark</string>
+			<key>UIApplicationShortcutItemTitle</key>
+			<string>Bookmarks</string>
+			<key>UIApplicationShortcutItemType</key>
+			<string>com.serena.santander.bookmarks</string>
+		</dict>
+	</array>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>audio</string>

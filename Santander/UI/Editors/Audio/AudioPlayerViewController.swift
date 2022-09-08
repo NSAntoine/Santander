@@ -374,6 +374,10 @@ class AudioPlayerViewController: UIViewController {
         player.stop()
         super.dismiss(animated: flag, completion: completion)
     }
+    
+    func removeFromSystemMediaPlayer() {
+        MPNowPlayingInfoCenter.default().nowPlayingInfo = nil
+    }
 }
 
 extension AudioPlayerViewController: AVAudioPlayerDelegate {
