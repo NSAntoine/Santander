@@ -111,7 +111,7 @@ class SerializedItemViewController: UITableViewController {
                     textView.resignFirstResponder()
                 }
                 
-                textView.inputAccessoryView = toolbarDoneView(doneAction: editTextAction)
+                textView.inputAccessoryView = toolbarDoneView(doneAction: editTextAction, textFieldOrView: textView)
                 cell.contentView.addSubview(textView)
                 return cell
             case .int(_), .float(_):
@@ -169,11 +169,11 @@ class SerializedItemViewController: UITableViewController {
         case .int(let int):
             textField.keyboardType = .numberPad
             textField.text = int.description
-            textField.inputAccessoryView = toolbarDoneView(doneAction: action)
+            textField.inputAccessoryView = toolbarDoneView(doneAction: action, textFieldOrView: textField)
         case .float(let float):
             textField.text = float.description
             textField.keyboardType = .decimalPad
-            textField.inputAccessoryView = toolbarDoneView(doneAction: action)
+            textField.inputAccessoryView = toolbarDoneView(doneAction: action, textFieldOrView: textField)
         default:
             fatalError() // should never get here
         }
@@ -183,13 +183,17 @@ class SerializedItemViewController: UITableViewController {
     
     /// A toolbar with a bar button item saying 'done'
     /// this is needed for non-string type textfields
-    func toolbarDoneView(doneAction: UIAction) -> UIToolbar {
+    func toolbarDoneView(doneAction: UIAction, textFieldOrView: UIResponder) -> UIToolbar {
         let toolbar = UIToolbar()
-        let flexSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
+        
+        let cancelAction = UIAction {
+            textFieldOrView.resignFirstResponder()
+        }
         
         let doneButton = UIBarButtonItem(systemItem: .done, primaryAction: doneAction)
+        let cancelButton = UIBarButtonItem(systemItem: .cancel, primaryAction: cancelAction)
         
-        toolbar.setItems([flexSpace, doneButton], animated: true)
+        toolbar.setItems([cancelButton, .flexibleSpace(), doneButton], animated: true)
         toolbar.sizeToFit()
         return toolbar
     }
