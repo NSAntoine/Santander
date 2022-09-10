@@ -45,6 +45,12 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
         fatalError("init(coder:) has not been implemented")
     }
     
+    lazy var themeController: TextEditorThemeSettingsViewController = {
+        let controller = TextEditorThemeSettingsViewController(style: .insetGrouped, theme: self.theme)
+        controller.delegate = self
+        return controller
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -93,7 +99,36 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
             textView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
         ])
         
-        splitViewController?.preferredDisplayMode = .secondaryOnly
+        if UIDevice.current.isiPad {
+            let navVC = UINavigationController(rootViewController: themeController)
+            splitViewController?.setViewController(navVC, for: .primary)
+            splitViewController?.preferredDisplayMode = .oneBesideSecondary
+        }
+    }
+    
+    override var keyCommands: [UIKeyCommand]? {
+        return [
+            UIKeyCommand(title: "Zoom in", action: #selector(zoomInOrOut(sender:)), input: "+", modifierFlags: .command),
+            UIKeyCommand(title: "Zoom out", action: #selector(zoomInOrOut(sender:)), input: "-", modifierFlags: .command)
+        ]
+    }
+    
+    @objc func zoomInOrOut(sender: UIKeyCommand) {
+        let existingFont = theme.font.uiFont
+        self.theme.font = CodableFont(existingFont.withSize(existingFont.pointSize))
+        
+        switch sender.title {
+        case "Zoom in":
+            self.theme.font = CodableFont(existingFont.withSize(existingFont.pointSize + 1))
+        case "Zoom out":
+            self.theme.font = CodableFont(existingFont.withSize(existingFont.pointSize - 1))
+        default:
+            break
+        }
+        
+        themeController.theme = self.theme
+        // the font index path
+        themeController.tableView.reloadRows(at: [IndexPath(row: 1, section: 0)], with: .none)
     }
     
     func makeRightBarMenuItemsMenu() -> UIMenu {
@@ -171,14 +206,11 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
     }
     
     @objc func presentTextEditorSettings() {
-        let settings = TextEditorThemeSettingsViewController(style: .insetGrouped, theme: self.theme)
-        settings.delegate = self
-        let navVC = UINavigationController(rootViewController: settings)
-        
         if UIDevice.current.isiPad {
-            splitViewController?.setViewController(navVC, for: .primary)
-            splitViewController?.preferredDisplayMode = .oneBesideSecondary
+            splitViewController?.show(.primary)
         } else {
+            let navVC = UINavigationController(rootViewController: themeController)
+            
             if #available(iOS 15.0, *) {
                 navVC.sheetPresentationController?.detents = [.medium(), .large()]
             }

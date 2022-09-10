@@ -11,7 +11,13 @@ import Minizip
 class Compression {
     static let shared = Compression()
     
-    public func zipFiles(paths: [URL], zipFilePath: URL, password: String?, compression: ZipCompression = .defaultCompression, progress: ((_ progress: Double) -> ())?) throws {
+    public func zipFiles(
+        paths: [URL],
+        zipFilePath: URL,
+        password: String? = nil,
+        compression: ZipCompression = .defaultCompression,
+        progress: ((_ progress: Double) -> ())? = nil
+    ) throws {
         // File manager
         let fileManager = FileManager.default
         
@@ -113,7 +119,14 @@ class Compression {
         progressTracker.completedUnitCount = Int64(totalSize)
     }
     
-    public func unzipFile(_ zipFilePath: URL, destination: URL, overwrite: Bool, password: String?, progress: ((_ progress: Double) -> ())? = nil, fileOutputHandler: ((_ unzippedFile: URL) -> Void)? = nil) throws {
+    public func unzipFile(
+        _ zipFilePath: URL,
+        destination: URL,
+        overwrite: Bool,
+        password: String? = nil,
+        progress: ((_ progress: Double) -> ())? = nil,
+        fileOutputHandler: ((_ unzippedFile: URL) -> Void)? = nil
+    ) throws {
         
         // File manager
         let fileManager = FileManager.default

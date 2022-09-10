@@ -640,16 +640,12 @@ extension UIDevice {
 extension DateFormatter {
     /// A Date Formatter which could be used to format dates
     /// used in EXIF metadata
-    static var EXIFDateFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy:MM:dd HH:mm:ss"
-        return formatter
-    }
+    static let EXIFDateFormatter = DateFormatter(withFormat: "yyyy:MM:dd HH:mm:ss")
+    static let IPTCDateFormatter = DateFormatter(withFormat: "yyyyMMdd")
     
-    static var IPTCDateFormatter: DateFormatter {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyyMMdd"
-        return formatter
+    convenience init(withFormat dateFormat: String) {
+        self.init()
+        self.dateFormat = dateFormat
     }
 }
 

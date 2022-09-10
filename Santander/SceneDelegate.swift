@@ -55,11 +55,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             window.overrideUserInterfaceStyle = UIUserInterfaceStyle(rawValue: UserPreferences.preferredInterfaceStyle) ?? .unspecified
         }
         
-        // Needed on iPad so that the SplitViewController displays no matter orientation
-        window.rootViewController?.splitViewController?.show(.primary)
         self.window = window
         
-        if let launchPath = UserPreferences.launchPath, FileManager.default.fileExists(atPath: launchPath) {
+        // Needed on iPad so that the SplitViewController displays no matter orientation
+        (window.rootViewController as? UISplitViewController)?.show(.primary)
+        if !UIDevice.current.isiPad,
+            let launchPath = UserPreferences.launchPath,
+            FileManager.default.fileExists(atPath: launchPath) {
             subPathsVC.goToPath(path: URL(fileURLWithPath: launchPath))
         }
         

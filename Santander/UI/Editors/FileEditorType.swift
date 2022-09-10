@@ -180,8 +180,10 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
         switch self {
         case .text, .image, .video, .executable:
             return true
-        case .propertyList, .audio, .json, .font:
+        case .audio, .font:
             return false
+        case .propertyList, .json:
+            return UIDevice.current.isiPad
         }
     }
     

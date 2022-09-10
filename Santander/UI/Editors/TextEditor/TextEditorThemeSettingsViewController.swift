@@ -50,14 +50,14 @@ class TextEditorThemeSettingsViewController: SettingsTableViewController {
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
             conf.text = "Font"
-            conf.secondaryText = theme.font.font.fontName
+            conf.secondaryText = theme.font.uiFont.fontName
         case (0, 1):
             conf.text = "Font size"
             let stepper = UIStepper()
-            stepper.value = theme.font.font.pointSize
+            stepper.value = theme.font.uiFont.pointSize
             stepper.addTarget(self, action: #selector(fontStepperValueChanged(sender:)), for: .valueChanged)
             cell.accessoryView = stepper
-            conf.secondaryText = theme.font.font.pointSize.description
+            conf.secondaryText = theme.font.uiFont.pointSize.description
         case (1, 0):
             return cellWithView(settingsSwitch(forIndexPath: indexPath), text: "Show Line Count")
         case (1, 1):
@@ -154,7 +154,7 @@ class TextEditorThemeSettingsViewController: SettingsTableViewController {
     @objc
     func fontStepperValueChanged(sender: UIStepper) {
         let val = sender.value
-        self.theme.font = CodableFont(self.theme.font.font.withSize(val)) // set the theme font
+        self.theme.font = CodableFont(self.theme.font.uiFont.withSize(val)) // set the theme font
         
         // the index path containing the stepper,
         // to be reloaded
@@ -209,7 +209,7 @@ extension TextEditorThemeSettingsViewController: UIFontPickerViewControllerDeleg
         viewController.dismiss(animated: true) // Dismiss the vc
         // Make sure we got the descriptor
         guard let descriptor = viewController.selectedFontDescriptor else { return }
-        let existingFontSize = self.theme.font.font.pointSize
+        let existingFontSize = self.theme.font.uiFont.pointSize
         self.theme.font = CodableFont(UIFont(descriptor: descriptor, size: existingFontSize))
         
         let fontNameIndexPath = IndexPath(row: 0, section: 0)

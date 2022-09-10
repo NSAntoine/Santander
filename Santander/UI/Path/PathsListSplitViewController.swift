@@ -28,6 +28,14 @@ class PathListsSplitViewController: SubPathsTableViewController {
             self.showPaths()
         }
         setupOrUpdateToolbar()
+        
+        if #available(iOS 16.0, *) {
+            self.navigationItem.renameDelegate = nil
+        }
+        
+        if let launchPath = UserPreferences.launchPath, FileManager.default.fileExists(atPath: launchPath) {
+            goToPath(path: URL(fileURLWithPath: launchPath), pushingToSplitView: true)
+        }
     }
     
     override func showPaths(animatingDifferences: Bool = true) {

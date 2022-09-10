@@ -10,42 +10,22 @@ import UIKit
 
 // Stolen directly from Runestone example source code, modified for use by Serena
 
+fileprivate func _makeGenericButton(image: UIImage?) -> UIButton {
+    let button = UIButton(type: .system)
+    button.translatesAutoresizingMaskIntoConstraints = false
+    button.setImage(image, for: .normal)
+    button.tintColor = .label
+    return button
+}
+
 final class KeyboardToolsView: UIInputView {
-    private let shiftLeftButton: UIButton = {
-        let this = UIButton(type: .system)
-        this.translatesAutoresizingMaskIntoConstraints = false
-        this.setImage(UIImage(systemName: "arrow.left.to.line"), for: .normal)
-        this.tintColor = .label
-        return this
-    }()
-    private let shiftRightButton: UIButton = {
-        let this = UIButton(type: .system)
-        this.translatesAutoresizingMaskIntoConstraints = false
-        this.setImage(UIImage(systemName: "arrow.right.to.line"), for: .normal)
-        this.tintColor = .label
-        return this
-    }()
-    private let undoButton: UIButton = {
-        let this = UIButton(type: .system)
-        this.translatesAutoresizingMaskIntoConstraints = false
-        this.setImage(UIImage(systemName: "arrow.uturn.backward"), for: .normal)
-        this.tintColor = .label
-        return this
-    }()
-    private let redoButton: UIButton = {
-        let this = UIButton(type: .system)
-        this.translatesAutoresizingMaskIntoConstraints = false
-        this.setImage(UIImage(systemName: "arrow.uturn.forward"), for: .normal)
-        this.tintColor = .label
-        return this
-    }()
-    private let dismissButton: UIButton = {
-        let this = UIButton(type: .system)
-        this.translatesAutoresizingMaskIntoConstraints = false
-        this.setImage(UIImage(systemName: "keyboard.chevron.compact.down"), for: .normal)
-        this.tintColor = .label
-        return this
-    }()
+    private let shiftLeftButton = _makeGenericButton(image: UIImage(systemName: "arrow.left.to.line"))
+    private let shiftRightButton = _makeGenericButton(image: UIImage(systemName: "arrow.right.to.line"))
+    
+    private let undoButton = _makeGenericButton(image: UIImage(systemName: "arrow.uturn.backward"))
+    private let redoButton = _makeGenericButton(image: UIImage(systemName: "arrow.uturn.forward"))
+    
+    private let dismissButton = _makeGenericButton(image: UIImage(systemName: "keyboard.chevron.compact.down"))
 
     private weak var textView: TextView?
 

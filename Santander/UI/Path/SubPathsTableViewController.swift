@@ -413,7 +413,7 @@ class SubPathsTableViewController: UITableViewController {
         if path.pathExtension == "zip" {
             DispatchQueue.main.async {
                 do {
-                    try Compression.shared.unzipFile(path, destination: path.deletingPathExtension(), overwrite: true, password: nil)
+                    try Compression.shared.unzipFile(path, destination: path.deletingPathExtension(), overwrite: true)
                 } catch {
                     self.errorAlert(error, title: "Unable to decompress \"\(path.lastPathComponent)\"")
                 }
@@ -679,11 +679,11 @@ class SubPathsTableViewController: UITableViewController {
             var children: [UIMenuElement] = [informationAction, renameAction, shareAction]
             
             let compressOrDecompressAction: UIAction
-            if item.pathExtension != "zip" {
+            if !(item.contentType?.isOfType(.archive) ?? false) {
                 compressOrDecompressAction = UIAction(title: "Compress", image: UIImage(systemName: "archivebox")) { _ in
                     let zipFilePath = item.deletingPathExtension().appendingPathExtension("zip")
                     do {
-                        try Compression.shared.zipFiles(paths: [item], zipFilePath: zipFilePath, password: nil, progress: nil)
+                        try Compression.shared.zipFiles(paths: [item], zipFilePath: zipFilePath)
                     } catch {
                         self.errorAlert(error, title: "Unable to compress \"\(item.lastPathComponent)\"")
                     }

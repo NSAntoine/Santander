@@ -86,7 +86,7 @@ struct CodableFont: Codable {
     var name: String
     var size: CGFloat
     
-    var font: UIFont {
+    var uiFont: UIFont {
         return UIFont(name: name, size: size)!
     }
     
@@ -123,11 +123,11 @@ struct CodableTheme: Codable {
     var theme: AnyTheme {
         AnyTheme(
             textColor: textColor?.uiColor ?? .label,
-            font: font.font,
+            font: font.uiFont,
             gutterBackgroundColor: gutterBackgroundColor.uiColor,
             gutterHairlineColor: gutterHairlineColor.uiColor,
             lineNumberColor: lineNumberColor.uiColor,
-            lineNumberFont: lineNumberFont.font,
+            lineNumberFont: lineNumberFont.uiFont,
             selectedLineBackgroundColor: selectedLineBackgroundColor.uiColor,
             selectedLinesLineNumberColor: selectedLinesLineNumberColor.uiColor,
             selectedLinesGutterBackgroundColor: selectedLinesGutterBackgroundColor.uiColor,

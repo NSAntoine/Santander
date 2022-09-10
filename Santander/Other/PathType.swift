@@ -48,12 +48,12 @@ enum PathType: CustomStringConvertible {
     }
     
     enum Errors: Error, LocalizedError {
-        case unableToCreateFile
+        case unableToCreateFile(fileName: String, error: String)
         
         var errorDescription: String? {
             switch self {
-            case .unableToCreateFile:
-                return "Unable to create file"
+            case .unableToCreateFile(let name, let error):
+                return "Unable to create file \(name): \(error)"
             }
         }
     }
@@ -62,9 +62,16 @@ enum PathType: CustomStringConvertible {
     func create(to url: URL) throws {
         switch self {
         case .file:
-            let didCreateFile = FileManager.default.createFile(atPath: url.path, contents: nil, attributes: nil)
-            guard didCreateFile else {
-                throw Errors.unableToCreateFile
+            // FileManager.default.createFile doesn't throw an error, just returns a bool
+            // so instead use fopen to get the error with errno if one did occur
+            let file = fopen(url.path, "a");
+            defer {
+                fclose(file)
+            }
+            
+            guard errno == 0 else {
+                let error = String(cString: strerror(errno))
+                throw Errors.unableToCreateFile(fileName: url.lastPathComponent, error: error)
             }
         case .directory:
             try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)

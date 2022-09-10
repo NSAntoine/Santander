@@ -92,7 +92,7 @@ extension SubPathsTableViewController: AudioPlayerToolbarDelegate {
             let compressAction = UIAction(title: "Compress", image: UIImage(systemName: "archivebox")) { _ in
                 do {
                     let zipFilePath = currentPath.appendingPathComponent("Archive.zip")
-                    try Compression.shared.zipFiles(paths: self.selectedItems, zipFilePath: zipFilePath, password: nil, progress: nil)
+                    try Compression.shared.zipFiles(paths: self.selectedItems, zipFilePath: zipFilePath)
                 } catch {
                     self.errorAlert(error, title: "Unable to compress items")
                 }
