@@ -83,11 +83,10 @@ class PathInformationTableViewController: UITableViewController {
             conf.secondaryText = showDisplayName ? self.path.displayName : self.path.lastPathComponent
         case (0, 1):
             conf.text = showRealPath ? "Real Path" : "Path"
-            let pathString: String = showRealPath ? (self.path.realPath ?? "N/A") : self.path.path
-            if pathString == "N/A" {
-                conf.secondaryText = "N/A"
+            if showRealPath {
+                conf.secondaryText = path.resolvedURL.path
             } else {
-                conf.secondaryText = URL(fileURLWithPath: pathString).path
+                conf.secondaryText = self.path.path
             }
             
         case (0, 2):

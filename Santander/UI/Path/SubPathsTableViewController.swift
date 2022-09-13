@@ -552,16 +552,11 @@ class SubPathsTableViewController: UITableViewController {
     }
     
     /// Returns the cell row to be used to display a path
-    func pathCellRow(forURL fsItem: URL, displayFullPathAsSubtitle: Bool = false) -> UITableViewCell {
-        let cell: UITableViewCell
-        
-        // If we should display the full path as a subtitle, init with the style as `subtitle`
-        if displayFullPathAsSubtitle {
-            cell = UITableViewCell(style: .subtitle, reuseIdentifier: nil)
-        } else {
-            cell = UITableViewCell()
-        }
-        
+    func pathCellRow(
+        forURL fsItem: URL,
+        displayFullPathAsSubtitle useSubtitle: Bool = false
+    ) -> UITableViewCell {
+        let cell = UITableViewCell(style: useSubtitle ? .subtitle : .default, reuseIdentifier: nil)
         var cellConf = cell.defaultContentConfiguration()
         defer {
             cell.contentConfiguration = cellConf
@@ -581,17 +576,18 @@ class SubPathsTableViewController: UITableViewController {
             return cell
         }
         
-        cellConf.text = fsItem.lastPathComponent
+        let pathName = fsItem.lastPathComponent
+        cellConf.text = pathName
         
-        // if the item starts is a dotfile / dotdirectory
+        // if the item name starts is a dotfile / dotdirectory
         // ie, .conf or .zshrc,
         // display the label as gray
-        if fsItem.lastPathComponent.first == "." {
+        if pathName.first == "." {
             cellConf.textProperties.color = .gray
             cellConf.secondaryTextProperties.color = .gray
         }
         
-        if displayFullPathAsSubtitle {
+        if useSubtitle {
             cellConf.secondaryText = fsItem.path // Display full path as the subtitle text if we should
         }
         

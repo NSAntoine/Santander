@@ -26,13 +26,12 @@ extension URL {
     }
     
     var contents: [URL] {
-        let _contents = try? FileManager.default.contentsOfDirectory(at: self, includingPropertiesForKeys: [])
+        let _contents = try? FileManager.default.contentsOfDirectory(at: self.resolvedURL, includingPropertiesForKeys: [])
         return _contents ?? []
     }
     
     var isDirectory: Bool {
-        let resolvedURL = URL(fileURLWithPath: self.realPath ?? self.path)
-        return (try? resolvedURL.resourceValues(forKeys: [.isDirectoryKey]))?.isDirectory ?? false
+        return (try? resolvedURL.resourceValues(forKeys: [.isDirectoryKey]).isDirectory) ?? false
     }
     
     var creationDate: Date? {
@@ -69,9 +68,14 @@ extension URL {
         return FileManager.default.displayName(atPath: self.path)
     }
     
-    /// The path, resolved if a symbolic link
-    var realPath: String? {
-        return try? FileManager.default.destinationOfSymbolicLink(atPath: self.path)
+    /// The URL, resolved if a symbolic link
+    var resolvedURL: URL {
+        if let realPath = try? FileManager.default.destinationOfSymbolicLink(atPath: self.path),
+           let resolved = URL(string: realPath, relativeTo: deletingLastPathComponent()) {
+            return resolved
+        }
+        
+        return self
     }
     
     static var root: URL = URL(fileURLWithPath: "/")
