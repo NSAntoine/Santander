@@ -29,7 +29,7 @@ extension SubPathsTableViewController: UITableViewDropDelegate, UITableViewDragD
                 let newPath = currentPath.appendingPathComponent(url.lastPathComponent)
                 
                 do {
-                    try FileManager.default.copyItem(at: url, to: newPath)
+                    try FSOperation.perform(.moveItem(resultPath: newPath), url: url)
                 } catch {
                     DispatchQueue.main.async {
                         self.errorAlert("Error: \(error.localizedDescription)", title: "Failed to copy item")

@@ -22,7 +22,7 @@ extension SubPathsTableViewController: AudioPlayerToolbarDelegate {
                 var failedDict: [String: Error] = [:]
                 for item in self.selectedItems {
                     do {
-                        try FileManager.default.removeItem(at: item)
+                        try FSOperation.perform(.removeItem, url: item)
                     } catch {
                         failedDict[item.lastPathComponent] = error
                     }

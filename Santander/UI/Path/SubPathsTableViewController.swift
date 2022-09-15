@@ -657,7 +657,7 @@ class SubPathsTableViewController: UITableViewController {
                     
                     do {
                         let newPath = item.deletingLastPathComponent().appendingPathComponent(name)
-                        try FileManager.default.moveItem(at: item, to: newPath)
+                        try FSOperation.perform(.copyItem(resultPath: newPath), url: item)
                     } catch {
                         self.errorAlert(error, title: "Unable to rename \(item.lastPathComponent)")
                     }
@@ -925,7 +925,7 @@ extension SubPathsTableViewController: UINavigationItemRenameDelegate {
         }
         
         do {
-            try FileManager.default.moveItem(at: currentPath, to: newURL)
+            try FSOperation.perform(.moveItem(resultPath: newURL), url: currentPath)
             self.currentPath = newURL
         } catch {
             self.errorAlert(error, title: "Uname to rename \(newURL.lastPathComponent)")

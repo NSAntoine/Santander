@@ -203,9 +203,9 @@ class PathGroupOwnerViewController: UITableViewController {
         func set(forURL url: URL) throws {
             switch self {
             case .owner(let ownerName):
-                try FileManager.default.setAttributes([.ownerAccountName: ownerName], ofItemAtPath: url.path)
+                try FSOperation.perform(.setOwner(newOwner: ownerName), url: url)
             case .group(let groupName):
-                try FileManager.default.setAttributes([.groupOwnerAccountName: groupName], ofItemAtPath: url.path)
+                try FSOperation.perform(.setGroup(newGroup: groupName), url: url)
             }
         }
         

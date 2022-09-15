@@ -58,11 +58,11 @@ class PathOperationViewController: SubPathsTableViewController {
             do {
                 switch operationType {
                 case .move:
-                    try FileManager.default.moveItem(at: path, to: destinationPath)
+                    try FSOperation.perform(.moveItem(resultPath: destinationPath), url: path)
                 case .copy, .import:
-                    try FileManager.default.copyItem(at: path, to: destinationPath)
+                    try FSOperation.perform(.copyItem(resultPath: destinationPath), url: path)
                 case .symlink:
-                    try FileManager.default.createSymbolicLink(at: destinationPath, withDestinationURL: path)
+                    try FSOperation.perform(.symlink(destination: destinationPath), url: path)
                 }
             } catch {
                 failedPaths[path.lastPathComponent] = error

@@ -54,6 +54,7 @@
 		37EEA03928A8C86B00FA8CEB /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA02F28A8C86A00FA8CEB /* unzip.c */; };
 		37EEA03A28A8C86B00FA8CEB /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA03728A8C86B00FA8CEB /* ioapi.c */; };
 		37EEA03B28A8C86B00FA8CEB /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA03828A8C86B00FA8CEB /* zip.c */; };
+		CE13D1DD28D3572000F5C833 /* FSOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE13D1DC28D3572000F5C833 /* FSOperation.swift */; };
 		CE5DFE8328C7BC89003E1095 /* BinaryExecutionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5DFE8228C7BC89003E1095 /* BinaryExecutionViewController.swift */; };
 		CECF6EDA28C37F660080B805 /* FontViewerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECF6ED928C37F660080B805 /* FontViewerController.swift */; };
 		CEDAF42028C36B2900DF03E6 /* Runestone in Frameworks */ = {isa = PBXBuildFile; productRef = CEDAF41F28C36B2900DF03E6 /* Runestone */; };
@@ -132,6 +133,7 @@
 		37EEA03528A8C86A00FA8CEB /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
 		37EEA03728A8C86B00FA8CEB /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
 		37EEA03828A8C86B00FA8CEB /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		CE13D1DC28D3572000F5C833 /* FSOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FSOperation.swift; sourceTree = "<group>"; };
 		CE5DFE8228C7BC89003E1095 /* BinaryExecutionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryExecutionViewController.swift; sourceTree = "<group>"; };
 		CECF6ED928C37F660080B805 /* FontViewerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontViewerController.swift; sourceTree = "<group>"; };
 		CEF54FF428C3D4E30078A146 /* FontInformationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontInformationViewController.swift; sourceTree = "<group>"; };
@@ -215,6 +217,7 @@
 				374ECDC62875A3710066E9DD /* Preferences */,
 				37C6E0C928662C6800BDDA16 /* PathsSortMethods.swift */,
 				37963F16286A0F0B00C4B72A /* DirectoryMonitor.swift */,
+				CE13D1DC28D3572000F5C833 /* FSOperation.swift */,
 			);
 			path = Other;
 			sourceTree = "<group>";
@@ -491,6 +494,7 @@
 				37C6E0D028673AFF00BDDA16 /* Search.swift in Sources */,
 				37EEA03A28A8C86B00FA8CEB /* ioapi.c in Sources */,
 				375CF89D289CF3A600BB7C60 /* Permissions.swift in Sources */,
+				CE13D1DD28D3572000F5C833 /* FSOperation.swift in Sources */,
 				37CA828A28AA675B000236D7 /* AppInfoViewController.swift in Sources */,
 				37ECADA728B23ECC00B95733 /* ImageFileViewController.swift in Sources */,
 				3771D37F2862493E00E200B6 /* PathInformationTableViewController.swift in Sources */,

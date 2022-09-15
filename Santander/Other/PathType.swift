@@ -8,7 +8,7 @@
 
 import UIKit
 
-extension UITableViewController {
+extension UIViewController {
     /// Presents an alert to create a new path based on the path type
     func presentAlertAndCreate(type: PathType, forURL url: URL) {
         let alert = UIAlertController(title: "New \(type.description)", message: nil, preferredStyle: .alert)
@@ -23,7 +23,12 @@ extension UITableViewController {
             
             let urlToCreate = url.appendingPathComponent(name)
             do {
-                try type.create(to: urlToCreate)
+                switch type {
+                case .file:
+                    try FSOperation.perform(.createFile, url: urlToCreate)
+                case .directory:
+                    try FSOperation.perform(.createDirectory, url: urlToCreate)
+                }
             } catch {
                 self.errorAlert(error, title: "Unable to create \(name)")
             }
@@ -44,37 +49,6 @@ enum PathType: CustomStringConvertible {
             return "file"
         case .directory:
             return "directory"
-        }
-    }
-    
-    enum Errors: Error, LocalizedError {
-        case unableToCreateFile(fileName: String, error: String)
-        
-        var errorDescription: String? {
-            switch self {
-            case .unableToCreateFile(let name, let error):
-                return "Unable to create file \(name): \(error)"
-            }
-        }
-    }
-    
-    /// Creates the specified path type to the given URL.
-    func create(to url: URL) throws {
-        switch self {
-        case .file:
-            // FileManager.default.createFile doesn't throw an error, just returns a bool
-            // so instead use fopen to get the error with errno if one did occur
-            let file = fopen(url.path, "a");
-            defer {
-                fclose(file)
-            }
-            
-            guard errno == 0 else {
-                let error = String(cString: strerror(errno))
-                throw Errors.unableToCreateFile(fileName: url.lastPathComponent, error: error)
-            }
-        case .directory:
-            try FileManager.default.createDirectory(at: url, withIntermediateDirectories: true, attributes: nil)
         }
     }
 }
