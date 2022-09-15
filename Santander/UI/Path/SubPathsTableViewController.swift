@@ -66,7 +66,7 @@ class SubPathsTableViewController: UITableViewController {
     /// Whether or not to display files beginning with a dot in their names
     var displayHiddenFiles: Bool = UserPreferences.displayHiddenFiles {
         didSet {
-            showOrHideDotfiles()
+            reloadTableData()
             
             UserPreferences.displayHiddenFiles = self.displayHiddenFiles
         }
@@ -121,7 +121,7 @@ class SubPathsTableViewController: UITableViewController {
         
         setRightBarButton()
         if !self.displayHiddenFiles {
-            showOrHideDotfiles()
+            reloadTableData()
         }
         
         self.navigationController?.navigationBar.prefersLargeTitles = UserPreferences.useLargeNavigationTitles
@@ -135,6 +135,7 @@ class SubPathsTableViewController: UITableViewController {
         if let currentPath = currentPath {
             searchController.searchBar.scopeButtonTitles = [currentPath.lastPathComponent, "Subdirectories"]
             self.containsAppUUIDs = currentPath.containsAppUUIDSubpaths
+            setupRefreshControl(forPath: currentPath)
         }
         self.navigationItem.searchController = searchController
 #if compiler(>=5.7)
@@ -170,6 +171,20 @@ class SubPathsTableViewController: UITableViewController {
             UserPreferences.lastOpenedPath = currentPath.path
         }
     }
+    
+    func setupRefreshControl(forPath path: URL) {
+        let refreshControl = UIRefreshControl()
+        let refreshAction = UIAction { [self] in
+            unfilteredContents = sortMethod.sorting(URLs: path.contents, sortOrder: .userPreferred)
+            reloadTableData()
+            refreshControl.endRefreshing()
+        }
+        
+        refreshControl.addAction(refreshAction, for: .primaryActionTriggered)
+        
+        tableView.refreshControl = refreshControl
+    }
+    
     /// Setup the snapshot to show the paths given
     func showPaths(animatingDifferences: Bool = false) {
         self.displayingSearchSuggestions = false
@@ -487,7 +502,7 @@ class SubPathsTableViewController: UITableViewController {
     
     func sortContents() {
         self.unfilteredContents = sortMethod.sorting(URLs: unfilteredContents, sortOrder: .userPreferred)
-        showOrHideDotfiles(animatingDifferences: true)
+        reloadTableData(animatingDifferences: true)
     }
     
     /// Opens the information bottom sheet for a specified path
@@ -858,7 +873,7 @@ class SubPathsTableViewController: UITableViewController {
     
     /// Shows or hides dotfiles,
     /// this method is the primary way of reloading the view
-    func showOrHideDotfiles(animatingDifferences: Bool = false) {
+    func reloadTableData(animatingDifferences: Bool = false) {
         if !displayHiddenFiles {
             let filtered = unfilteredContents.filter { !$0.lastPathComponent.starts(with: ".") }
             setFilteredContents(filtered, animatingDifferences: animatingDifferences)
@@ -900,7 +915,7 @@ extension SubPathsTableViewController: DirectoryMonitorDelegate {
         DispatchQueue.main.async {
             let items = self.sortMethod.sorting(URLs: directoryMonitor.url.contents, sortOrder: .userPreferred)
             self.unfilteredContents = items
-            self.showOrHideDotfiles(animatingDifferences: true)
+            self.reloadTableData(animatingDifferences: true)
             
             if self.isSearching, let searchBar = self.navigationItem.searchController?.searchBar {
                 // If we're searching,

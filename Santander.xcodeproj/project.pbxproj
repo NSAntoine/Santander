@@ -209,9 +209,8 @@
 				372A570E28AA44D200781243 /* ApplicationsManager.swift */,
 				37EEA02428A8BE4E00FA8CEB /* External */,
 				3771D37A2862329D00E200B6 /* Extensions.swift */,
-				3787DB0B28ACE5E200ACA60B /* SerializedItemType.swift */,
-				37963F122869C96C00C4B72A /* PathType.swift */,
 				375CF898289C4FF000BB7C60 /* PathMetadata.swift */,
+				37963F122869C96C00C4B72A /* PathType.swift */,
 				375CF89C289CF3A600BB7C60 /* Permissions.swift */,
 				3713292428B60163009E4AEA /* ImageMetadata.swift */,
 				374ECDC62875A3710066E9DD /* Preferences */,
@@ -238,6 +237,7 @@
 		3787DB0828ACE4C900ACA60B /* Serialized */ = {
 			isa = PBXGroup;
 			children = (
+				3787DB0B28ACE5E200ACA60B /* SerializedItemType.swift */,
 				3787DB0628ACB74D00ACA60B /* SerializedDocumentViewController.swift */,
 				37137F7728AED89F00E28069 /* SerializedArrayViewController.swift */,
 				3787DB0928ACE4EE00ACA60B /* SerializedItemViewController.swift */,

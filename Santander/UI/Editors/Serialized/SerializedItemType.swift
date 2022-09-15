@@ -14,9 +14,10 @@ enum SerializedItemType: Equatable, CustomStringConvertible {
         case (.bool(let first), .bool(let second)):             return first == second
         case (.int(let first), .int(let second)):               return first == second
         case (.float(let first), .float(let second)):           return first == second
-        case (.array(let first), .array(let second)):           return first == second
         case (.data(let first), .data(let second)):             return first == second
         case (.date(let first), .date(let second)):             return first == second
+        case (.array(let first), .array(let second)):
+            return NSArray(array: first) == NSArray(array: second)
         case (.dictionary(let first), .dictionary(let second)):
             return NSDictionary(dictionary: first) == NSDictionary(dictionary: second)
         default:
@@ -28,7 +29,7 @@ enum SerializedItemType: Equatable, CustomStringConvertible {
     case bool(Bool)
     case int(Int)
     case float(Float)
-    case array(NSArray)
+    case array(Array<Any>)
     case dictionary([String: Any])
     case data(Data)
     case date(Date)
@@ -50,7 +51,7 @@ enum SerializedItemType: Equatable, CustomStringConvertible {
                     self = .int(item.intValue)
                 }
             }
-        } else if let item = item as? NSArray {
+        } else if let item = item as? Array<Any> {
             self = .array(item)
         } else if let item = item as? Dictionary<String, Any> {
             self = .dictionary(item)
@@ -73,8 +74,8 @@ enum SerializedItemType: Equatable, CustomStringConvertible {
             return int.description
         case .float(let float):
             return float.description
-        case .array(let nsArray):
-            return (nsArray as? Array<Any>)?.description ?? nsArray.description
+        case .array(let array):
+            return array.description
         case .dictionary(let nsDictionary):
             return nsDictionary.description
         case .date(let date):
@@ -132,4 +133,9 @@ enum SerializedItemType: Equatable, CustomStringConvertible {
         }
     }
     
+}
+
+enum SerializedControllerParent {
+    case dictionary(SerializedDocumentViewController)
+    case array(SerializedArrayViewController)
 }

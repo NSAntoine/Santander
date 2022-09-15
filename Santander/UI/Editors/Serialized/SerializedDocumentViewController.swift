@@ -25,12 +25,21 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
     var canEdit: Bool
     var isSearching: Bool = false
     let type: SerializedDocumentViewerType
+    let parentController: SerializedControllerParent?
     
-    init(dictionary: SerializedDictionaryType, type: SerializedDocumentViewerType, title: String, fileURL: URL? = nil, canEdit: Bool) {
+    init(
+        dictionary: SerializedDictionaryType,
+        type: SerializedDocumentViewerType,
+        title: String,
+        fileURL: URL? = nil,
+        parentController: SerializedControllerParent?,
+        canEdit: Bool
+    ) {
         self.serializedDict = dictionary
         self.type = type
         self.fileURL = fileURL
         self.canEdit = canEdit
+        self.parentController = parentController
         
         super.init(style: .userPreferred)
         self.title = title
@@ -47,7 +56,12 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
         navigationItem.hidesSearchBarWhenScrolling = !UserPreferences.alwaysShowSearchBar
     }
     
-    convenience init?(type: SerializedDocumentViewerType, fileURL: URL, data: Data, canEdit: Bool) {
+    convenience init?(
+        type: SerializedDocumentViewerType,
+        fileURL: URL,
+        data: Data,
+        canEdit: Bool
+    ) {
         
         switch type {
         case .json:
@@ -56,7 +70,7 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
             }
             
             let newDict = json.asSerializedDictionary()
-            self.init(dictionary: newDict, type: .json, title: fileURL.lastPathComponent, fileURL: fileURL, canEdit: canEdit)
+            self.init(dictionary: newDict, type: .json, title: fileURL.lastPathComponent, fileURL: fileURL, parentController: nil, canEdit: canEdit)
         case .plist(_):
             let fmt: UnsafeMutablePointer<PropertyListSerialization.PropertyListFormat>? = .allocate(capacity: 4)
             defer {
@@ -69,7 +83,7 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
             
             let newDict = plist.asSerializedDictionary()
             
-            self.init(dictionary: newDict, type: .plist(format: fmt?.pointee), title: fileURL.lastPathComponent, fileURL: fileURL, canEdit: canEdit)
+            self.init(dictionary: newDict, type: .plist(format: fmt?.pointee), title: fileURL.lastPathComponent, fileURL: fileURL, parentController: nil, canEdit: canEdit)
         }
     }
     
@@ -115,12 +129,12 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
         let elem = dictElement(forKey: text)!
         
         if case .array(let arr) = elem {
-            let vc = SerializedArrayViewController(array: arr, type: type, title: text)
+            let vc = SerializedArrayViewController(array: arr, type: type, parentController: .dictionary(self), title: text, fileURL: fileURL, canEdit: canEdit)
             self.navigationController?.pushViewController(vc, animated: true)
         } else if case .dictionary(let dict) = elem {
             let newDict = dict.asSerializedDictionary()
             
-            let vc = SerializedDocumentViewController(dictionary: newDict, type: type, title: text, fileURL: fileURL, canEdit: false)
+            let vc = SerializedDocumentViewController(dictionary: newDict, type: type, title: text, fileURL: fileURL, parentController: .dictionary(self), canEdit: true)
             self.navigationController?.pushViewController(vc, animated: true)
         } else {
             let vc = SerializedItemViewController(item: elem, itemKey: text)
@@ -171,6 +185,48 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
             return false
         }
         
+        // write to parent dictionary / array
+        if let parentController = parentController {
+            let didSucced: Bool
+            switch parentController {
+            case .dictionary(let parent):
+                let key = parent.serializedDict.first { (_, value) in
+                    value == SerializedItemType.dictionary(self.serializedDict.asAnyDictionary())
+                }?.key
+                
+                guard let key = key else {
+                    return false
+                }
+                
+                var parentDict = parent.serializedDict
+                parentDict[key] = .dictionary(newDict.asAnyDictionary())
+                didSucced = parent.writeToFile(newDict: parentDict)
+            case .array(let parent):
+                var parentArr = parent.array
+                let indx = parentArr.firstIndex { item in
+                    guard let item = item as? Dictionary<String, Any> else {
+                        return false
+                    }
+                    
+                    return serializedDict == item.asSerializedDictionary()
+                }
+                
+                guard let indx = indx else {
+                    return false
+                }
+                
+                parentArr[indx] = newDict.asAnyDictionary()
+                didSucced = parent.writeToFile(newArray: parentArr)
+            }
+            
+            if didSucced {
+                self.serializedDict = newDict
+                return true
+            }
+            
+            return false
+        }
+        
         switch type {
         case .json:
             do {
@@ -205,13 +261,11 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
     }
     
     override func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        
         guard canEdit else {
             return nil
         }
         
         let deleteAction = UIContextualAction(style: .destructive, title: nil) { _, _, completion in
-            
             var newDict = self.serializedDict
             newDict[self.keys[indexPath.row]] = nil
             if self.writeToFile(newDict: newDict) {

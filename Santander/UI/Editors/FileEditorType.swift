@@ -99,9 +99,9 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
             let plist = try? PropertyListSerialization.propertyList(from: data, format: fmt)
             
             if let dict = plist as? [String: Any] {
-                return SerializedDocumentViewController(dictionary: dict.asSerializedDictionary(), type: .plist(format: fmt.pointee), title: path.lastPathComponent, fileURL: path, canEdit: true)
-            } else if let arr = plist as? NSArray {
-                return SerializedArrayViewController(array: arr, type: .plist(format: fmt.pointee), title: path.lastPathComponent)
+                return SerializedDocumentViewController(dictionary: dict.asSerializedDictionary(), type: .plist(format: fmt.pointee), title: path.lastPathComponent, fileURL: path, parentController: nil, canEdit: true)
+            } else if let arr = plist as? Array<Any> {
+                return SerializedArrayViewController(array: arr, type: .plist(format: fmt.pointee), parentController: nil, title: path.lastPathComponent, fileURL: path, canEdit: true)
             }
             
             return nil
@@ -110,9 +110,9 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
             let json = try? JSONSerialization.jsonObject(with: data)
             
             if let dict = json as? [String: Any] {
-                return SerializedDocumentViewController(dictionary: dict.asSerializedDictionary(), type: .json, title: path.lastPathComponent, fileURL: path, canEdit: true)
-            } else if let arr = json as? NSArray {
-                return SerializedArrayViewController(array: arr, type: .json, title: path.lastPathComponent)
+                return SerializedDocumentViewController(dictionary: dict.asSerializedDictionary(), type: .json, title: path.lastPathComponent, fileURL: path, parentController: nil, canEdit: true)
+            } else if let arr = json as? Array<Any> {
+                return SerializedArrayViewController(array: arr, type: .json, parentController: nil, title: path.lastPathComponent, fileURL: path, canEdit: true)
             }
             
             return nil

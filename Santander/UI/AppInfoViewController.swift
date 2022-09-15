@@ -125,7 +125,7 @@ class AppInfoViewController: UITableViewController {
         switch (indexPath.section, indexPath.row) {
         case (1, 1):
             let dict = app.entitlements.asSerializedDictionary()
-            let vc = SerializedDocumentViewController(dictionary: dict, type: .plist(format: nil), title: "Entitlements", canEdit: false)
+            let vc = SerializedDocumentViewController(dictionary: dict, type: .plist(format: nil), title: "Entitlements", parentController: nil, canEdit: false)
             self.navigationController?.pushViewController(vc, animated: true)
         case (3, 0):
             dismissAndGoToURL(app.containerURL())
