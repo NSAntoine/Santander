@@ -91,13 +91,8 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
         view.addSubview(textView)
         
         configureNavigationBarToNormal()
-        
-        NSLayoutConstraint.activate([
-            textView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            textView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
-            textView.topAnchor.constraint(equalTo: self.view.topAnchor),
-            textView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor)
-        ])
+  
+        textView.constraintCompletely(to: view)
         
         if UIDevice.current.isiPad {
             let navVC = UINavigationController(rootViewController: themeController)

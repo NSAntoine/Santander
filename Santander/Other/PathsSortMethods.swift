@@ -16,6 +16,7 @@ enum PathsSortMethods: String, CaseIterable, CustomStringConvertible {
     case dateCreated
     case dateModified
     case dateAccessed
+    case dateAdded
     
     static var userPrefered: PathsSortMethods? {
         if let string = UserDefaults.standard.string(forKey: "SubPathsSortMode"), let sortMode = PathsSortMethods(rawValue: string) {
@@ -39,6 +40,8 @@ enum PathsSortMethods: String, CaseIterable, CustomStringConvertible {
             return "Date modified"
         case .dateAccessed:
             return "Date accessed"
+        case .dateAdded:
+            return "Date Added"
         }
     }
     
@@ -59,6 +62,8 @@ enum PathsSortMethods: String, CaseIterable, CustomStringConvertible {
                 ascending =  firstURL.lastModifiedDate > secondURL.lastModifiedDate
             case .dateAccessed:
                 ascending = firstURL.lastAccessedDate > secondURL.lastAccessedDate
+            case .dateAdded:
+                ascending = firstURL.addedToDirectoryDate > secondURL.addedToDirectoryDate
             }
             
             if sortOrder == .descending {

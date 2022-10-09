@@ -638,18 +638,15 @@ class SubPathsTableViewController: UITableViewController {
         } actionProvider: { _ in
             
             let movePath = UIAction(title: "Move to..", image: UIImage(systemName: "arrow.right")) { _ in
-                let vc = PathOperationViewController(paths: [item], operationType: .move)
-                self.present(UINavigationController(rootViewController: vc), animated: true)
+                self.presentOperationVC(forItems: [item], type: .move)
             }
             
             let copyPath = UIAction(title: "Copy to..", image: UIImage(systemName: "doc.on.doc")) { _ in
-                let vc = PathOperationViewController(paths: [item], operationType: .copy)
-                self.present(UINavigationController(rootViewController: vc), animated: true)
+                self.presentOperationVC(forItems: [item], type: .copy)
             }
             
             let createSymlink = UIAction(title: "Create symbolic link to..", image: UIImage(systemName: "link")) { _ in
-                let vc = PathOperationViewController(paths: [item], operationType: .symlink)
-                self.present(UINavigationController(rootViewController: vc), animated: true)
+                self.presentOperationVC(forItems: [item], type: .symlink)
             }
             
             let pasteboardOptions = UIMenu(options: .displayInline, children: self.makePasteboardMenuElements(for: item))
@@ -787,6 +784,16 @@ class SubPathsTableViewController: UITableViewController {
         
         return [copyName, copyPath]
     }
+    
+    func presentOperationVC(forItems items: [URL], type: PathSelectionOperation) {
+        let vc = PathOperationViewController(paths: items, operationType: type)
+        present(UINavigationController(rootViewController: vc), animated: true) { [self] in
+            if let currentPath = currentPath {
+                vc.goToPath(path: currentPath)
+            }
+        }
+    }
+    
     /// Returns the UIMenu to be used as the (primary) right bar button
     func makeRightBarButton() -> UIMenu {
         let selectAction = UIAction(title: "Select", image: UIImage(systemName: "checkmark.circle")) { _ in
@@ -895,17 +902,17 @@ class SubPathsTableViewController: UITableViewController {
         }
         
         permissionDeniedLabel = UILabel()
-        permissionDeniedLabel.text = "Don't have permission to read directory."
+        permissionDeniedLabel.text = "Permission Denied."
         
         permissionDeniedLabel.font = .systemFont(ofSize: 20, weight: .medium)
         permissionDeniedLabel.textColor = .systemGray
         permissionDeniedLabel.textAlignment = .center
         
-        self.view.addSubview(permissionDeniedLabel)
+        view.addSubview(permissionDeniedLabel)
         permissionDeniedLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            permissionDeniedLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            permissionDeniedLabel.centerYAnchor.constraint(equalTo: self.view.centerYAnchor)
+            permissionDeniedLabel.centerXAnchor.constraint(equalTo: view.layoutMarginsGuide.centerXAnchor),
+            permissionDeniedLabel.centerYAnchor.constraint(equalTo: view.layoutMarginsGuide.centerYAnchor)
         ])
     }
 }

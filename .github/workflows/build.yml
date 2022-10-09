@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - serena/car-support
     paths-ignore:
       - '**/*.md'
       - '.gitignore'

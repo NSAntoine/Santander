@@ -1,5 +1,5 @@
 //
-//  ImageFileViewController.swift
+//  ImageViewerViewController.swift
 //  Santander
 //
 //  Created by Serena on 21/08/2022.
@@ -9,9 +9,9 @@ import UIKit
 import ObjectiveC
 import PDFKit // Hacky workaround, but PDFView is the best way to display the image due to the built in scroll view support
 
-/// The ViewController displaying an image
-class ImageFileViewController: UIViewController {
-    let fileURL: URL
+/// A ViewController displaying a UIImage
+class ImageViewerViewController: UIViewController {
+    let fileURL: URL?
     let image: UIImage
     var metadata: ImageMetadata?
     
@@ -19,11 +19,12 @@ class ImageFileViewController: UIViewController {
     /// by SpringBoardUIServices
     typealias SetWallpaperFunction = @convention(c) (_: NSDictionary, _: NSDictionary, _: Int, _: Int) -> Int
     
-    init(fileURL: URL, image: UIImage) {
+    init(fileURL: URL?, image: UIImage, title: String? = nil) {
         self.fileURL = fileURL
         self.image = image
         
         super.init(nibName: nil, bundle: nil)
+        self.title = fileURL?.lastPathComponent ?? title
     }
     
     convenience init?(fileURL: URL) {
@@ -42,9 +43,10 @@ class ImageFileViewController: UIViewController {
         super.viewDidLoad()
         // note: - don't move this to the init,
         // because we only want to assign this once the view loaded
-        self.metadata = ImageMetadata(fileURL: fileURL)
+        if let fileURL = fileURL {
+            self.metadata = ImageMetadata(fileURL: fileURL)
+        }
         
-        title = fileURL.lastPathComponent
         view.backgroundColor = .systemBackground
         
         let doneAction = UIAction { _ in
@@ -55,9 +57,9 @@ class ImageFileViewController: UIViewController {
         let doneButton = UIBarButtonItem(systemItem: .done, primaryAction: doneAction)
         let infoButton = UIBarButtonItem()
         
-        if let metadata = self.metadata {
+        if let metadata = self.metadata, let fileURL = fileURL {
             let infoAction = UIAction { _ in
-                let vc = ImageMetadataViewController(metadata: metadata, fileURL: self.fileURL)
+                let vc = ImageMetadataViewController(metadata: metadata, fileURL: fileURL)
                 self.present(UINavigationController(rootViewController: vc), animated: true)
             }
             
@@ -111,7 +113,11 @@ class ImageFileViewController: UIViewController {
     
     func setupToolbar() {
         let shareMenuAction = UIAction {
-            self.presentActivityVC(forItems: [self.fileURL])
+            if let fileURL = self.fileURL {
+                self.presentActivityVC(forItems: [fileURL])
+            } else {
+                self.presentActivityVC(forItems: [self.image])
+            }
         }
         
         let shareMenuButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), primaryAction: shareMenuAction)
@@ -120,7 +126,7 @@ class ImageFileViewController: UIViewController {
         }
         
         // the places to set the wallpaper, represented by a UIAction
-        let setWallpaperActions = WallpaperLoction.allCases.map { location in
+        let setWallpaperActions = WallpaperLocation.allCases.map { location in
             return UIAction(title: location.description) { _ in
                 self.setImageAsWallpaper(to: location)
             }
@@ -140,7 +146,7 @@ class ImageFileViewController: UIViewController {
         }
     }
     
-    func setImageAsWallpaper(to location: WallpaperLoction) {
+    func setImageAsWallpaper(to location: WallpaperLocation) {
         // for SBFWallpaperOptions
         let sbF = dlopen("/System/Library/PrivateFrameworks/SpringBoardFoundation.framework/SpringBoardFoundation", RTLD_LAZY)
         // for SBSUIWallpaperSetImages
@@ -153,7 +159,7 @@ class ImageFileViewController: UIViewController {
         
         guard let options = NSClassFromString("SBFWallpaperOptions")?.alloc(),
               let pointer = dlsym(sbServer, "SBSUIWallpaperSetImages"),
-              let setWallpaperFunc = unsafeBitCast(pointer, to: (SetWallpaperFunction)?.self)
+              let setWallpaper = unsafeBitCast(pointer, to: (SetWallpaperFunction)?.self)
         else {
             errorAlert(nil, title: "Unable to set image as wallpaper")
             return
@@ -169,7 +175,7 @@ class ImageFileViewController: UIViewController {
             "dark": options
         ]
         
-        let result = setWallpaperFunc(NSDictionary(dictionary: imagesDict), NSDictionary(dictionary: optionsDict), location.rawValue, UIUserInterfaceStyle.dark.rawValue)
+        let result = setWallpaper(NSDictionary(dictionary: imagesDict), NSDictionary(dictionary: optionsDict), location.rawValue, traitCollection.userInterfaceStyle.rawValue)
         // 1 is success
         if result != 1 {
             errorAlert(nil, title: "Unable to set image as wallpaper")
@@ -178,7 +184,7 @@ class ImageFileViewController: UIViewController {
     
     /// The places where an image can be set as the Wallpaper
     /// The integer values here are passed directly to `SBSUIWallpaperSetImages`
-    enum WallpaperLoction: Int, CustomStringConvertible, CaseIterable {
+    enum WallpaperLocation: Int, CustomStringConvertible, CaseIterable {
         case lockScreen = 1
         case homeScreen = 2
         case both = 3
