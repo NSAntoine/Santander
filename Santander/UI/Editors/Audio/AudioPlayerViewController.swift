@@ -61,7 +61,9 @@ class AudioPlayerViewController: UIViewController {
     let availableSpeedRates: [Float] = [0.5, 1.0, 1.5, 2.0]
     
     /// The UIImage of the track's artwork, if available
-    var artworkImage: UIImage? {
+    lazy var artworkImage: UIImage? = _getArtworkImage()
+    
+    func _getArtworkImage() -> UIImage? {
         guard let data = asset.metadata.first(where: { $0.commonKey?.rawValue == "artwork" })?.dataValue, let image = UIImage(data: data) else {
             return nil
         }
@@ -74,12 +76,16 @@ class AudioPlayerViewController: UIViewController {
     }
     
     /// The image to display for the Play / Pause button
-    func playButtonImage(withLargerSize largerSize: Bool = true) -> UIImage? {
-        let conf = UIImage.SymbolConfiguration(pointSize: 45, weight: .medium, scale: .medium)
+    func playButtonImage(withSize pointSize: CGFloat = 45, imageTintColor: UIColor? = .systemGray) -> UIImage? {
+        let conf = UIImage.SymbolConfiguration(pointSize: pointSize, weight: .medium, scale: .medium)
         
         let imageSymbolName = playButtonSymbolName()
-        return UIImage(systemName: imageSymbolName, withConfiguration: largerSize ? conf : nil)?
-            .withTintColor(.systemGray, renderingMode: .alwaysOriginal)
+        let image = UIImage(systemName: imageSymbolName, withConfiguration: conf)
+        if let imageTintColor = imageTintColor {
+            return image?.withTintColor(imageTintColor, renderingMode: .alwaysOriginal)
+        }
+        
+        return image
     }
     
     init(fileURL: URL, player: AVAudioPlayer) {
@@ -198,23 +204,23 @@ class AudioPlayerViewController: UIViewController {
         
         NSLayoutConstraint.activate([
             playbackSlider.centerYAnchor.constraint(equalTo: view.centerYAnchor, constant: 120),
-            playbackSlider.rightAnchor.constraint(equalTo: view.layoutMarginsGuide.rightAnchor),
-            playbackSlider.leftAnchor.constraint(equalTo: view.layoutMarginsGuide.leftAnchor),
+            playbackSlider.trailingAnchor.constraint(equalTo: view.layoutMarginsGuide.trailingAnchor),
+            playbackSlider.leadingAnchor.constraint(equalTo: view.layoutMarginsGuide.leadingAnchor),
             
             buttonsStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             buttonsStackView.centerYAnchor.constraint(equalTo: playbackSlider.centerYAnchor, constant: 80),
   
-            labelsStackView.rightAnchor.constraint(equalTo: playbackSlider.rightAnchor),
-            labelsStackView.leftAnchor.constraint(equalTo: playbackSlider.leftAnchor),
+            labelsStackView.trailingAnchor.constraint(equalTo: playbackSlider.trailingAnchor),
+            labelsStackView.leadingAnchor.constraint(equalTo: playbackSlider.leadingAnchor),
             labelsStackView.bottomAnchor.constraint(equalTo: playbackSlider.topAnchor, constant: -10),
             
-            durationLabel.rightAnchor.constraint(equalTo: titleLabel.rightAnchor),
+            durationLabel.trailingAnchor.constraint(equalTo: titleLabel.trailingAnchor),
             durationLabel.topAnchor.constraint(equalTo: playbackSlider.bottomAnchor),
             
-            currentProgressLabel.leftAnchor.constraint(equalTo: titleLabel.leftAnchor),
+            currentProgressLabel.leadingAnchor.constraint(equalTo: titleLabel.leadingAnchor),
             currentProgressLabel.topAnchor.constraint(equalTo: playbackSlider.bottomAnchor),
             
-            loopButton.rightAnchor.constraint(equalTo: artistLabel.rightAnchor),
+            loopButton.trailingAnchor.constraint(equalTo: artistLabel.trailingAnchor),
             loopButton.topAnchor.constraint(equalTo: artistLabel.topAnchor)
         ])
         
@@ -387,5 +393,6 @@ extension AudioPlayerViewController: AVAudioPlayerDelegate {
         }
         
         setPlayButtonImage()
+        playbackCallback?()
     }
 }

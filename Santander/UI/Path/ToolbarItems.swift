@@ -141,7 +141,7 @@ extension SubPathsTableViewController: AudioPlayerToolbarDelegate {
         let blurView = UIVisualEffectView(effect: UIBlurEffect(style: .regular))
         blurView.frame = toolbar.bounds
         
-        let audioToolbarView = AudioPlayerToolbarView(audioPlayerController, parentViewController: self, frame: blurView.bounds)
+        let audioToolbarView = AudioPlayerToolbarView(audioPlayerController, frame: blurView.bounds)
         audioToolbarView.delegate = self
         blurView.contentView.addSubview(audioToolbarView)
         blurView.tag = 100
