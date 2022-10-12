@@ -35,9 +35,9 @@ class AssetCatalogWrapper {
         }
         
         // sort by Alphabetical order
-        arr = arr.sorted(by: { first, second in
-            first.type.description < second.type.description
-        })
+        arr = arr.sorted { first, second in
+            return first.type.description < second.type.description
+        }
         
         return (catalog, arr)
     }
@@ -47,9 +47,9 @@ class AssetCatalogWrapper {
 class Rendition: Hashable {
     
     /// the ThemeSubtype constant used to identify renditions
-    /// classified as `universal`
+    /// classified as `macCatalyst`
     /// see `RenditionIdiom`'s init
-    static let universalIdiomThemeSubtype = 32401
+    static let macCatalystSubtype = 32401
     
     func hash(into hasher: inout Hasher) {
         hasher.combine(cuiRend)
@@ -98,6 +98,117 @@ class Rendition: Hashable {
         dragItem.localObject = image
         
         return dragItem
+    }
+    
+    /// The idiom, aka the platform target, of a Rendition
+    enum Idiom: CustomStringConvertible {
+        /// All platforms.
+        case universal
+        
+        case iphone
+        case ipad
+        case tv
+        case watch
+        case carPlay
+        case macCatalyst
+        
+        /// This seems to be for App Store related renditions.
+        case marketing
+        
+        init?(_ keyList: CUIRenditionKey) {
+            if keyList.themeSubtype == Rendition.macCatalystSubtype {
+                self = .macCatalyst
+                return
+            }
+            
+            switch keyList.themeIdiom {
+            case 0:
+                self = .universal
+            case 1:
+                self = .iphone
+            case 2:
+                self = .ipad
+            case 3:
+                self = .tv
+            case 4:
+                self = .carPlay
+            case 5:
+                self = .watch
+            case 6:
+                self = .marketing
+            default:
+                return nil
+            }
+        }
+        
+        var description: String {
+            switch self {
+            case .universal:
+                return "Universal"
+            case .iphone:
+                return "iPhone"
+            case .ipad:
+                return "iPad"
+            case .tv:
+                return "TV"
+            case .watch:
+                return "Watch"
+            case .carPlay:
+                return "CarPlay"
+            case .macCatalyst:
+                return "Mac Catalyst"
+            case .marketing:
+                return "Marketing"
+            }
+        }
+    }
+    
+    enum DisplayGamut: Int64, Hashable, CustomStringConvertible {
+        case sRGB = 0
+        case p3 = 1
+        
+        init?(_ key: CUIRenditionKey) {
+            self.init(rawValue: key.themeDisplayGamut)
+        }
+        
+        var description: String {
+            switch self {
+            case .sRGB:
+                return "SRGB"
+            case .p3:
+                return "Display P3"
+            }
+        }
+    }
+    
+    enum Appearance: Int64, CustomStringConvertible {
+        case any = 0
+        case dark = 1
+        case highContrast = 2
+        case highConstrastDark = 3
+        case light = 4
+        case highConstrastLight = 5
+        
+        init?(_ key: CUIRenditionKey) {
+            self.init(rawValue: key.themeAppearance)
+        }
+        
+        var description: String {
+            switch self {
+            case .any:
+                return "Any"
+            case .dark:
+                return "Dark"
+            case .light:
+                return "Light"
+            case .highContrast:
+                return "High Constrast"
+            case .highConstrastDark:
+                return "High Contrast Dark"
+            case .highConstrastLight:
+                return "High Constrast Light"
+            }
+        }
     }
 }
 
@@ -202,69 +313,6 @@ enum RenditionPreview: Hashable {
         }
     }
     
-}
-
-/// The idiom, aka the platform target, of a Rendition
-enum RenditionIdiom: CustomStringConvertible {
-    /// All platforms.
-    case universal
-    
-    case iphone
-    case ipad
-    case tv
-    case watch
-    case carPlay
-    case macCatalyst
-    
-    /// This seems to be for App Store related renditions.
-    case marketing
-    
-    init?(keyList: CUIRenditionKey) {
-        if keyList.themeSubtype == Rendition.universalIdiomThemeSubtype {
-            self = .macCatalyst
-            return
-        }
-        
-        switch keyList.themeIdiom {
-        case 0:
-            self = .universal
-        case 1:
-            self = .iphone
-        case 2:
-            self = .ipad
-        case 3:
-            self = .tv
-        case 4:
-            self = .carPlay
-        case 5:
-            self = .watch
-        case 6:
-            self = .marketing
-        default:
-            return nil
-        }
-    }
-    
-    var description: String {
-        switch self {
-        case .universal:
-            return "Universal"
-        case .iphone:
-            return "iPhone"
-        case .ipad:
-            return "iPad"
-        case .tv:
-            return "TV"
-        case .watch:
-            return "Watch"
-        case .carPlay:
-            return "CarPlay"
-        case .macCatalyst:
-            return "Mac Catalyst"
-        case .marketing:
-            return "Marketing"
-        }
-    }
 }
 
 extension CUICatalog {

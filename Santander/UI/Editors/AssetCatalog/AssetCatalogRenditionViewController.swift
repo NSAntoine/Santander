@@ -107,10 +107,14 @@ class AssetCatalogRenditionViewController: UIViewController {
             itemDetails.append(DetailItem(primaryText: "Width", secondaryText: size.width.description))
         }
         
-        let rendInfo = [
-            DetailItem(primaryText: "Scale", secondaryText: rendition.cuiRend.scale().description),
-            DetailItem(primaryText: "Idiom", secondaryText: RenditionIdiom(keyList: rendition.namedLookup.key)?.description ?? "N/A"),
-            DetailItem(primaryText: "Type", secondaryText: rendition.type.description)
+        itemDetails.append(DetailItem(primaryText: "Scale", secondaryText: rendition.cuiRend.scale().description))
+        
+        let key = rendition.namedLookup.key
+        let rendInfo: [DetailItem] = [
+            DetailItem(primaryText: "Idiom", secondaryText: Rendition.Idiom(key)),
+            DetailItem(primaryText: "Appearance", secondaryText: Rendition.Appearance(key)),
+            DetailItem(primaryText: "Display Gamut", secondaryText: Rendition.DisplayGamut(key)),
+            DetailItem(primaryText: "Type", secondaryText: rendition.type),
         ]
         
         snapshot.appendItems(ItemType.fromDetails(rendInfo), toSection: .renditionInformation)
@@ -143,10 +147,7 @@ class AssetCatalogRenditionViewController: UIViewController {
     
     func makeLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewCompositionalLayout { sectionIndex, enviroment in
-            guard let section = Section(rawValue: sectionIndex) else {
-                fatalError("Should NEVER reach here")
-            }
-            
+            let section = Section(rawValue: sectionIndex)!
             switch section {
             case .itemPreview:
                 let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
@@ -208,6 +209,16 @@ class AssetCatalogRenditionViewController: UIViewController {
         
         /// The text of the secondary label, ie, the height number as a String
         let secondaryText: String
+        
+        init(primaryText: String, secondaryText: String?) {
+            self.primaryText = primaryText
+            self.secondaryText = secondaryText ?? "N/A"
+        }
+        
+        init(primaryText: String, secondaryText: CustomStringConvertible?) {
+            self.primaryText = primaryText
+            self.secondaryText = secondaryText?.description ?? "N/A"
+        }
     }
 }
 
