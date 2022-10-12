@@ -37,8 +37,6 @@ class PathOperationViewController: SubPathsTableViewController {
             self.navigationItem.backBarButtonItem = UIBarButtonItem(title: currentPath.lastPathComponent, style: .plain, target: nil, action: nil)
         }
         
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
-        
         for path in paths {
             _ = path.startAccessingSecurityScopedResource()
         }
@@ -63,6 +61,8 @@ class PathOperationViewController: SubPathsTableViewController {
                     try FSOperation.perform(.copyItem(resultPath: destinationPath), url: path)
                 case .symlink:
                     try FSOperation.perform(.symlink(destination: destinationPath), url: path)
+                case .custom(_, _, action: let action):
+                    try action(self, currentPath)
                 }
             } catch {
                 failedPaths[path.lastPathComponent] = error
@@ -87,10 +87,31 @@ class PathOperationViewController: SubPathsTableViewController {
     }
     
     override func goToPath(path: URL, pushingToSplitView: Bool = false) {
+        let parentDirectory = path.deletingLastPathComponent()
+        
+        if parentDirectory != currentPath {
+            traverseThroughPath(path, pushingToSplitView: pushingToSplitView)
+            return
+        }
+        
         if path.isDirectory {
             self.navigationController?.pushViewController(PathOperationViewController(paths: paths, operationType: self.operationType, startingPath: path), animated: true)
         } else {
             self.goToFile(path: path)
+        }
+    }
+    
+    override func traverseThroughPath(_ path: URL, pushingToSplitView: Bool) {
+        let vcs = path.fullPathComponents().map {
+            PathOperationViewController(paths: self.paths, operationType: self.operationType, startingPath: $0)
+        }
+        
+        if pushingToSplitView {
+            let navVC = UINavigationController()
+            navVC.setViewControllers(vcs, animated: true)
+            self.splitViewController?.setViewController(navVC, for: .secondary)
+        } else {
+            self.navigationController?.setViewControllers(vcs, animated: true)
         }
     }
     
@@ -128,6 +149,9 @@ enum PathSelectionOperation: CustomStringConvertible {
     /// To create a symbolic link to the path
     case symlink
     
+    /// Custom action
+    case custom(description: String, verbDescription: String, action: (PathOperationViewController, URL) throws -> Void)
+    
     var description: String {
         switch self {
         case .move:
@@ -138,6 +162,8 @@ enum PathSelectionOperation: CustomStringConvertible {
             return "import"
         case .symlink:
             return "symlink"
+        case .custom(description: let description, _, _):
+            return description
         }
     }
     
@@ -151,6 +177,8 @@ enum PathSelectionOperation: CustomStringConvertible {
             return "Importing to.."
         case .symlink:
             return "Aliasing to.."
+        case .custom(_, verbDescription: let verbDescription, _):
+            return verbDescription
         }
     }
 }

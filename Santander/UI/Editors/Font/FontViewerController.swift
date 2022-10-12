@@ -43,12 +43,7 @@ class FontViewerController: UIViewController {
         textView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(textView)
         
-        NSLayoutConstraint.activate([
-            textView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            textView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            textView.topAnchor.constraint(equalTo: view.topAnchor),
-            textView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
+        textView.constraintCompletely(to: view)
         
         configureNavigationBarToNormal()
         setupBottomView()

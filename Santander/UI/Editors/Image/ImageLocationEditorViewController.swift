@@ -51,12 +51,7 @@ class ImageLocationEditorViewController: UIViewController, MKMapViewDelegate {
         
         view.addSubview(mapView)
         
-        NSLayoutConstraint.activate([
-            mapView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            mapView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            mapView.topAnchor.constraint(equalTo: view.topAnchor),
-            mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
-        ])
+        mapView.constraintCompletely(to: view)
         
         if let center = metadata.location.coordinate {
             annotation.coordinate = center

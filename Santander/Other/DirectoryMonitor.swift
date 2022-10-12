@@ -23,7 +23,7 @@ class DirectoryMonitor {
     var monitoredDirectoryFileDescriptor: CInt = -1
 
     /// A dispatch queue used for sending file changes in the directory.
-    let directoryMonitorQueue =  DispatchQueue(label: "directorymonitor", attributes: .concurrent)
+    let directoryMonitorQueue = DispatchQueue(label: "directorymonitor", attributes: .concurrent)
 
     /// A dispatch source to monitor a file descriptor created from the directory.
     var directoryMonitorSource: DispatchSource?

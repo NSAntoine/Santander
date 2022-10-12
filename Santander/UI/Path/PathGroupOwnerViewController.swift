@@ -46,7 +46,7 @@ class PathGroupOwnerViewController: UITableViewController {
     }
     
     override func viewDidLoad() {
-        DispatchQueue.main.async {
+        Task {
             do {
                 self.allData = try self.type.getAll(forURL: self.fileURL)
                 self.tableView.reloadData()
@@ -125,11 +125,11 @@ class PathGroupOwnerViewController: UITableViewController {
         errorLabel.textColor = .systemGray
         
         errorLabel.translatesAutoresizingMaskIntoConstraints = false
-        self.view.addSubview(errorLabel)
+        view.addSubview(errorLabel)
         NSLayoutConstraint.activate([
-            errorLabel.widthAnchor.constraint(equalTo: self.view.widthAnchor),
-            errorLabel.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
-            errorLabel.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+            errorLabel.widthAnchor.constraint(equalTo: view.layoutMarginsGuide.widthAnchor),
+            errorLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            errorLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
         ])
     }
     
@@ -188,7 +188,6 @@ class PathGroupOwnerViewController: UITableViewController {
             }
         }
         
-        /// The name of the value associated with the value
         var name: String {
             switch self {
             case .owner(let ownerName):
@@ -210,7 +209,7 @@ class PathGroupOwnerViewController: UITableViewController {
         }
         
         /// Converts a pointer to an Array
-        func convert<T>(length: Int, data: UnsafePointer<T>) -> [T] {
+        private func convert<T>(length: Int, data: UnsafePointer<T>) -> [T] {
             let buffer = data.withMemoryRebound(to: T.self, capacity: length) {
                 UnsafeBufferPointer(start: $0, count: length)
             }

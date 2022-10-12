@@ -53,7 +53,8 @@ extension URL {
     
     var size: Int? {
         if self.isDirectory {
-            return nil // TODO: - Good dir support, async for UI
+            #warning("Do this for directories")
+            return nil
         }
         
         return try? resourceValues(forKeys: [.fileSizeKey]).fileSize
@@ -70,16 +71,11 @@ extension URL {
     
     /// The URL, resolved if a symbolic link
     var resolvedURL: URL {
-        if let realPath = try? FileManager.default.destinationOfSymbolicLink(atPath: self.path),
-           let resolved = URL(string: realPath, relativeTo: deletingLastPathComponent()) {
-            return resolved
-        }
-        
-        return self
+        return (try? URL(resolvingAliasFileAt: self)) ?? self
     }
     
-    static var root: URL = URL(fileURLWithPath: "/")
-    static var home: URL = URL(fileURLWithPath: NSHomeDirectory())
+    static let root: URL = URL(fileURLWithPath: "/")
+    static let home: URL = URL(fileURLWithPath: NSHomeDirectory())
     
     var isSymlink: Bool {
         return (try? FileManager.default.destinationOfSymbolicLink(atPath: self.path)) != nil
@@ -153,20 +149,30 @@ fileprivate let applicationPaths: [String] = [
 #endif
 
 extension UIViewController {
-    func errorAlert(_ errorDescription: String?, title: String, presentingFromIfAvailable presentingVC: UIViewController? = nil) {
+    func errorAlert(
+        _ errorDescription: String?,
+        title: String,
+        presentingFromIfAvailable presentingVC: UIViewController? = nil,
+        cancelAction: UIAlertAction = .cancel(handler: nil, title: "OK")
+    ) {
         var message: String? = nil
         if let errorDescription = errorDescription {
             message = "Error occured: \(errorDescription)"
         }
         
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(.init(title: "OK", style: .cancel))
+        alert.addAction(cancelAction)
         let vcToPresentFrom = presentingVC ?? self
         vcToPresentFrom.present(alert, animated: true)
     }
     
-    func errorAlert(_ error: Error, title: String, presentingFromIfAvailable presentingVC: UIViewController? = nil) {
-        self.errorAlert(error.localizedDescription, title: title, presentingFromIfAvailable: presentingVC)
+    func errorAlert(
+        _ error: Error,
+        title: String,
+        presentingFromIfAvailable presentingVC: UIViewController? = nil,
+        cancelAction: UIAlertAction = .cancel(handler: nil, title: "OK")
+    ) {
+        self.errorAlert(error.localizedDescription, title: title, presentingFromIfAvailable: presentingVC, cancelAction: cancelAction)
     }
     
     func configureNavigationBarToNormal() {
@@ -187,6 +193,7 @@ extension UIViewController {
     }
 }
 
+
 extension UIMenu {
     func appending(_ element: UIMenuElement) -> UIMenu {
         var children = self.children
@@ -196,8 +203,8 @@ extension UIMenu {
 }
 
 extension UIAlertAction {
-    static func cancel(handler: (() -> Void)? = nil) -> UIAlertAction {
-        UIAlertAction(title: "Cancel", style: .cancel) { _ in
+    static func cancel(handler: (() -> Void)? = nil, title: String = "Cancel") -> UIAlertAction {
+        UIAlertAction(title: title, style: .cancel) { _ in
             handler?()
         }
     }
@@ -442,7 +449,7 @@ extension UITableViewController {
         button.tag = sectionTag
         
         label.text = titleText
-        label.font = UIFont.systemFont(ofSize: 18, weight: .bold)
+        label.font = .systemFont(ofSize: 18, weight: .bold)
         
         label.translatesAutoresizingMaskIntoConstraints = false
         button.translatesAutoresizingMaskIntoConstraints = false

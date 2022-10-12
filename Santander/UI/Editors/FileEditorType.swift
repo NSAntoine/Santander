@@ -17,6 +17,10 @@ struct FileEditor {
             return nil
         }
         
+        if url.pathExtension == "car", let carVC = FileEditorType.assetCatalog.viewController(forPath: url, data: data) {
+            return FileEditor(type: .assetCatalog, viewController: carVC)
+        }
+        
         let type = url.contentType
         if type == .unixExecutable {
             return FileEditor(type: .executable, viewController: BinaryExecutionViewController(executableURL: url))
@@ -85,7 +89,10 @@ struct FileEditor {
 }
 
 enum FileEditorType: CustomStringConvertible, CaseIterable {
-    case audio, image, video, propertyList, json, text, font, executable
+    case audio, image, video
+    case propertyList, json, text, font
+    case assetCatalog
+    case executable
     
     /// Returns the view controller to be used for the file editor type
     /// the Data parameter is used so that, when looping over all editor types,
@@ -134,7 +141,7 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
                 return nil
             }
             
-            return ImageFileViewController(fileURL: path, image: image)
+            return ImageViewerViewController(fileURL: path, image: image)
         case .video:
             let type = path.contentType
             guard (type?.isOfType(.movie) ?? false || type?.isOfType(.video) ?? false) else {
@@ -152,6 +159,13 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
             return FontViewerController(selectedFont: descriptors.first!.uiFont, descriptors: descriptors)
         case .executable:
             return BinaryExecutionViewController(executableURL: path)
+        case .assetCatalog:
+            guard path.pathExtension == "car",
+                  let vc = try? AssetCatalogViewController(catalogFileURL: path) else {
+                return nil
+            }
+            
+            return vc
         }
     }
     
@@ -171,6 +185,8 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
             return "Font Viewer"
         case .text:
             return "Text Editor"
+        case .assetCatalog:
+            return "Asset Catalog Viewer"
         case .executable:
             return "Executable Runner"
         }
@@ -180,7 +196,7 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
         switch self {
         case .text, .image, .video, .executable:
             return true
-        case .audio, .font:
+        case .audio, .font, .assetCatalog:
             return false
         case .propertyList, .json:
             return UIDevice.current.isiPad

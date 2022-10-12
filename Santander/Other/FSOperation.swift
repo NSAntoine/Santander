@@ -62,11 +62,14 @@ enum FSOperation: Codable {
     
     private enum _Errors: Error, LocalizedError {
         case errnoError
+        case otherError(description: String)
         
         var errorDescription: String? {
             switch self {
             case .errnoError:
                 return String(cString: strerror(errno))
+            case .otherError(let description):
+                return description
             }
         }
     }

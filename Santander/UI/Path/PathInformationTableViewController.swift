@@ -16,6 +16,7 @@ class PathInformationTableViewController: UITableViewController {
     var showByteCount: Bool = false
     var showDisplayName: Bool = false
     var showRealPath: Bool = false
+    var sizeState: PathSizeState = .loading
     
     init(style: UITableView.Style, path: URL) {
         self.path = path
@@ -32,6 +33,16 @@ class PathInformationTableViewController: UITableViewController {
         super.viewDidLoad()
         
         self.title = self.path.lastPathComponent
+        DispatchQueue.global(qos: .userInteractive).sync { [self] in
+            if let size = path.size {
+                sizeState = .size(size)
+            } else {
+                sizeState = .unavailable
+            }
+            
+        }
+        
+        self.tableView.reloadRows(at: [IndexPath(row: 2, section: 0)], with: .fade)
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -91,14 +102,26 @@ class PathInformationTableViewController: UITableViewController {
             
         case (0, 2):
             conf.text = "Size"
-            if let size = self.path.size {
+            switch sizeState {
+            case .loading:
+                let spinner = UIActivityIndicatorView()
+                spinner.startAnimating()
+                spinner.translatesAutoresizingMaskIntoConstraints = false
+                cell.addSubview(spinner)
+                
+                NSLayoutConstraint.activate([
+                    spinner.trailingAnchor.constraint(equalTo: cell.layoutMarginsGuide.trailingAnchor),
+                    spinner.centerYAnchor.constraint(equalTo: cell.centerYAnchor)
+                ])
+                
+            case .unavailable:
+                conf.secondaryText = "N/A"
+            case .size(let size):
                 let formatter = ByteCountFormatter()
                 formatter.countStyle = .file
                 formatter.allowedUnits = .useAll
                 formatter.includesActualByteCount = showByteCount
                 conf.secondaryText = formatter.string(fromByteCount: Int64(size))
-            } else {
-                conf.secondaryText = "N/A"
             }
         case (0, 3):
             conf.text = "Items"
@@ -140,7 +163,7 @@ class PathInformationTableViewController: UITableViewController {
         case (0, 1):
             return (try? FileManager.default.destinationOfSymbolicLink(atPath: self.path.path)) != nil
         case (0, 2):
-            return self.path.size != nil
+            return true
         case (3, 0):
             return metadata.permissions != nil
         default:
@@ -161,4 +184,10 @@ class PathInformationTableViewController: UITableViewController {
         default: fatalError("\(#function): Unknown Section num \(section)")
         }
     }
+}
+
+enum PathSizeState {
+    case loading
+    case unavailable
+    case size(Int)
 }

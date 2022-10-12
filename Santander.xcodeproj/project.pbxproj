@@ -49,13 +49,22 @@
 		37CA828828AA4638000236D7 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37CA828728AA4638000236D7 /* CoreServices.framework */; };
 		37CA828A28AA675B000236D7 /* AppInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CA828928AA675B000236D7 /* AppInfoViewController.swift */; };
 		37DE0FA22864902400E5EBBC /* FilePreviewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */; };
-		37ECADA728B23ECC00B95733 /* ImageFileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ECADA628B23ECB00B95733 /* ImageFileViewController.swift */; };
+		37ECADA728B23ECC00B95733 /* ImageViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ECADA628B23ECB00B95733 /* ImageViewerViewController.swift */; };
 		37EEA02828A8BF2700FA8CEB /* Compression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA02728A8BF2700FA8CEB /* Compression.swift */; };
 		37EEA03928A8C86B00FA8CEB /* unzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA02F28A8C86A00FA8CEB /* unzip.c */; };
 		37EEA03A28A8C86B00FA8CEB /* ioapi.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA03728A8C86B00FA8CEB /* ioapi.c */; };
 		37EEA03B28A8C86B00FA8CEB /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA03828A8C86B00FA8CEB /* zip.c */; };
+		CE0E513028D4D03300E9D611 /* AssetCatalogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0E512F28D4D03300E9D611 /* AssetCatalogViewController.swift */; };
 		CE13D1DD28D3572000F5C833 /* FSOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE13D1DC28D3572000F5C833 /* FSOperation.swift */; };
+		CE1FDA2A28F20302000A16BE /* AssetCatalogGridPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1FDA2928F20302000A16BE /* AssetCatalogGridPreviewCell.swift */; };
+		CE37904628DB44C300124029 /* AssetCatalogCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE37904528DB44C300124029 /* AssetCatalogCell.swift */; };
+		CE37904A28DB523500124029 /* AssetCatalogSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE37904928DB523500124029 /* AssetCatalogSectionHeader.swift */; };
+		CE55BCC528D48C2B0008F764 /* CoreUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE55BCC428D48C2B0008F764 /* CoreUI.framework */; };
+		CE55BCCE28D48F500008F764 /* AssetCatalogWrapper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE55BCCD28D48F500008F764 /* AssetCatalogWrapper.swift */; };
 		CE5DFE8328C7BC89003E1095 /* BinaryExecutionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5DFE8228C7BC89003E1095 /* BinaryExecutionViewController.swift */; };
+		CE7228ED28E8188D00918C5F /* AssetCatalogRenditionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7228EC28E8188D00918C5F /* AssetCatalogRenditionViewController.swift */; };
+		CEB0566328F156F500B71017 /* BaseLayoutAnchorSupporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB0566228F156F500B71017 /* BaseLayoutAnchorSupporting.swift */; };
+		CECB3A0C28E330BC00328434 /* AssetCatalogDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECB3A0B28E330BC00328434 /* AssetCatalogDetailsView.swift */; };
 		CECF6EDA28C37F660080B805 /* FontViewerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECF6ED928C37F660080B805 /* FontViewerController.swift */; };
 		CEDAF42028C36B2900DF03E6 /* Runestone in Frameworks */ = {isa = PBXBuildFile; productRef = CEDAF41F28C36B2900DF03E6 /* Runestone */; };
 		CEF54FF528C3D4E30078A146 /* FontInformationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF54FF428C3D4E30078A146 /* FontInformationViewController.swift */; };
@@ -122,7 +131,7 @@
 		37CA828728AA4638000236D7 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		37CA828928AA675B000236D7 /* AppInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfoViewController.swift; sourceTree = "<group>"; };
 		37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewDataSource.swift; sourceTree = "<group>"; };
-		37ECADA628B23ECB00B95733 /* ImageFileViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageFileViewController.swift; sourceTree = "<group>"; };
+		37ECADA628B23ECB00B95733 /* ImageViewerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerViewController.swift; sourceTree = "<group>"; };
 		37EEA02728A8BF2700FA8CEB /* Compression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Compression.swift; sourceTree = "<group>"; };
 		37EEA02E28A8C86A00FA8CEB /* module.modulemap */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
 		37EEA02F28A8C86A00FA8CEB /* unzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = unzip.c; sourceTree = "<group>"; };
@@ -133,9 +142,29 @@
 		37EEA03528A8C86A00FA8CEB /* ioapi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ioapi.h; sourceTree = "<group>"; };
 		37EEA03728A8C86B00FA8CEB /* ioapi.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ioapi.c; sourceTree = "<group>"; };
 		37EEA03828A8C86B00FA8CEB /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
+		CE0E512F28D4D03300E9D611 /* AssetCatalogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogViewController.swift; sourceTree = "<group>"; wrapsLines = 1; };
 		CE13D1DC28D3572000F5C833 /* FSOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FSOperation.swift; sourceTree = "<group>"; };
+		CE1FDA2928F20302000A16BE /* AssetCatalogGridPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogGridPreviewCell.swift; sourceTree = "<group>"; };
+		CE2B6A8C28E360A2006014A5 /* structs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = structs.h; sourceTree = "<group>"; };
+		CE37904528DB44C300124029 /* AssetCatalogCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetCatalogCell.swift; sourceTree = "<group>"; };
+		CE37904928DB523500124029 /* AssetCatalogSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogSectionHeader.swift; sourceTree = "<group>"; };
+		CE55BCC428D48C2B0008F764 /* CoreUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CoreUI.framework; sourceTree = "<group>"; };
+		CE55BCCA28D48EC70008F764 /* CUIThemeRendition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CUIThemeRendition.h; sourceTree = "<group>"; };
+		CE55BCCB28D48F140008F764 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
+		CE55BCCC28D48F290008F764 /* CoreUI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CoreUI.h; sourceTree = "<group>"; };
+		CE55BCCD28D48F500008F764 /* AssetCatalogWrapper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogWrapper.swift; sourceTree = "<group>"; };
+		CE55BCCF28D4905E0008F764 /* CUICatalog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CUICatalog.h; sourceTree = "<group>"; };
+		CE55BCD028D490860008F764 /* CUINamedLookup.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CUINamedLookup.h; sourceTree = "<group>"; };
+		CE5B5C8328E0B85C007C2129 /* CUICommonAssetStorage.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CUICommonAssetStorage.h; sourceTree = "<group>"; };
 		CE5DFE8228C7BC89003E1095 /* BinaryExecutionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryExecutionViewController.swift; sourceTree = "<group>"; };
+		CE642CAE28E48CB100170904 /* CSIGenerator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSIGenerator.h; sourceTree = "<group>"; };
+		CE642CAF28E48D7700170904 /* CSIBitmapWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CSIBitmapWrapper.h; sourceTree = "<group>"; };
+		CE642CB028E5F1D300170904 /* CUIRenditionKey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CUIRenditionKey.h; sourceTree = "<group>"; };
+		CE7228EC28E8188D00918C5F /* AssetCatalogRenditionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogRenditionViewController.swift; sourceTree = "<group>"; };
+		CEB0566228F156F500B71017 /* BaseLayoutAnchorSupporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseLayoutAnchorSupporting.swift; sourceTree = "<group>"; };
+		CECB3A0B28E330BC00328434 /* AssetCatalogDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogDetailsView.swift; sourceTree = "<group>"; };
 		CECF6ED928C37F660080B805 /* FontViewerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontViewerController.swift; sourceTree = "<group>"; };
+		CEE08EC428E1C93100B540B8 /* CUIStructuredThemeStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CUIStructuredThemeStore.h; sourceTree = "<group>"; };
 		CEF54FF428C3D4E30078A146 /* FontInformationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontInformationViewController.swift; sourceTree = "<group>"; };
 		CEFA0D7928C7CCAA003A0764 /* NSTask.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSTask.h; sourceTree = "<group>"; };
 		CEFA0D7A28C7CCE1003A0764 /* module.modulemap */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.module-map"; path = module.modulemap; sourceTree = "<group>"; };
@@ -148,6 +177,7 @@
 			files = (
 				CEDAF42028C36B2900DF03E6 /* Runestone in Frameworks */,
 				37CA828828AA4638000236D7 /* CoreServices.framework in Frameworks */,
+				CE55BCC528D48C2B0008F764 /* CoreUI.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -157,7 +187,7 @@
 		3713292628B618AD009E4AEA /* Image */ = {
 			isa = PBXGroup;
 			children = (
-				37ECADA628B23ECB00B95733 /* ImageFileViewController.swift */,
+				37ECADA628B23ECB00B95733 /* ImageViewerViewController.swift */,
 				3713292A28B74D34009E4AEA /* ImageLocationEditorViewController.swift */,
 				3713292828B61F98009E4AEA /* ImageMetadataViewController.swift */,
 			);
@@ -206,6 +236,7 @@
 			isa = PBXGroup;
 			children = (
 				37EEA02728A8BF2700FA8CEB /* Compression.swift */,
+				CEB0566228F156F500B71017 /* BaseLayoutAnchorSupporting.swift */,
 				372A570E28AA44D200781243 /* ApplicationsManager.swift */,
 				37EEA02428A8BE4E00FA8CEB /* External */,
 				3771D37A2862329D00E200B6 /* Extensions.swift */,
@@ -217,6 +248,7 @@
 				37C6E0C928662C6800BDDA16 /* PathsSortMethods.swift */,
 				37963F16286A0F0B00C4B72A /* DirectoryMonitor.swift */,
 				CE13D1DC28D3572000F5C833 /* FSOperation.swift */,
+				CE55BCCD28D48F500008F764 /* AssetCatalogWrapper.swift */,
 			);
 			path = Other;
 			sourceTree = "<group>";
@@ -285,6 +317,7 @@
 				376F749E28BC8A4F000E5D77 /* Audio */,
 				3787DB0828ACE4C900ACA60B /* Serialized */,
 				3787DB0428ABECF200ACA60B /* FileEditorType.swift */,
+				CE76B0BD28D74EE900415675 /* AssetCatalog */,
 				3713292628B618AD009E4AEA /* Image */,
 				CEF54FF228C3D4CE0078A146 /* Font */,
 			);
@@ -319,6 +352,7 @@
 		37EEA02428A8BE4E00FA8CEB /* External */ = {
 			isa = PBXGroup;
 			children = (
+				CE55BCC328D48AD60008F764 /* CoreUI */,
 				CEFA0D7828C7CC5B003A0764 /* NSTask */,
 				372A570928AA436400781243 /* LaunchServices */,
 				37EEA03C28A912B900FA8CEB /* Compression */,
@@ -356,6 +390,38 @@
 				37EEA03828A8C86B00FA8CEB /* zip.c */,
 			);
 			path = Compression;
+			sourceTree = "<group>";
+		};
+		CE55BCC328D48AD60008F764 /* CoreUI */ = {
+			isa = PBXGroup;
+			children = (
+				CE55BCC428D48C2B0008F764 /* CoreUI.framework */,
+				CE642CB028E5F1D300170904 /* CUIRenditionKey.h */,
+				CE642CAE28E48CB100170904 /* CSIGenerator.h */,
+				CE642CAF28E48D7700170904 /* CSIBitmapWrapper.h */,
+				CE55BCCA28D48EC70008F764 /* CUIThemeRendition.h */,
+				CE55BCCF28D4905E0008F764 /* CUICatalog.h */,
+				CEE08EC428E1C93100B540B8 /* CUIStructuredThemeStore.h */,
+				CE5B5C8328E0B85C007C2129 /* CUICommonAssetStorage.h */,
+				CE55BCD028D490860008F764 /* CUINamedLookup.h */,
+				CE2B6A8C28E360A2006014A5 /* structs.h */,
+				CE55BCCB28D48F140008F764 /* module.modulemap */,
+				CE55BCCC28D48F290008F764 /* CoreUI.h */,
+			);
+			path = CoreUI;
+			sourceTree = "<group>";
+		};
+		CE76B0BD28D74EE900415675 /* AssetCatalog */ = {
+			isa = PBXGroup;
+			children = (
+				CE0E512F28D4D03300E9D611 /* AssetCatalogViewController.swift */,
+				CECB3A0B28E330BC00328434 /* AssetCatalogDetailsView.swift */,
+				CE37904528DB44C300124029 /* AssetCatalogCell.swift */,
+				CE1FDA2928F20302000A16BE /* AssetCatalogGridPreviewCell.swift */,
+				CE7228EC28E8188D00918C5F /* AssetCatalogRenditionViewController.swift */,
+				CE37904928DB523500124029 /* AssetCatalogSectionHeader.swift */,
+			);
+			path = AssetCatalog;
 			sourceTree = "<group>";
 		};
 		CEF54FF228C3D4CE0078A146 /* Font */ = {
@@ -454,10 +520,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE0E513028D4D03300E9D611 /* AssetCatalogViewController.swift in Sources */,
 				37C6E0CE28665B2A00BDDA16 /* PathOperationViewController.swift in Sources */,
 				3771D37B2862329D00E200B6 /* Extensions.swift in Sources */,
+				CE55BCCE28D48F500008F764 /* AssetCatalogWrapper.swift in Sources */,
 				37EEA03928A8C86B00FA8CEB /* unzip.c in Sources */,
 				3787DB0C28ACE5E200ACA60B /* SerializedItemType.swift in Sources */,
+				CE7228ED28E8188D00918C5F /* AssetCatalogRenditionViewController.swift in Sources */,
 				374ECDCA2875F5350066E9DD /* AudioPlayerViewController.swift in Sources */,
 				37C6E0C52865CF7C00BDDA16 /* SettingsTableViewController.swift in Sources */,
 				37C6E0CA28662C6800BDDA16 /* PathsSortMethods.swift in Sources */,
@@ -467,11 +536,13 @@
 				375CF89F289D969A00BB7C60 /* PathPermissionsViewController.swift in Sources */,
 				3787DB0528ABECF200ACA60B /* FileEditorType.swift in Sources */,
 				3713292528B60163009E4AEA /* ImageMetadata.swift in Sources */,
+				CEB0566328F156F500B71017 /* BaseLayoutAnchorSupporting.swift in Sources */,
 				37C6E0C828662C4100BDDA16 /* DragAndDrop.swift in Sources */,
 				37932F052863205F00BF48C8 /* UserPreferences.swift in Sources */,
 				37177E4C289F12640025042E /* PathGroupOwnerViewController.swift in Sources */,
 				376F749D28BC8A33000E5D77 /* AudioPlayerToolbarView.swift in Sources */,
 				37963F132869C96C00C4B72A /* PathType.swift in Sources */,
+				CECB3A0C28E330BC00328434 /* AssetCatalogDetailsView.swift in Sources */,
 				CECF6EDA28C37F660080B805 /* FontViewerController.swift in Sources */,
 				374ECDC82875A3940066E9DD /* Storage.swift in Sources */,
 				3789B5F428622E0D00058688 /* SubPathsTableViewController.swift in Sources */,
@@ -480,8 +551,11 @@
 				3712D319286F7F2E00BCD034 /* TypeSelectionViewController.swift in Sources */,
 				37198B9F2872DDA6000C8CDF /* KeyboardToolsView.swift in Sources */,
 				37DE0FA22864902400E5EBBC /* FilePreviewDataSource.swift in Sources */,
+				CE37904628DB44C300124029 /* AssetCatalogCell.swift in Sources */,
+				CE1FDA2A28F20302000A16BE /* AssetCatalogGridPreviewCell.swift in Sources */,
 				37963F17286A0F0B00C4B72A /* DirectoryMonitor.swift in Sources */,
 				37EEA02828A8BF2700FA8CEB /* Compression.swift in Sources */,
+				CE37904A28DB523500124029 /* AssetCatalogSectionHeader.swift in Sources */,
 				CE5DFE8328C7BC89003E1095 /* BinaryExecutionViewController.swift in Sources */,
 				37EEA03B28A8C86B00FA8CEB /* zip.c in Sources */,
 				CEF54FF528C3D4E30078A146 /* FontInformationViewController.swift in Sources */,
@@ -496,7 +570,7 @@
 				375CF89D289CF3A600BB7C60 /* Permissions.swift in Sources */,
 				CE13D1DD28D3572000F5C833 /* FSOperation.swift in Sources */,
 				37CA828A28AA675B000236D7 /* AppInfoViewController.swift in Sources */,
-				37ECADA728B23ECC00B95733 /* ImageFileViewController.swift in Sources */,
+				37ECADA728B23ECC00B95733 /* ImageViewerViewController.swift in Sources */,
 				3771D37F2862493E00E200B6 /* PathInformationTableViewController.swift in Sources */,
 				37198B9A28721069000C8CDF /* TextEditorThemeSettingsViewController.swift in Sources */,
 				375CF899289C4FF000BB7C60 /* PathMetadata.swift in Sources */,
@@ -644,6 +718,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Santander/Other/External",
+					"$(PROJECT_DIR)/Santander/Other/External/CoreUI",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Santander/Info.plist;
@@ -681,6 +756,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Santander/Other/External",
+					"$(PROJECT_DIR)/Santander/Other/External/CoreUI",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Santander/Info.plist;
