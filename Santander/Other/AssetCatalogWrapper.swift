@@ -204,11 +204,19 @@ enum RenditionPreview: Hashable {
     
 }
 
+/// The idiom, aka the platform target, of a Rendition
 enum RenditionIdiom: CustomStringConvertible {
+    /// All platforms.
     case universal
+    
     case iphone
     case ipad
+    case tv
+    case watch
+    case carPlay
     case macCatalyst
+    
+    /// This seems to be for App Store related renditions.
     case marketing
     
     init?(keyList: CUIRenditionKey) {
@@ -224,6 +232,12 @@ enum RenditionIdiom: CustomStringConvertible {
             self = .iphone
         case 2:
             self = .ipad
+        case 3:
+            self = .tv
+        case 4:
+            self = .carPlay
+        case 5:
+            self = .watch
         case 6:
             self = .marketing
         default:
@@ -239,6 +253,12 @@ enum RenditionIdiom: CustomStringConvertible {
             return "iPhone"
         case .ipad:
             return "iPad"
+        case .tv:
+            return "TV"
+        case .watch:
+            return "Watch"
+        case .carPlay:
+            return "CarPlay"
         case .macCatalyst:
             return "Mac Catalyst"
         case .marketing:
