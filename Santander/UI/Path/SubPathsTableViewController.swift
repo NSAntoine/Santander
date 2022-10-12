@@ -243,7 +243,7 @@ class SubPathsTableViewController: UITableViewController {
             if (indexPath.section, indexPath.row) == (0, 0) {
                 // The user wants to filter by type,
                 // prompt the viewController for doing so
-                let vc = TypesSelectionViewController { types in
+                let vc = TypesSelectionCollectionViewController { types in
                     // Make sure the user selected a type before we insert the search token
                     if !types.isEmpty {
                         var searchSuggestion = SearchSuggestion.displaySearchSuggestions(for: indexPath, typesToCheck: types)

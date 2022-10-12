@@ -9,197 +9,216 @@
 import UIKit
 import UniformTypeIdentifiers
 
-/// A View Controller to select a UTT Type
-class TypesSelectionViewController: UITableViewController, UISearchBarDelegate {
-    let allTypes: [[UTType]] = UTType.allTypes()
-    
-    /// The types, filtred by the user search
-    var filteredTypes: [UTType] {
-        guard let text = navigationItem.searchController?.searchBar.text else {
-            return []
-        }
-        
-        return allTypes.flatMap { $0 }.filter { type in
-            type.localizedDescription?.localizedCaseInsensitiveContains(text) ?? false ||
-            type.preferredFilenameExtension?.localizedCaseInsensitiveContains(text) ?? false
-        }
-    }
-    
-    var selectedTypes: [UTType] = [] {
-        didSet {
-            // if the types are empty
-            // disable the 'Done' button
-            self.navigationItem.rightBarButtonItem?.isEnabled = !selectedTypes.isEmpty
-        }
-    }
-    
-    var collapsedSections: Set<Int> = []
-    var isSearching: Bool = false
-    
+/// A View Controller to select one or multiple UniformTypeIdentifiers
+class TypesSelectionCollectionViewController: UICollectionViewController {
     typealias DismissHandler = (([UTType]) -> Void)
     
-    /// The action to execute once the ViewController is dismissed
-    var dismissHandler: DismissHandler
+    typealias DataSource = UICollectionViewDiffableDataSource<Section, ItemType>
+    typealias CellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, ItemType>
     
-    init(style: UITableView.Style = .insetGrouped, onDismisAction: @escaping DismissHandler) {
-        self.dismissHandler = onDismisAction
+    var dismissHandler: DismissHandler
+    var dataSource: DataSource!
+    var selectedTypes: Set<UTType> = [] {
+        didSet {
+            // Enable or disable done button based on whether or not the selection is empty
+            navigationItem.rightBarButtonItem?.isEnabled = !selectedTypes.isEmpty
+        }
+    }
+    
+    let allItems = TypesCollection.all()
+    
+    init(dismissHandler: @escaping DismissHandler) {
+        self.dismissHandler = dismissHandler
         
-        super.init(style: style)
+        let layout = UICollectionViewCompositionalLayout { _, env in
+            var layoutConf = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
+            layoutConf.headerMode = .firstItemInSection
+            return NSCollectionLayoutSection.list(using: layoutConf, layoutEnvironment: env)
+        }
+        
+        super.init(collectionViewLayout: layout)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
     }
     
     override func viewDidLoad() {
-        super.viewDidLoad()
+        title = "Types"
         
-        self.title = "Types"
-        let searchController = UISearchController(searchResultsController: nil)
+        let cancelAction = UIAction {
+            self.selectedTypes = []
+            self.dismiss(animated: true)
+        }
+        
+        let doneAction = UIAction {
+            self.dismiss(animated: true)
+        }
+        
+        let searchController = UISearchController()
         searchController.searchBar.delegate = self
-        self.navigationItem.searchController = searchController
-        self.navigationItem.hidesSearchBarWhenScrolling = false
+        navigationItem.searchController = searchController
+        navigationItem.hidesSearchBarWhenScrolling = false
         
-#if compiler(>=5.7)
-        if #available(iOS 16.0, *) {
-            // .inline looks frustrating on iPad
-            self.navigationItem.preferredSearchBarPlacement = .stacked
-        }
-#endif
-        
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneDismiss))
-        self.navigationItem.rightBarButtonItem?.isEnabled = !selectedTypes.isEmpty
-        
-        self.navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(systemItem: .cancel, primaryAction: cancelAction)
+        let rightBarButton = UIBarButtonItem(systemItem: .done, primaryAction: doneAction)
+        rightBarButton.isEnabled = false // not enabled by default bc no items are selected rn in setup
+        navigationItem.rightBarButtonItem = rightBarButton
+        makeDataSource()
     }
     
-    
-    required init?(coder: NSCoder) {
-        fatalError()
+    // when we call dismiss(animated:, completion:)
+    // call the dismissal handler
+    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
+        super.dismiss(animated: flag, completion: completion)
+        dismissHandler(Array(selectedTypes))
     }
     
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        if self.isSearching {
-            return 1
-        }
-        
-        return allTypes.count
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if self.collapsedSections.contains(section) {
-            return 0
-        }
-        
-        if self.isSearching {
-            return filteredTypes.count
-        } else {
-            return allTypes[section].count
-        }
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let type = self.type(forIndexPath: indexPath)
-        
-        let cell = UITableViewCell()
-        var conf = cell.defaultContentConfiguration()
-        conf.text = type.localizedDescription
-        cell.contentConfiguration = conf
-        cell.accessoryType = selectedTypes.contains(type) ? .checkmark : .none
-        return cell
-    }
-    
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let type = self.type(forIndexPath: indexPath)
-        
-        if selectedTypes.contains(type) {
-            selectedTypes.removeAll { $0 == type }
-        } else {
-            selectedTypes.append(type)
-        }
-        
-        tableView.reloadRows(at: [indexPath], with: .fade)
-    }
-    
-    func headerTitle(forSection section: Int) -> String? {
-        switch section {
-        case 0: return self.isSearching ? "Results" : "Generic"
-        case 1: return "Audio"
-        case 2: return "Programming"
-        case 3: return "Archive"
-        case 4: return "Image"
-        case 5: return "Document"
-        case 6: return "Executable"
-        case 7: return "System"
-        default: return nil
-        }
-    }
-    
-    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        return sectionHeaderWithButton(sectionTag: section, titleText: headerTitle(forSection: section)) { button in
-            button.setImage(UIImage(systemName: "chevron.down"), for: .normal)
-            let action = UIAction { _ in
-                self.sectionButtonClicked(button)
+    func makeDataSource() {
+        let cellRegistration = CellRegistration { [self] cell, indexPath, itemIdentifier in
+            var conf: UIListContentConfiguration
+            switch itemIdentifier {
+            case .header(let section):
+                conf = .sidebarHeader()
+                conf.text = section.description
+                cell.accessories = [.outlineDisclosure()]
+            case .type(let type):
+                conf = cell.defaultContentConfiguration()
+                conf.text = type.localizedDescription
+                cell.accessories = selectedTypes.contains(type) ? [.checkmark()] : []
             }
             
-            button.addAction(action, for: .touchUpInside)
+            cell.contentConfiguration = conf
+        }
+        
+        self.dataSource = DataSource(collectionView: collectionView) { collectionView, indexPath, itemIdentifier in
+            return collectionView.dequeueConfiguredReusableCell(using: cellRegistration, for: indexPath, item: itemIdentifier)
+        }
+        
+        showItems(fromCollections: allItems)
+    }
+    
+    func showItems(fromCollections coll: [TypesCollection], animatingDifferences: Bool = false) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, ItemType>()
+        let justSections = coll.map(\.section)
+        snapshot.appendSections(justSections)
+        dataSource.apply(snapshot, animatingDifferences: false)
+        
+        for collection in coll {
+            let collectionSection = ItemType.header(collection.section)
+            var section = NSDiffableDataSourceSectionSnapshot<ItemType>()
+            section.append([collectionSection])
+            let types = ItemType.fromTypes(collection.types)
+            section.append(types, to: collectionSection)
+            section.expand([collectionSection])
+            dataSource.apply(section, to: collection.section, animatingDifferences: animatingDifferences)
         }
     }
     
-    func sectionButtonClicked(_ sender: UIButton) {
-        let section = sender.tag
-        let isCollapsing: Bool = !(self.collapsedSections.contains(section))
-        let newImageToSet = isCollapsing ? "chevron.forward" : "chevron.down"
-
-        let animationOptions: UIView.AnimationOptions = isCollapsing ? .transitionFlipFromLeft : .transitionFlipFromRight
-
-        UIView.transition(with: sender, duration: 0.3, options: animationOptions) {
-            sender.setImage(UIImage(systemName: newImageToSet), for: .normal)
+    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        // "why force unwrap here!" because silently failing is a worse option, and the user will be questioning
+        // why tapping didn't work
+        collectionView.deselectItem(at: indexPath, animated: false)
+        let item = dataSource.itemIdentifier(for: indexPath)!
+        switch item {
+        case .header(_): break // never supposed to get here
+        case .type(let type):
+            // if the item is already selected, remove this UTType from selectedTyps
+            // otherwise, insert it to our selected types
+            if selectedTypes.contains(type) {
+                selectedTypes.remove(type)
+            } else {
+                selectedTypes.insert(type)
+            }
+            
+            var snapshot = dataSource.snapshot()
+            snapshot.reloadItems([.type(type)])
+            dataSource.apply(snapshot, animatingDifferences: true)
         }
-
-        if isCollapsing {
-            // Need to capture the index paths *before inserting* when collapsing
-            let indexPaths: [IndexPath] = self.indexPaths(forSection: section)
-            collapsedSections.insert(section)
-            tableView.deleteRows(at: indexPaths, with: .fade)
-        } else {
-            collapsedSections.remove(section)
-            tableView.insertRows(at: self.indexPaths(forSection: section), with: .fade)
+    }
+    enum ItemType: Hashable {
+        case header(Section)
+        case type(UTType)
+        
+        static func fromTypes(_ types: [UTType]) -> [ItemType] {
+            return types.map { type in
+                ItemType.type(type)
+            }
         }
+    }
+    
+    enum Section: CustomStringConvertible {
+        case generic
+        case audio
+        case programming
+        case archive
+        case image
+        case document
+        case executable
+        case systemTypes
+        
+        var description: String {
+            switch self {
+            case .generic:
+                return "Generic"
+            case .audio:
+                return "Audio"
+            case .programming:
+                return "Programming"
+            case .archive:
+                return "Archive"
+            case .image:
+                return "Image"
+            case .document:
+                return "Document"
+            case .executable:
+                return "Executable"
+            case .systemTypes:
+                return "System"
+            }
+        }
+    }
+    
+    struct TypesCollection {
+        let section: Section
+        let types: [UTType]
+        
+        static func all() -> [TypesCollection] {
+            return [
+                TypesCollection(section: .generic, types: UTType.generictypes()),
+                TypesCollection(section: .audio, types: UTType.audioTypes()),
+                TypesCollection(section: .programming, types: UTType.programmingTypes()),
+                TypesCollection(section: .archive, types: UTType.compressedFormatTypes()),
+                TypesCollection(section: .image, types: UTType.imageTypes()),
+                TypesCollection(section: .document, types: UTType.documentTypes()),
+                TypesCollection(section: .systemTypes, types: UTType.systemTypes())
+            ]
+        }
+    }
+}
 
-    }
-    
-    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        return 40
-    }
-    
-    override func viewDidDisappear(_ animated: Bool) {
-        super.viewDidDisappear(animated)
-        self.dismissHandler(selectedTypes)
-    }
-    
-    @objc
-    func doneDismiss() {
-        self.dismiss(animated: true)
-    }
-    
+extension TypesSelectionCollectionViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        isSearching = !searchText.isEmpty
-        self.tableView.reloadData()
+        guard !searchText.isEmpty else {
+            showItems(fromCollections: allItems)
+            return
+        }
+        
+        let filtered = allItems.map { collection in
+            let newTypes = collection.types.filter { type in
+                type.localizedDescription?.localizedCaseInsensitiveContains(searchText) ?? false ||
+                type.preferredFilenameExtension?.localizedCaseInsensitiveContains(searchText) ?? false
+            }
+
+            return TypesCollection(section: collection.section, types: newTypes)
+        }.filter { collection in
+            !collection.types.isEmpty
+        }
+
+        showItems(fromCollections: filtered, animatingDifferences: false)
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        // When cancelling, set the text to be empty, so that it displays all items
-        self.searchBar(searchBar, textDidChange: "")
-    }
-    
-    @objc
-    func cancel() {
-        self.selectedTypes = []
-        self.dismiss(animated: true)
-    }
-    
-    func type(forIndexPath indexPath: IndexPath) -> UTType {
-        if self.isSearching {
-            return filteredTypes[indexPath.row]
-        } else {
-            return allTypes[indexPath.section][indexPath.row]
-        }
+        showItems(fromCollections: allItems)
     }
 }

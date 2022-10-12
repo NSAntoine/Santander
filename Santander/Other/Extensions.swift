@@ -298,7 +298,6 @@ extension UTType {
     
     public static func audioTypes() -> [UTType] {
         return [
-            .audio,
             .mp3,
             .aiff,
             .wav,
@@ -309,7 +308,6 @@ extension UTType {
     public static func programmingTypes() -> [UTType] {
         var arr: [UTType] = [
             .swiftSource,
-            .sourceCode,
             .assemblyLanguageSource,
             
             .cSource,
@@ -339,7 +337,6 @@ extension UTType {
     
     public static func compressedFormatTypes() -> [UTType] {
         return [
-            .archive,
             .zip,
             .gzip,
             .bz2
@@ -348,7 +345,6 @@ extension UTType {
     
     public static func imageTypes() -> [UTType] {
         return [
-            .image,
             .png,
             .gif,
             .jpeg,
@@ -389,19 +385,6 @@ extension UTType {
             UTType(filenameExtension: "dylib")
         ]
             .compactMap { $0 }
-    }
-    
-    public static func allTypes() -> [[UTType]] {
-        return [
-            generictypes(),
-            audioTypes(),
-            programmingTypes(),
-            compressedFormatTypes(),
-            imageTypes(),
-            documentTypes(),
-            executableTypes(),
-            systemTypes(),
-        ]
     }
     
     /// A Dictionary containing the systemName for icons for of certain UTTypes
