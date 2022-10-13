@@ -45,7 +45,7 @@
 		37C6E0CA28662C6800BDDA16 /* PathsSortMethods.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0C928662C6800BDDA16 /* PathsSortMethods.swift */; };
 		37C6E0CE28665B2A00BDDA16 /* PathOperationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0CD28665B2A00BDDA16 /* PathOperationViewController.swift */; };
 		37C6E0D028673AFF00BDDA16 /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0CF28673AFF00BDDA16 /* Search.swift */; };
-		37C6E0D22867653A00BDDA16 /* PathsListSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0D12867653A00BDDA16 /* PathsListSplitViewController.swift */; };
+		37C6E0D22867653A00BDDA16 /* PathSidebarListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0D12867653A00BDDA16 /* PathSidebarListViewController.swift */; };
 		37CA828828AA4638000236D7 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37CA828728AA4638000236D7 /* CoreServices.framework */; };
 		37CA828A28AA675B000236D7 /* AppInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CA828928AA675B000236D7 /* AppInfoViewController.swift */; };
 		37DE0FA22864902400E5EBBC /* FilePreviewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */; };
@@ -56,6 +56,7 @@
 		37EEA03B28A8C86B00FA8CEB /* zip.c in Sources */ = {isa = PBXBuildFile; fileRef = 37EEA03828A8C86B00FA8CEB /* zip.c */; };
 		CE0E513028D4D03300E9D611 /* AssetCatalogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0E512F28D4D03300E9D611 /* AssetCatalogViewController.swift */; };
 		CE13D1DD28D3572000F5C833 /* FSOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE13D1DC28D3572000F5C833 /* FSOperation.swift */; };
+		CE1F1F7028F7211700E44DF2 /* PathTransitioning.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1F1F6F28F7211700E44DF2 /* PathTransitioning.swift */; };
 		CE1FDA2A28F20302000A16BE /* AssetCatalogGridPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1FDA2928F20302000A16BE /* AssetCatalogGridPreviewCell.swift */; };
 		CE37904628DB44C300124029 /* AssetCatalogCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE37904528DB44C300124029 /* AssetCatalogCell.swift */; };
 		CE37904A28DB523500124029 /* AssetCatalogSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE37904928DB523500124029 /* AssetCatalogSectionHeader.swift */; };
@@ -127,7 +128,7 @@
 		37C6E0C928662C6800BDDA16 /* PathsSortMethods.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathsSortMethods.swift; sourceTree = "<group>"; };
 		37C6E0CD28665B2A00BDDA16 /* PathOperationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathOperationViewController.swift; sourceTree = "<group>"; };
 		37C6E0CF28673AFF00BDDA16 /* Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
-		37C6E0D12867653A00BDDA16 /* PathsListSplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathsListSplitViewController.swift; sourceTree = "<group>"; };
+		37C6E0D12867653A00BDDA16 /* PathSidebarListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathSidebarListViewController.swift; sourceTree = "<group>"; };
 		37CA828728AA4638000236D7 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		37CA828928AA675B000236D7 /* AppInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfoViewController.swift; sourceTree = "<group>"; };
 		37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewDataSource.swift; sourceTree = "<group>"; };
@@ -144,6 +145,7 @@
 		37EEA03828A8C86B00FA8CEB /* zip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = zip.c; sourceTree = "<group>"; };
 		CE0E512F28D4D03300E9D611 /* AssetCatalogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogViewController.swift; sourceTree = "<group>"; wrapsLines = 1; };
 		CE13D1DC28D3572000F5C833 /* FSOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FSOperation.swift; sourceTree = "<group>"; };
+		CE1F1F6F28F7211700E44DF2 /* PathTransitioning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathTransitioning.swift; sourceTree = "<group>"; };
 		CE1FDA2928F20302000A16BE /* AssetCatalogGridPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogGridPreviewCell.swift; sourceTree = "<group>"; };
 		CE2B6A8C28E360A2006014A5 /* structs.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = structs.h; sourceTree = "<group>"; };
 		CE37904528DB44C300124029 /* AssetCatalogCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetCatalogCell.swift; sourceTree = "<group>"; };
@@ -249,6 +251,7 @@
 				37963F16286A0F0B00C4B72A /* DirectoryMonitor.swift */,
 				CE13D1DC28D3572000F5C833 /* FSOperation.swift */,
 				CE55BCCD28D48F500008F764 /* AssetCatalogWrapper.swift */,
+				CE1F1F6F28F7211700E44DF2 /* PathTransitioning.swift */,
 			);
 			path = Other;
 			sourceTree = "<group>";
@@ -332,7 +335,7 @@
 				37177E4B289F12640025042E /* PathGroupOwnerViewController.swift */,
 				375CF896289C394E00BB7C60 /* ToolbarItems.swift */,
 				375CF89E289D969A00BB7C60 /* PathPermissionsViewController.swift */,
-				37C6E0D12867653A00BDDA16 /* PathsListSplitViewController.swift */,
+				37C6E0D12867653A00BDDA16 /* PathSidebarListViewController.swift */,
 				37C6E0CD28665B2A00BDDA16 /* PathOperationViewController.swift */,
 				3771D37E2862493E00E200B6 /* PathInformationTableViewController.swift */,
 				37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */,
@@ -520,6 +523,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE1F1F7028F7211700E44DF2 /* PathTransitioning.swift in Sources */,
 				CE0E513028D4D03300E9D611 /* AssetCatalogViewController.swift in Sources */,
 				37C6E0CE28665B2A00BDDA16 /* PathOperationViewController.swift in Sources */,
 				3771D37B2862329D00E200B6 /* Extensions.swift in Sources */,
@@ -561,7 +565,7 @@
 				CEF54FF528C3D4E30078A146 /* FontInformationViewController.swift in Sources */,
 				375CF897289C394E00BB7C60 /* ToolbarItems.swift in Sources */,
 				372A570F28AA44D200781243 /* ApplicationsManager.swift in Sources */,
-				37C6E0D22867653A00BDDA16 /* PathsListSplitViewController.swift in Sources */,
+				37C6E0D22867653A00BDDA16 /* PathSidebarListViewController.swift in Sources */,
 				3787DB0728ACB74D00ACA60B /* SerializedDocumentViewController.swift in Sources */,
 				3787DB0A28ACE4EE00ACA60B /* SerializedItemViewController.swift in Sources */,
 				37198B9C28721275000C8CDF /* Themes.swift in Sources */,

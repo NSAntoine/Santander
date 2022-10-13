@@ -11,7 +11,7 @@ import QuickLook
 import UniformTypeIdentifiers
 
 /// A table view controller showing the subpaths under a Directory, or a group
-class SubPathsTableViewController: UITableViewController {
+class SubPathsTableViewController: UITableViewController, PathTransitioning {
     
     /// The contents of the path, unfiltered
     var unfilteredContents: [URL]
@@ -459,7 +459,7 @@ class SubPathsTableViewController: UITableViewController {
     }
     
     /// Opens a path in the UI
-    func goToPath(path: URL, pushingToSplitView: Bool = false) {
+    func goToPath(path: URL) {
         // Make sure we're opening a directory,
         // or the parent directory of the file selected (if searching)
         
@@ -473,31 +473,29 @@ class SubPathsTableViewController: UITableViewController {
             // rather than traversing through each parent path
             if isBookmarksSheet || parentDirectory == self.currentPath {
                 let vc = SubPathsTableViewController(path: path, isBookmarksSheet: self.isBookmarksSheet)
-                if pushingToSplitView {
-                    self.splitViewController?.setViewController(vc, for: .secondary)
-                } else {
-                    self.navigationController?.pushViewController(vc, animated: true)
-                }
+                self.navigationController?.pushViewController(vc, animated: true)
             } else {
-                traverseThroughPath(path, pushingToSplitView: pushingToSplitView)
+                traverseThroughPath(path)
             }
         } else {
             self.goToFile(path: path)
         }
     }
     
-    func traverseThroughPath(_ path: URL, pushingToSplitView: Bool) {
+    func traverseThroughPath(_ path: URL) {
         let vcs = path.fullPathComponents().map {
             SubPathsTableViewController(path: $0, isBookmarksSheet: self.isBookmarksSheet)
         }
         
-        if pushingToSplitView {
-            let navVC = UINavigationController()
-            navVC.setViewControllers(vcs, animated: true)
-            self.splitViewController?.setViewController(navVC, for: .secondary)
-        } else {
-            self.navigationController?.setViewControllers(vcs, animated: true)
-        }
+//        if pushingToSplitView {
+//            let navVC = UINavigationController()
+//            navVC.setViewControllers(vcs, animated: true)
+//            self.splitViewController?.setViewController(navVC, for: .secondary)
+//        } else {
+//            self.navigationController?.setViewControllers(vcs, animated: true)
+//        }
+        
+        self.navigationController?.setViewControllers(vcs, animated: true)
     }
     
     func sortContents() {
@@ -744,7 +742,7 @@ class SubPathsTableViewController: UITableViewController {
             if UIDevice.current.isiPad {
                 var menu = UIMenu(title: "Add to group..", image: UIImage(systemName: "sidebar.leading"), children: [])
                 
-                for (index, group) in UserPreferences.pathGroups.enumerated() where group != .default {
+                for (index, group) in UserPreferences.pathGroups.enumerated() {
                     let addAction = UIAction(title: group.name) { _ in
                         UserPreferences.pathGroups[index].paths.append(item)
                     }

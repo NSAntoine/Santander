@@ -91,32 +91,10 @@ enum UserPreferences {
     @Storage(key: "FontViewerFontSize", defaultValue: 30)
     static var fontViewerFontSize: CGFloat
     
-    static var pathGroups: [PathGroup] {
-        get {
-            guard let data = UserDefaults.standard.data(forKey: "UserPathGroups"),
-                  var decoded = try? JSONDecoder().decode([PathGroup].self, from: data),
-                    !decoded.isEmpty else {
-                // if we can't get the saved path groups - or if they're empty,
-                // return the only defaut one
-                return [.default]
-            }
-            
-            // Make sure we always have the default group
-            if !decoded.contains(.default) {
-                decoded.insert(.default, at: 0)
-            }
-            return decoded
-        }
-        
-        set {
-            guard let encoded = try? JSONEncoder().encode(newValue) else {
-                return
-            }
-            
-            UserDefaults.standard.set(encoded, forKey: "UserPathGroups")
-            NotificationCenter.default.post(name: .pathGroupsDidChange, object: nil)
-        }
-    }
+    @CodableStorage(key: "PathGroups", defaultValue: [.default], didChange: { groups in
+        NotificationCenter.default.post(name: .pathGroupsDidChange, object: groups)
+    })
+    static var pathGroups: [PathGroup]
     
     /// The path to launch upon opening the program,
     /// if this is nil, use `URL.root` instead.
@@ -137,6 +115,6 @@ struct PathGroup: Codable, Hashable {
     var paths: [URL]
     
     static var `default`: PathGroup {
-        return PathGroup(name: "", paths: [.root])
+        return PathGroup(name: "Default", paths: [.root])
     }
 }

@@ -183,13 +183,13 @@ class AssetCatalogRenditionViewController: UIViewController {
         /// The item information, in a list layout
         case itemInfo
         
-        /// The information specifically related to the rendition,
-        /// coming from CUIRenditionKey
-        case renditionInformation
-        
         /// The item information that is specific to it's type,
         /// ie, the red, green and blue components of a color
         case specificTypeInfo
+        
+        /// The information specifically related to the rendition,
+        /// coming from CUIRenditionKey
+        case renditionInformation
     }
     
     enum ItemType: Hashable {

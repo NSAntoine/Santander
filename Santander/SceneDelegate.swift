@@ -36,11 +36,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let windowScene = (scene as? UIWindowScene) else { return }
         
-        let subPathsVC: SubPathsTableViewController
+        let subPathsVC: PathTransitioning
         let window = UIWindow(windowScene: windowScene)
         if UIDevice.current.isiPad {
             let splitVC = UISplitViewController(style: .doubleColumn)
-            let vc = PathListsSplitViewController(contents: [], title: "Santander")
+            let vc = PathSidebarListViewController()
             subPathsVC = vc
             splitVC.setViewController(vc, for: .primary)
             window.rootViewController = splitVC

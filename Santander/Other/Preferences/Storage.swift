@@ -31,11 +31,13 @@ struct Storage<T> {
 
 @propertyWrapper
 struct CodableStorage<T: Codable> {
+    typealias ChangeHandler = ((T) -> ())
+    
     let key: String
     let defaultValue: T
-    var didChange: (() -> Void)?
+    var didChange: ChangeHandler?
     
-    init(key: String, defaultValue: T, didChange: (() -> Void)?) {
+    init(key: String, defaultValue: T, didChange: ChangeHandler?) {
         self.key = key
         self.defaultValue = defaultValue
         self.didChange = didChange
@@ -57,7 +59,7 @@ struct CodableStorage<T: Codable> {
             }
             
             UserDefaults.standard.set(encoded, forKey: key)
-            didChange?()
+            didChange?(newValue)
         }
     }
 }

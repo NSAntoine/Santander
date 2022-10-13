@@ -67,10 +67,8 @@ class TypesSelectionCollectionViewController: UICollectionViewController {
         makeDataSource()
     }
     
-    // when we call dismiss(animated:, completion:)
-    // call the dismissal handler
-    override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
-        super.dismiss(animated: flag, completion: completion)
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
         dismissHandler(Array(selectedTypes))
     }
     

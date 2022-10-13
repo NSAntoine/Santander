@@ -86,11 +86,11 @@ class PathOperationViewController: SubPathsTableViewController {
         }
     }
     
-    override func goToPath(path: URL, pushingToSplitView: Bool = false) {
+    override func goToPath(path: URL) {
         let parentDirectory = path.deletingLastPathComponent()
         
         if parentDirectory != currentPath {
-            traverseThroughPath(path, pushingToSplitView: pushingToSplitView)
+            traverseThroughPath(path)
             return
         }
         
@@ -101,18 +101,19 @@ class PathOperationViewController: SubPathsTableViewController {
         }
     }
     
-    override func traverseThroughPath(_ path: URL, pushingToSplitView: Bool) {
+    override func traverseThroughPath(_ path: URL) {
         let vcs = path.fullPathComponents().map {
             PathOperationViewController(paths: self.paths, operationType: self.operationType, startingPath: $0)
         }
         
-        if pushingToSplitView {
-            let navVC = UINavigationController()
-            navVC.setViewControllers(vcs, animated: true)
-            self.splitViewController?.setViewController(navVC, for: .secondary)
-        } else {
-            self.navigationController?.setViewControllers(vcs, animated: true)
-        }
+//        if pushingToSplitView {
+//            let navVC = UINavigationController()
+//            navVC.setViewControllers(vcs, animated: true)
+//            self.splitViewController?.setViewController(navVC, for: .secondary)
+//        } else {
+//            self.navigationController?.setViewControllers(vcs, animated: true)
+//        }
+        self.navigationController?.setViewControllers(vcs, animated: true)
     }
     
     @objc
