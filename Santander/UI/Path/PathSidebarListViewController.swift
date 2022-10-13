@@ -56,6 +56,11 @@ class PathSidebarListViewController: UIViewController, PathTransitioning, UIColl
             var layoutConf = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
             layoutConf.headerMode = .firstItemInSection
             layoutConf.trailingSwipeActionsConfigurationProvider = { indexPath in
+                // dont allow the first item (/) to be removed
+                if (indexPath.section, indexPath.row) == (0, 1) {
+                    return nil
+                }
+                
                 let removeAction = UIContextualAction(style: .destructive, title: nil) { _, _, completion in
                     // remove the item
                     var newPathGroups = self.pathGroups
