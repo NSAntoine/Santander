@@ -17,9 +17,12 @@ class PathOperationViewController: SubPathsTableViewController {
     /// The type of the operation to perform
     let operationType: PathSelectionOperation
     
-    init(paths: [URL], operationType: PathSelectionOperation, startingPath: URL = .root) {
+    let dismissWhenDone: Bool
+    
+    init(paths: [URL], operationType: PathSelectionOperation, startingPath: URL = .root, dismissWhenDone: Bool = true) {
         self.paths = paths
         self.operationType = operationType
+        self.dismissWhenDone = dismissWhenDone
         
         super.init(path: startingPath)
     }
@@ -81,7 +84,7 @@ class PathOperationViewController: SubPathsTableViewController {
             
             alert.addAction(okAction)
             self.present(alert, animated: true)
-        } else {
+        } else if dismissWhenDone {
             self.dismiss(animated: true)
         }
     }
@@ -95,24 +98,17 @@ class PathOperationViewController: SubPathsTableViewController {
         }
         
         if path.isDirectory {
-            self.navigationController?.pushViewController(PathOperationViewController(paths: paths, operationType: self.operationType, startingPath: path), animated: true)
+            self.navigationController?.pushViewController(PathOperationViewController(paths: paths, operationType: operationType, startingPath: path, dismissWhenDone: dismissWhenDone), animated: true)
         } else {
             self.goToFile(path: path)
         }
     }
     
     override func traverseThroughPath(_ path: URL) {
-        let vcs = path.fullPathComponents().map {
-            PathOperationViewController(paths: self.paths, operationType: self.operationType, startingPath: $0)
+        let vcs = path.fullPathComponents().map { [self] newPath in
+            PathOperationViewController(paths: paths, operationType: operationType, startingPath: newPath, dismissWhenDone: dismissWhenDone)
         }
         
-//        if pushingToSplitView {
-//            let navVC = UINavigationController()
-//            navVC.setViewControllers(vcs, animated: true)
-//            self.splitViewController?.setViewController(navVC, for: .secondary)
-//        } else {
-//            self.navigationController?.setViewControllers(vcs, animated: true)
-//        }
         self.navigationController?.setViewControllers(vcs, animated: true)
     }
     

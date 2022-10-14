@@ -27,6 +27,12 @@ class AssetCatalogViewController: UIViewController {
     var collectionView: UICollectionView!
     var dataSource: DataSource!
     var noResultsLabel: UILabel = UILabel()
+    var layoutMode: LayoutMode = LayoutMode(UserPreferences.assetCatalogControllerLayoutMode) {
+        didSet {
+            collectionView.setCollectionViewLayout(createLayout(), animated: true)
+            UserPreferences.assetCatalogControllerLayoutMode = layoutMode.rawValue
+        }
+    }
     
     init(renditions: RenditionCollection, fileURL: URL, catalog: CUICatalog) {
         self.renditionCollection = renditions
@@ -83,7 +89,15 @@ class AssetCatalogViewController: UIViewController {
             self.extractAction()
         }
         
-        return UIMenu(children: [extractAction])
+        let changeLayoutActions = LayoutMode.allCases.map { [self] mode in
+            return UIAction(title: mode.description, state: layoutMode == mode ? .on : .off) { [self] _ in
+                layoutMode = mode
+                setupBarItems() // update the bar items so that the new selected mode is marked with a checkmark
+            }
+        }
+        
+        let changeLayoutMenu = UIMenu(title: "Layout", children: changeLayoutActions)
+        return UIMenu(children: [extractAction, changeLayoutMenu])
     }
     
     func setupBarItems() {
@@ -102,20 +116,18 @@ class AssetCatalogViewController: UIViewController {
         let action: PathSelectionOperation = .custom(description: "extract", verbDescription: "Extracting to..") { [self] operationVC, selectedPath in
             let extractionPath = selectedPath
                 .appendingPathComponent("\(fileURL.lastPathComponent)-Extracted")
+            
             extractItems(extractionPath: extractionPath, sourceVC: operationVC) { result in
                 switch result {
                 case .failure(let failure):
-                    let cancelAction: UIAlertAction = .cancel(handler: {
-                        operationVC.dismiss(animated: true)
-                    }, title: "OK")
-                    operationVC.errorAlert(failure, title: "Unable to extract items", cancelAction: cancelAction)
+                    operationVC.errorAlert(failure, title: "Unable to extract items")
                 default:
                     operationVC.dismiss(animated: true)
                 }
             }
         }
         
-        let vc = PathOperationViewController(paths: [fileURL], operationType: action)
+        let vc = PathOperationViewController(paths: [fileURL], operationType: action, dismissWhenDone: false)
         present(UINavigationController(rootViewController: vc), animated: true) {
             // go to .car's parent path once the operation vc is presented
             vc.goToPath(path: self.fileURL.deletingLastPathComponent())
@@ -181,47 +193,85 @@ class AssetCatalogViewController: UIViewController {
             }
             
             DispatchQueue.main.async {
-                alertController.dismiss(animated: true)
-                
-                if !failedItems.isEmpty {
-                    return completionHandler(.failure(_ExtractErrors.failedToExtractCatalog(failedItems: failedItems)))
-                } else {
-                    return completionHandler(.success(()))
+                alertController.dismiss(animated: true) {
+                    if !failedItems.isEmpty {
+                        return completionHandler(.failure(_ExtractErrors.failedToExtractCatalog(failedItems: failedItems)))
+                    } else {
+                        return completionHandler(.success(()))
+                    }
                 }
             }
         }
+    }
+    
+    enum LayoutMode: Int, CustomStringConvertible, CaseIterable {
+        case horizantal
+        case verical
         
+        init(_ rawValue: Int) {
+            // default to horizontal
+            switch rawValue {
+            case LayoutMode.verical.rawValue: self = .verical
+            default: self = .horizantal
+            }
+        }
+        
+        var description: String {
+            switch self {
+            case .horizantal:
+                return "Horizontal"
+            case .verical:
+                return "Vertical"
+            }
+        }
     }
 }
 
 // Mark: - Layout & Data Source stuff
 extension AssetCatalogViewController: UICollectionViewDelegate {
     func createLayout() -> UICollectionViewLayout {
-        let itemSize = NSCollectionLayoutSize(
+        let section: NSCollectionLayoutSection
+        
+        switch layoutMode {
+        case .verical:
+            let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                  heightDimension: .fractionalHeight(1.0))
+            let item = NSCollectionLayoutItem(layoutSize: itemSize)
+            let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0),
+                                                   heightDimension: .absolute(60))
+            
+            let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
+            let spacing = CGFloat(10)
+            group.interItemSpacing = .fixed(10)
+            
+            section = NSCollectionLayoutSection(group: group)
+            section.interGroupSpacing = spacing
+            section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
+        case .horizantal:
+            let itemSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1),
                 heightDimension: .fractionalHeight(0.40)
             )
-        
-        let layoutItem = NSCollectionLayoutItem(layoutSize: itemSize)
-        layoutItem.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 5, bottom: 0, trailing: 5)
-        layoutItem.contentInsets.bottom = 3
-        
-        let layoutGroupSize = NSCollectionLayoutSize(
-            widthDimension: .fractionalWidth(0.93),
-            heightDimension: .fractionalWidth(0.55)
-        )
-        
-        let layoutGroup: NSCollectionLayoutGroup = .vertical(
-            layoutSize: layoutGroupSize,
-            subitem: layoutItem,
-            count: 3
-        )
-        
-        layoutGroup.interItemSpacing = .fixed(15)
-        
-        
-        let layoutSection = NSCollectionLayoutSection(group: layoutGroup)
-        layoutSection.orthogonalScrollingBehavior = .groupPagingCentered
+            
+            let layoutItem = NSCollectionLayoutItem(layoutSize: itemSize)
+            layoutItem.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 5, bottom: 3, trailing: 5)
+            
+            let layoutGroupSize = NSCollectionLayoutSize(
+                widthDimension: .fractionalWidth(0.93),
+                heightDimension: .fractionalWidth(0.55)
+            )
+            
+            let layoutGroup: NSCollectionLayoutGroup = .vertical(
+                layoutSize: layoutGroupSize,
+                subitem: layoutItem,
+                count: 3
+            )
+            
+            layoutGroup.interItemSpacing = .fixed(15)
+            
+            section = NSCollectionLayoutSection(group: layoutGroup)
+            section.orthogonalScrollingBehavior = .groupPagingCentered
+        }
         
         let titleHeaderSize = NSCollectionLayoutSize(
             widthDimension: .fractionalWidth(0.93),
@@ -231,16 +281,15 @@ extension AssetCatalogViewController: UICollectionViewDelegate {
         let titleSupplementary = NSCollectionLayoutBoundarySupplementaryItem(
             layoutSize: titleHeaderSize,
             elementKind: AssetCatalogViewController.titleElementKind,
-            alignment: .top
+            alignment: layoutMode == .horizantal ? .top : .topLeading
         )
         
-        layoutSection.boundarySupplementaryItems = [titleSupplementary]
+        section.boundarySupplementaryItems = [titleSupplementary]
+        let layout = UICollectionViewCompositionalLayout(section: section)
+        let conf = UICollectionViewCompositionalLayoutConfiguration()
+        conf.interSectionSpacing = 20
         
-        let layout = UICollectionViewCompositionalLayout(section: layoutSection)
-        let config = UICollectionViewCompositionalLayoutConfiguration()
-        
-        config.interSectionSpacing = 20
-        layout.configuration = config
+        layout.configuration = conf
         return layout
     }
     
@@ -275,7 +324,7 @@ extension AssetCatalogViewController: UICollectionViewDelegate {
         present(UINavigationController(rootViewController: vc), animated: true)
     }
     
-    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? { 
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
         guard let item = dataSource.itemIdentifier(for: indexPath) else { return nil }
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
             let copyNameAction = UIAction(title: "Copy name", image: UIImage(systemName: "doc.on.doc")) { _ in

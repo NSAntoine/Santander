@@ -38,6 +38,7 @@ extension AssetCatalogCell {
         let guide = contentView.layoutMarginsGuide
         if let circleView = circleView {
             circleView.layer.cornerRadius = 20
+            circleView.layer.cornerCurve = .circular
             circleView.translatesAutoresizingMaskIntoConstraints = false
             stackView.insertArrangedSubview(circleView, at: 0)
             

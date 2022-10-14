@@ -8,7 +8,7 @@
 
 import UIKit
 
-/// A Protocol defining the basic layout anchors of an object, such as  UIView or a UI
+/// A Protocol defining the basic layout anchors of an object, such as  UIView or a UILayoutGuide
 protocol BaseLayoutAnchorSupporting {
     var leadingAnchor: NSLayoutXAxisAnchor { get }
     var trailingAnchor: NSLayoutXAxisAnchor { get }

@@ -153,7 +153,7 @@ extension UIViewController {
         _ errorDescription: String?,
         title: String,
         presentingFromIfAvailable presentingVC: UIViewController? = nil,
-        cancelAction: UIAlertAction = .cancel(handler: nil, title: "OK")
+        cancelAction: UIAlertAction = .cancel(title: "OK")
     ) {
         var message: String? = nil
         if let errorDescription = errorDescription {
@@ -170,7 +170,7 @@ extension UIViewController {
         _ error: Error,
         title: String,
         presentingFromIfAvailable presentingVC: UIViewController? = nil,
-        cancelAction: UIAlertAction = .cancel(handler: nil, title: "OK")
+        cancelAction: UIAlertAction = .cancel(title: "OK")
     ) {
         self.errorAlert(error.localizedDescription, title: title, presentingFromIfAvailable: presentingVC, cancelAction: cancelAction)
     }
@@ -203,7 +203,7 @@ extension UIMenu {
 }
 
 extension UIAlertAction {
-    static func cancel(handler: (() -> Void)? = nil, title: String = "Cancel") -> UIAlertAction {
+    static func cancel(title: String = "Cancel", handler: (() -> Void)? = nil) -> UIAlertAction {
         UIAlertAction(title: title, style: .cancel) { _ in
             handler?()
         }

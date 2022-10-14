@@ -91,6 +91,9 @@ enum UserPreferences {
     @Storage(key: "FontViewerFontSize", defaultValue: 30)
     static var fontViewerFontSize: CGFloat
     
+    @Storage(key: "AssetCatalogControllerLayoutMode", defaultValue: AssetCatalogViewController.LayoutMode.horizantal.rawValue)
+    static var assetCatalogControllerLayoutMode: Int
+    
     @CodableStorage(key: "PathGroups", defaultValue: [.default], didChange: { groups in
         NotificationCenter.default.post(name: .pathGroupsDidChange, object: groups)
     })

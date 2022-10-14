@@ -140,6 +140,15 @@ struct SearchSuggestion: Hashable {
         }
     }
     
+    /// Describes the sections and rows for search suggestions
+    /// Key: Sections
+    /// Value: Array of rows
+    static let searchSuggestionSectionAndRows = [
+        0: [0],
+        1: [0, 1, 2],
+        2: [0, 1, 2]
+    ]
+    
     static func == (lhs: SearchSuggestion, rhs: SearchSuggestion) -> Bool {
         return lhs.name == rhs.name && lhs.image == rhs.image
     }

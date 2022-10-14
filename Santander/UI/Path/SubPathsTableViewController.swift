@@ -75,6 +75,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
     /// Whether or not the current path contains subpaths that are app UUIDs
     var containsAppUUIDs: Bool?
     
+    typealias SnapshotType = NSDiffableDataSourceSnapshot<Int, SubPathsRowItem>
     typealias DataSourceType = UITableViewDiffableDataSource<Int, SubPathsRowItem>
     lazy var dataSource = DataSourceType(tableView: self.tableView) { tableView, indexPath, itemIdentifier in
         switch itemIdentifier {
@@ -188,9 +189,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
     /// Setup the snapshot to show the paths given
     func showPaths(animatingDifferences: Bool = false) {
         self.displayingSearchSuggestions = false
-        var snapshot = dataSource.snapshot()
-        snapshot.deleteAllItems()
-        snapshot.deleteSections([1, 2])
+        var snapshot = SnapshotType()
         
         snapshot.appendSections([0])
         snapshot.appendItems(SubPathsRowItem.fromPaths(contents))
@@ -200,24 +199,19 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
     /// Show the search suggestions
     func switchToSearchSuggestions() {
         displayingSearchSuggestions = true
-        var snapshot = dataSource.snapshot()
-        snapshot.deleteAllItems()
+        var snapshot = SnapshotType()
+        
         snapshot.appendSections([0, 1, 2])
-        snapshot.appendItems([
-            .searchSuggestion(.displaySearchSuggestions(for: [0, 0]))
-        ], toSection: 0)
         
-        snapshot.appendItems([
-            .searchSuggestion(.displaySearchSuggestions(for: [1, 0])),
-            .searchSuggestion(.displaySearchSuggestions(for: [1, 1])),
-            .searchSuggestion(.displaySearchSuggestions(for: [1, 2]))
-        ], toSection: 1)
-        
-        snapshot.appendItems([
-            .searchSuggestion(.displaySearchSuggestions(for: [2, 0])),
-            .searchSuggestion(.displaySearchSuggestions(for: [2, 1])),
-            .searchSuggestion(.displaySearchSuggestions(for: [2, 2])),
-        ])
+        for (section, items) in SearchSuggestion.searchSuggestionSectionAndRows {
+            let mapped = items.map { item in
+                SearchSuggestion.displaySearchSuggestions(for: IndexPath(row: item, section: section))
+            }.map { suggestion in
+                SubPathsRowItem.searchSuggestion(suggestion)
+            }
+            
+            snapshot.appendItems(mapped, toSection: section)
+        }
         
         dataSource.apply(snapshot, animatingDifferences: false)
     }
@@ -486,14 +480,6 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         let vcs = path.fullPathComponents().map {
             SubPathsTableViewController(path: $0, isBookmarksSheet: self.isBookmarksSheet)
         }
-        
-//        if pushingToSplitView {
-//            let navVC = UINavigationController()
-//            navVC.setViewControllers(vcs, animated: true)
-//            self.splitViewController?.setViewController(navVC, for: .secondary)
-//        } else {
-//            self.navigationController?.setViewControllers(vcs, animated: true)
-//        }
         
         self.navigationController?.setViewControllers(vcs, animated: true)
     }
@@ -995,4 +981,3 @@ enum SubPathsRowItem: Hashable {
         }
     }
 }
-
