@@ -165,7 +165,7 @@ class AssetCatalogViewController: UIViewController {
         
         DispatchQueue.global(qos: .userInitiated).async {
             for rendition in justRenditions {
-                let name = rendition.name
+                let name = rendition.cuiRend.name()
                 let itemURL = savePath.appendingPathComponent(name)
                 
                 if let image = rendition.image {
@@ -532,7 +532,7 @@ enum _ExtractErrors: Error, LocalizedError {
         case .failedToExtractCatalog(let failedItems):
             var message = ""
             for (item, itemMessage) in failedItems {
-                message.append("\(item): \(itemMessage)")
+                message.append("\(item): \(itemMessage)\n")
             }
             return message
         }
