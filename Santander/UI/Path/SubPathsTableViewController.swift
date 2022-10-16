@@ -173,6 +173,27 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         }
     }
     
+    // scroll up or down keyboard shortcuts
+    override var keyCommands: [UIKeyCommand]? {
+        return [
+            UIKeyCommand(title: "Scroll Up", action: #selector(scrollUpOrDown(sender:)), input: UIKeyCommand.inputUpArrow, modifierFlags: .command),
+            UIKeyCommand(title: "Scroll Down", action: #selector(scrollUpOrDown(sender:)), input: UIKeyCommand.inputDownArrow, modifierFlags: .command)
+        ]
+    }
+    
+    @objc
+    func scrollUpOrDown(sender: UIKeyCommand) {
+        switch sender.input {
+        case UIKeyCommand.inputDownArrow:
+            let snapshot = dataSource.snapshot()
+            let indexPathToSrcollTo = IndexPath(row: snapshot.numberOfItems - 1, section: snapshot.numberOfSections - 1)
+            tableView.scrollToRow(at: indexPathToSrcollTo, at: .bottom, animated: true)
+        case UIKeyCommand.inputUpArrow:
+            tableView.scrollToRow(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+        default: break
+        }
+    }
+    
     func setupRefreshControl(forPath path: URL) {
         let refreshControl = UIRefreshControl()
         let refreshAction = UIAction { [self] in

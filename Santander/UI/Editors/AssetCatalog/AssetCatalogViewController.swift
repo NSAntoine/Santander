@@ -73,6 +73,31 @@ class AssetCatalogViewController: UIViewController {
     }
     
     
+    // scroll up or down keyboard shortcuts
+    override var keyCommands: [UIKeyCommand]? {
+        return [
+            UIKeyCommand(title: "Scroll Up", action: #selector(goUpOrDown(sender:)), input: UIKeyCommand.inputUpArrow, modifierFlags: .command),
+            UIKeyCommand(title: "Scroll Down", action: #selector(goUpOrDown(sender:)), input: UIKeyCommand.inputDownArrow, modifierFlags: .command)
+        ]
+    }
+    
+    @objc
+    func goUpOrDown(sender: UIKeyCommand) {
+        switch sender.input {
+        case UIKeyCommand.inputDownArrow:
+            let snapshot = dataSource.snapshot()
+            if let last = snapshot.sectionIdentifiers.last {
+                let section = snapshot.sectionIdentifiers.count
+                let row = snapshot.itemIdentifiers(inSection: last).count
+                collectionView.scrollToItem(at: IndexPath(row: row - 1, section: section - 1), at: .bottom, animated: true)
+            }
+        case UIKeyCommand.inputUpArrow:
+            collectionView.scrollToItem(at: IndexPath(row: 0, section: 0), at: .top, animated: true)
+        default:
+            break
+        }
+    }
+    
     func configureCollectionView() {
         self.collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -333,11 +358,18 @@ extension AssetCatalogViewController: UICollectionViewDelegate {
             var children = [copyNameAction]
             
             if let image = item.image {
+                let uiImage = UIImage(cgImage: image)
                 let copyImageAction = UIAction(title: "Copy Image") { _ in
-                    UIPasteboard.general.image = UIImage(cgImage: image)
+                    UIPasteboard.general.image = uiImage
                 }
                 
                 children.append(copyImageAction)
+                
+                let saveImageAction = UIAction(title: "Save Image", image: UIImage(systemName: "square.and.arrow.down")) { _ in
+                    UIImageWriteToSavedPhotosAlbum(uiImage, self, #selector(self.didSaveImage(_:error:context:)), nil)
+                }
+                
+                children.append(saveImageAction)
             }
             
             var attributes: UIMenuElement.Attributes = []
@@ -375,6 +407,13 @@ extension AssetCatalogViewController: UICollectionViewDelegate {
             return UIMenu(children: children)
         }
         
+    }
+    
+    @objc
+    func didSaveImage(_ im: UIImage, error: Error?, context: UnsafeMutableRawPointer?) {
+        if let error = error {
+            errorAlert(error, title: "Unable to save image")
+        }
     }
     
     func updateDataSourceItems(collection: RenditionCollection) {

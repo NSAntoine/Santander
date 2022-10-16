@@ -117,7 +117,5 @@ struct PathGroup: Codable, Hashable {
     let name: String
     var paths: [URL]
     
-    static var `default`: PathGroup {
-        return PathGroup(name: "Default", paths: [.root])
-    }
+    static let `default` = PathGroup(name: "Default", paths: [.root])
 }

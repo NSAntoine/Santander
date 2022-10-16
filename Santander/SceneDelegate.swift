@@ -59,8 +59,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         // Needed on iPad so that the SplitViewController displays no matter orientation
         (window.rootViewController as? UISplitViewController)?.show(.primary)
-        if !UIDevice.current.isiPad,
-            let launchPath = UserPreferences.launchPath,
+        if let launchPath = UserPreferences.launchPath,
             FileManager.default.fileExists(atPath: launchPath) {
             subPathsVC.goToPath(path: URL(fileURLWithPath: launchPath))
         }

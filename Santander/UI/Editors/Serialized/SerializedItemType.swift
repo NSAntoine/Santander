@@ -36,32 +36,34 @@ enum SerializedItemType: Equatable, CustomStringConvertible {
     case other(Any)
     
     init(item: Any) {
-        if let item = item as? String {
-            self = .string(item)
-        } else if let item = item as? NSNumber {
+        switch item {
+        case let string as String:
+            self = .string(string)
+        case let nsNumber as NSNumber:
             // handle bools
-            if CFGetTypeID(item) == CFBooleanGetTypeID() {
-                self = .bool(item.boolValue)
+            if CFGetTypeID(nsNumber) == CFBooleanGetTypeID() {
+                self = .bool(nsNumber.boolValue)
             } else {
                 // handle numbers
-                switch CFNumberGetType(item as CFNumber) {
+                switch CFNumberGetType(nsNumber as CFNumber) {
                 case .floatType, .float32Type, .float64Type, .cgFloatType, .doubleType:
-                    self = .float(item.floatValue)
+                    self = .float(nsNumber.floatValue)
                 default:
-                    self = .int(item.intValue)
+                    self = .int(nsNumber.intValue)
                 }
             }
-        } else if let item = item as? Array<Any> {
-            self = .array(item)
-        } else if let item = item as? Dictionary<String, Any> {
-            self = .dictionary(item)
-        } else if let item = item as? NSData {
-            self = .data(item as Data)
-        } else if let item = item as? NSDate {
-            self = .date(item as Date)
-        } else {
+        case let arr as Array<Any>:
+            self = .array(arr)
+        case let dictionary as Dictionary<String, Any>:
+            self = .dictionary(dictionary)
+        case let data as NSData:
+            self = .data(data as Data)
+        case let date as NSDate:
+            self = .date(date as Date)
+        default:
             self = .other(item)
         }
+        
     }
     
     var description: String {

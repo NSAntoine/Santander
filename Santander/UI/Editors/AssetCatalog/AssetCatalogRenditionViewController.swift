@@ -51,12 +51,21 @@ class AssetCatalogRenditionViewController: UIViewController {
             content.prefersSideBySideTextAndSecondaryText = true
             content.text = details.primaryText
             content.secondaryText = details.secondaryText
+            content.secondaryTextProperties.font = .preferredFont(forTextStyle: .footnote)
             cell.contentConfiguration = content
             var background = UIBackgroundConfiguration.listAccompaniedSidebarCell()
             background.cornerRadius = 8
+            
+            switch self.traitCollection.userInterfaceStyle {
+            case .light:
+                background.backgroundColor = .tertiarySystemBackground
+            case .dark:
+                background.backgroundColor = .systemFill
+            default: break
+            }
+            
             background.strokeColor = .systemGray3
             background.strokeWidth = 1.0 / cell.traitCollection.displayScale
-            background.backgroundColor = .systemFill
             cell.backgroundConfiguration = background
         }
         
