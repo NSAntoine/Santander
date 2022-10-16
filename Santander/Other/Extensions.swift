@@ -10,7 +10,7 @@
 
 import UIKit
 import UniformTypeIdentifiers
-import LaunchServicesPrivate
+import ApplicationsWrapper
 
 extension URL {
     

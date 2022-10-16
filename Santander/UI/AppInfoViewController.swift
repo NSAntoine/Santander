@@ -6,7 +6,7 @@
 //
 
 import UIKit
-import LaunchServicesPrivate
+import ApplicationsWrapper
 
 /// A ViewController to display information about an app
 class AppInfoViewController: UITableViewController {

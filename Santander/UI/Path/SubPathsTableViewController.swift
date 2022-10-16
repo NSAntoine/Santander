@@ -9,6 +9,7 @@
 import UIKit
 import QuickLook
 import UniformTypeIdentifiers
+import ApplicationsWrapper
 
 /// A table view controller showing the subpaths under a Directory, or a group
 class SubPathsTableViewController: UITableViewController, PathTransitioning {

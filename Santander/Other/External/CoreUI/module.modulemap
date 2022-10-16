@@ -1,3 +1,0 @@
-module CoreUIBridge {
-    umbrella header "CoreUI.h"
-}
