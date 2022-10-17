@@ -7,6 +7,7 @@
 
 
 import UIKit
+import AssetCatalogWrapper
 
 class AssetCatalogRenditionViewController: UIViewController {
     typealias DataSource = UICollectionViewDiffableDataSource<Section, ItemType>

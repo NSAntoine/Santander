@@ -7,6 +7,7 @@
 
 
 import UIKit
+import AssetCatalogWrapper
 
 // Todo: - make this look good, haha
 class AssetCatalogCell: UICollectionViewCell {

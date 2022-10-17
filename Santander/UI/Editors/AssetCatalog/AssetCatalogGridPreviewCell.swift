@@ -7,6 +7,7 @@
 
 
 import UIKit
+import AssetCatalogWrapper
 
 fileprivate extension CACornerMask {
     static func alongEdge(_ edge: CGRectEdge) -> CACornerMask {

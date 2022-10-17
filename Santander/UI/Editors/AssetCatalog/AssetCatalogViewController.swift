@@ -7,7 +7,7 @@
 
 
 import UIKit
-import CoreUIBridge
+import AssetCatalogWrapper
 import UniformTypeIdentifiers
 import PhotosUI
 
@@ -186,44 +186,23 @@ class AssetCatalogViewController: UIViewController {
         let justRenditions = renditionCollection.flatMap(\.renditions)
         // key: the item name
         // value: why it failed
-        var failedItems: [String: String] = [:]
+        var caughtError: Error? = nil
         
         DispatchQueue.global(qos: .userInitiated).async {
-            for rendition in justRenditions {
-                let name = rendition.cuiRend.name()
-                let itemURL = savePath.appendingPathComponent(name)
-                
-                if let image = rendition.image {
-                    var type = UTType(filenameExtension: (name as NSString).pathExtension) ?? .png
-                    // if the type isn't declared, such as for packet assets, just use PNG
-                    if !type.isDeclared { type = .png }
-                    
-                    guard let dest = CGImageDestinationCreateWithURL(itemURL as CFURL, type.identifier as CFString, 1, nil) else {
-                        failedItems[name] = "Failed to generate image for item"
-                        continue
-                    }
-                    
-                    CGImageDestinationAddImage(dest, image, nil)
-                    if !CGImageDestinationFinalize(dest) {
-                        failedItems[name] = "Failed to write image to file"
-                    }
-                    
-                } else if let data = rendition.cuiRend.srcData {
-                    do {
-                        try data.write(to: itemURL)
-                    } catch {
-                        failedItems[name] = "Failed to write item data to file: \(error.localizedDescription)"
-                    }
-                }
+            do {
+                try FSOperation.perform(.extractCatalog(justRenditions.toCodable()), url: savePath)
+            } catch {
+                caughtError = error
             }
-            
-            DispatchQueue.main.async {
-                alertController.dismiss(animated: true) {
-                    if !failedItems.isEmpty {
-                        return completionHandler(.failure(_ExtractErrors.failedToExtractCatalog(failedItems: failedItems)))
-                    } else {
-                        return completionHandler(.success(()))
-                    }
+
+        }
+
+        DispatchQueue.main.async {
+            alertController.dismiss(animated: true) {
+                if let caughtError = caughtError {
+                    return completionHandler(.failure(caughtError))
+                } else {
+                    return completionHandler(.success(()))
                 }
             }
         }
