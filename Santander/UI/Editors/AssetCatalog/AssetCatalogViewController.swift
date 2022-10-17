@@ -552,7 +552,7 @@ enum _ExtractErrors: Error, LocalizedError {
             for (item, itemMessage) in failedItems {
                 message.append("\(item): \(itemMessage)\n")
             }
-            return message
+            return message.trimmingCharacters(in: .whitespacesAndNewlines)
         }
     }
 }

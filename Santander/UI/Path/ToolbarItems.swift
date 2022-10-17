@@ -33,7 +33,7 @@ extension SubPathsTableViewController: AudioPlayerToolbarDelegate {
                     for (item, error) in failedDict {
                         message.append("\(item): \(error.localizedDescription)\n")
                     }
-                    self.errorAlert(message, title: "Failed to delete \(failedDict.count) item(s)")
+                    self.errorAlert(message.trimmingCharacters(in: .whitespacesAndNewlines), title: "Failed to delete \(failedDict.count) item(s)")
                 }
             }
             
