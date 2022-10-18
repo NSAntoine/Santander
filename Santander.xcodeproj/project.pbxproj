@@ -59,15 +59,18 @@
 		CE1FDA2A28F20302000A16BE /* AssetCatalogGridPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1FDA2928F20302000A16BE /* AssetCatalogGridPreviewCell.swift */; };
 		CE37904628DB44C300124029 /* AssetCatalogCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE37904528DB44C300124029 /* AssetCatalogCell.swift */; };
 		CE37904A28DB523500124029 /* AssetCatalogSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE37904928DB523500124029 /* AssetCatalogSectionHeader.swift */; };
-		CE55BCC528D48C2B0008F764 /* CoreUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE55BCC428D48C2B0008F764 /* CoreUI.framework */; };
 		CE5DFE8328C7BC89003E1095 /* BinaryExecutionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5DFE8228C7BC89003E1095 /* BinaryExecutionViewController.swift */; };
 		CE7228ED28E8188D00918C5F /* AssetCatalogRenditionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7228EC28E8188D00918C5F /* AssetCatalogRenditionViewController.swift */; };
-		CE920D8528FDDD88003F74F1 /* ApplicationsWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = CE920D8428FDDD88003F74F1 /* ApplicationsWrapper */; };
-		CE920D8728FDDD88003F74F1 /* AssetCatalogWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = CE920D8628FDDD88003F74F1 /* AssetCatalogWrapper */; };
-		CE920D8928FDDD88003F74F1 /* NSTask in Frameworks */ = {isa = PBXBuildFile; productRef = CE920D8828FDDD88003F74F1 /* NSTask */; };
+		CE7E99BA28FF029A00411628 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE920D9028FDDEBE003F74F1 /* Helper.swift */; };
+		CE7E99BE28FF02B500411628 /* AssetCatalogWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = CE7E99BD28FF02B500411628 /* AssetCatalogWrapper */; };
+		CE7E99C028FF02B500411628 /* FSOperations in Frameworks */ = {isa = PBXBuildFile; productRef = CE7E99BF28FF02B500411628 /* FSOperations */; };
 		CEB0566328F156F500B71017 /* BaseLayoutAnchorSupporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB0566228F156F500B71017 /* BaseLayoutAnchorSupporting.swift */; };
 		CECB3A0C28E330BC00328434 /* AssetCatalogDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECB3A0B28E330BC00328434 /* AssetCatalogDetailsView.swift */; };
 		CECF6EDA28C37F660080B805 /* FontViewerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECF6ED928C37F660080B805 /* FontViewerController.swift */; };
+		CED78C4828FDEC610097D2C5 /* ApplicationsWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = CED78C4728FDEC610097D2C5 /* ApplicationsWrapper */; };
+		CED78C4A28FDEC610097D2C5 /* AssetCatalogWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = CED78C4928FDEC610097D2C5 /* AssetCatalogWrapper */; };
+		CED78C4C28FDEC610097D2C5 /* FSOperations in Frameworks */ = {isa = PBXBuildFile; productRef = CED78C4B28FDEC610097D2C5 /* FSOperations */; };
+		CED78C4E28FDEC610097D2C5 /* NSTask in Frameworks */ = {isa = PBXBuildFile; productRef = CED78C4D28FDEC610097D2C5 /* NSTask */; };
 		CEDAF42028C36B2900DF03E6 /* Runestone in Frameworks */ = {isa = PBXBuildFile; productRef = CEDAF41F28C36B2900DF03E6 /* Runestone */; };
 		CEF54FF528C3D4E30078A146 /* FontInformationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF54FF428C3D4E30078A146 /* FontInformationViewController.swift */; };
 /* End PBXBuildFile section */
@@ -81,6 +84,15 @@
 			files = (
 			);
 			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE7E99AF28FF028A00411628 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -147,9 +159,11 @@
 		CE1FDA2928F20302000A16BE /* AssetCatalogGridPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogGridPreviewCell.swift; sourceTree = "<group>"; };
 		CE37904528DB44C300124029 /* AssetCatalogCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetCatalogCell.swift; sourceTree = "<group>"; };
 		CE37904928DB523500124029 /* AssetCatalogSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogSectionHeader.swift; sourceTree = "<group>"; };
-		CE55BCC428D48C2B0008F764 /* CoreUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CoreUI.framework; sourceTree = "<group>"; };
 		CE5DFE8228C7BC89003E1095 /* BinaryExecutionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryExecutionViewController.swift; sourceTree = "<group>"; };
 		CE7228EC28E8188D00918C5F /* AssetCatalogRenditionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogRenditionViewController.swift; sourceTree = "<group>"; };
+		CE7E99A928FF010400411628 /* entitlements.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = entitlements.plist; sourceTree = "<group>"; };
+		CE7E99B128FF028A00411628 /* libRootHelper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRootHelper.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE920D9028FDDEBE003F74F1 /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
 		CEB0566228F156F500B71017 /* BaseLayoutAnchorSupporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseLayoutAnchorSupporting.swift; sourceTree = "<group>"; };
 		CECB3A0B28E330BC00328434 /* AssetCatalogDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogDetailsView.swift; sourceTree = "<group>"; };
 		CECF6ED928C37F660080B805 /* FontViewerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontViewerController.swift; sourceTree = "<group>"; };
@@ -163,10 +177,19 @@
 			files = (
 				CEDAF42028C36B2900DF03E6 /* Runestone in Frameworks */,
 				37CA828828AA4638000236D7 /* CoreServices.framework in Frameworks */,
-				CE920D8928FDDD88003F74F1 /* NSTask in Frameworks */,
-				CE920D8728FDDD88003F74F1 /* AssetCatalogWrapper in Frameworks */,
-				CE55BCC528D48C2B0008F764 /* CoreUI.framework in Frameworks */,
-				CE920D8528FDDD88003F74F1 /* ApplicationsWrapper in Frameworks */,
+				CED78C4E28FDEC610097D2C5 /* NSTask in Frameworks */,
+				CED78C4A28FDEC610097D2C5 /* AssetCatalogWrapper in Frameworks */,
+				CED78C4C28FDEC610097D2C5 /* FSOperations in Frameworks */,
+				CED78C4828FDEC610097D2C5 /* ApplicationsWrapper in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE7E99AE28FF028A00411628 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE7E99C028FF02B500411628 /* FSOperations in Frameworks */,
+				CE7E99BE28FF02B500411628 /* AssetCatalogWrapper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -261,6 +284,7 @@
 			children = (
 				375D568C28A5B01600E25591 /* entitlements.plist */,
 				3789B5DE28622B7A00058688 /* Santander */,
+				CE7E99B228FF028A00411628 /* RootHelper */,
 				3789B5DD28622B7A00058688 /* Products */,
 				37CA828628AA4637000236D7 /* Frameworks */,
 			);
@@ -270,6 +294,7 @@
 			isa = PBXGroup;
 			children = (
 				3789B5DC28622B7A00058688 /* Santander.app */,
+				CE7E99B128FF028A00411628 /* libRootHelper.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -331,7 +356,6 @@
 		37EEA02428A8BE4E00FA8CEB /* External */ = {
 			isa = PBXGroup;
 			children = (
-				CE8978C028FCA994007EF049 /* CoreUI */,
 				37EEA03C28A912B900FA8CEB /* Compression */,
 			);
 			path = External;
@@ -382,12 +406,13 @@
 			path = AssetCatalog;
 			sourceTree = "<group>";
 		};
-		CE8978C028FCA994007EF049 /* CoreUI */ = {
+		CE7E99B228FF028A00411628 /* RootHelper */ = {
 			isa = PBXGroup;
 			children = (
-				CE55BCC428D48C2B0008F764 /* CoreUI.framework */,
+				CE920D9028FDDEBE003F74F1 /* Helper.swift */,
+				CE7E99A928FF010400411628 /* entitlements.plist */,
 			);
-			path = CoreUI;
+			path = RootHelper;
 			sourceTree = "<group>";
 		};
 		CEF54FF228C3D4CE0078A146 /* Font */ = {
@@ -418,13 +443,35 @@
 			name = Santander;
 			packageProductDependencies = (
 				CEDAF41F28C36B2900DF03E6 /* Runestone */,
-				CE920D8428FDDD88003F74F1 /* ApplicationsWrapper */,
-				CE920D8628FDDD88003F74F1 /* AssetCatalogWrapper */,
-				CE920D8828FDDD88003F74F1 /* NSTask */,
+				CED78C4728FDEC610097D2C5 /* ApplicationsWrapper */,
+				CED78C4928FDEC610097D2C5 /* AssetCatalogWrapper */,
+				CED78C4B28FDEC610097D2C5 /* FSOperations */,
+				CED78C4D28FDEC610097D2C5 /* NSTask */,
 			);
 			productName = Santander;
 			productReference = 3789B5DC28622B7A00058688 /* Santander.app */;
 			productType = "com.apple.product-type.application";
+		};
+		CE7E99B028FF028A00411628 /* RootHelper */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CE7E99B528FF028A00411628 /* Build configuration list for PBXNativeTarget "RootHelper" */;
+			buildPhases = (
+				CE7E99AD28FF028A00411628 /* Sources */,
+				CE7E99AE28FF028A00411628 /* Frameworks */,
+				CE7E99AF28FF028A00411628 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = RootHelper;
+			packageProductDependencies = (
+				CE7E99BD28FF02B500411628 /* AssetCatalogWrapper */,
+				CE7E99BF28FF02B500411628 /* FSOperations */,
+			);
+			productName = RootHelper;
+			productReference = CE7E99B128FF028A00411628 /* libRootHelper.a */;
+			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
 
@@ -432,12 +479,15 @@
 		3789B5D428622B7A00058688 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1340;
+				LastSwiftUpdateCheck = 1410;
 				LastUpgradeCheck = 1340;
 				TargetAttributes = {
 					3789B5DB28622B7A00058688 = {
 						CreatedOnToolsVersion = 13.4.1;
 						LastSwiftMigration = 1400;
+					};
+					CE7E99B028FF028A00411628 = {
+						CreatedOnToolsVersion = 14.1;
 					};
 				};
 			};
@@ -452,13 +502,14 @@
 			mainGroup = 3789B5D328622B7A00058688;
 			packageReferences = (
 				CEDAF41E28C36B2900DF03E6 /* XCRemoteSwiftPackageReference "Runestone" */,
-				CE920D8328FDDD88003F74F1 /* XCRemoteSwiftPackageReference "SantanderWrappers" */,
+				CED78C4628FDEC610097D2C5 /* XCRemoteSwiftPackageReference "SantanderWrappers" */,
 			);
 			productRefGroup = 3789B5DD28622B7A00058688 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				3789B5DB28622B7A00058688 /* Santander */,
+				CE7E99B028FF028A00411628 /* RootHelper */,
 			);
 		};
 /* End PBXProject section */
@@ -535,6 +586,14 @@
 				37198B9A28721069000C8CDF /* TextEditorThemeSettingsViewController.swift in Sources */,
 				375CF899289C4FF000BB7C60 /* PathMetadata.swift in Sources */,
 				3789B5E228622B7A00058688 /* SceneDelegate.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE7E99AD28FF028A00411628 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE7E99BA28FF029A00411628 /* Helper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -675,11 +734,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L9735M962H;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Santander/Other/External",
-					"$(PROJECT_DIR)/Santander/Other/External/CoreUI",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Santander/Info.plist;
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
@@ -713,11 +768,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = L9735M962H;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Santander/Other/External",
-					"$(PROJECT_DIR)/Santander/Other/External/CoreUI",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(inherited)";
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Santander/Info.plist;
 				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
@@ -736,6 +787,38 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_INCLUDE_PATHS = "$(SRCROOT)/Santander/Other/External/**";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		CE7E99B628FF028A00411628 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = L9735M962H;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				MACH_O_TYPE = mh_execute;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CE7E99B728FF028A00411628 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = L9735M962H;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				MACH_O_TYPE = mh_execute;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -762,10 +845,19 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		CE7E99B528FF028A00411628 /* Build configuration list for PBXNativeTarget "RootHelper" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE7E99B628FF028A00411628 /* Debug */,
+				CE7E99B728FF028A00411628 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		CE920D8328FDDD88003F74F1 /* XCRemoteSwiftPackageReference "SantanderWrappers" */ = {
+		CED78C4628FDEC610097D2C5 /* XCRemoteSwiftPackageReference "SantanderWrappers" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/SerenaKit/SantanderWrappers";
 			requirement = {
@@ -784,19 +876,34 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		CE920D8428FDDD88003F74F1 /* ApplicationsWrapper */ = {
+		CE7E99BD28FF02B500411628 /* AssetCatalogWrapper */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = CE920D8328FDDD88003F74F1 /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
-			productName = ApplicationsWrapper;
-		};
-		CE920D8628FDDD88003F74F1 /* AssetCatalogWrapper */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = CE920D8328FDDD88003F74F1 /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
+			package = CED78C4628FDEC610097D2C5 /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
 			productName = AssetCatalogWrapper;
 		};
-		CE920D8828FDDD88003F74F1 /* NSTask */ = {
+		CE7E99BF28FF02B500411628 /* FSOperations */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = CE920D8328FDDD88003F74F1 /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
+			package = CED78C4628FDEC610097D2C5 /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
+			productName = FSOperations;
+		};
+		CED78C4728FDEC610097D2C5 /* ApplicationsWrapper */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CED78C4628FDEC610097D2C5 /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
+			productName = ApplicationsWrapper;
+		};
+		CED78C4928FDEC610097D2C5 /* AssetCatalogWrapper */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CED78C4628FDEC610097D2C5 /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
+			productName = AssetCatalogWrapper;
+		};
+		CED78C4B28FDEC610097D2C5 /* FSOperations */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CED78C4628FDEC610097D2C5 /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
+			productName = FSOperations;
+		};
+		CED78C4D28FDEC610097D2C5 /* NSTask */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CED78C4628FDEC610097D2C5 /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
 			productName = NSTask;
 		};
 		CEDAF41F28C36B2900DF03E6 /* Runestone */ = {

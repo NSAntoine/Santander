@@ -202,9 +202,9 @@ class PathGroupOwnerViewController: UITableViewController {
         func set(forURL url: URL) throws {
             switch self {
             case .owner(let ownerName):
-                try FSOperation.perform(.setOwner(newOwner: ownerName), url: url)
+                try FSOperation.perform(.setOwner(url: url, newOwner: ownerName), rootHelperConf: RootConf.shared)
             case .group(let groupName):
-                try FSOperation.perform(.setGroup(newGroup: groupName), url: url)
+                try FSOperation.perform(.setGroup(url: url, newGroup: groupName), rootHelperConf: RootConf.shared)
             }
         }
         

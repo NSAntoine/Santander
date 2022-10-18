@@ -246,7 +246,7 @@ extension TextFileEditorViewController: UINavigationItemRenameDelegate {
         }
         
         do {
-            try FSOperation.perform(.moveItem(resultPath: newURL), url: fileURL)
+            try FSOperation.perform(.moveItem(items: [fileURL], resultPath: newURL), rootHelperConf: RootConf.shared)
             self.fileURL = newURL
         } catch {
             self.errorAlert(error, title: "Uname to rename \(fileURL.lastPathComponent)")

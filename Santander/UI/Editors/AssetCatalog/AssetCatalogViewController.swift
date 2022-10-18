@@ -164,11 +164,6 @@ class AssetCatalogViewController: UIViewController {
         sourceVC: UIViewController,
         completionHandler: @escaping (Result<Void, Error>) -> Void
     ) {
-        do {
-            try FSOperation.perform(.createDirectory, url: savePath)
-        } catch {
-            return completionHandler(.failure(error))
-        }
         
         let alertController = UIAlertController(title: "Extracting..", message: nil, preferredStyle: .alert)
         let spinner = UIActivityIndicatorView()
@@ -190,7 +185,7 @@ class AssetCatalogViewController: UIViewController {
         
         DispatchQueue.global(qos: .userInitiated).async {
             do {
-                try FSOperation.perform(.extractCatalog(justRenditions.toCodable()), url: savePath)
+                try FSOperation.perform(.extractCatalog(renditions: justRenditions.toCodable(), resultPath: savePath), rootHelperConf: RootConf.shared)
             } catch {
                 caughtError = error
             }

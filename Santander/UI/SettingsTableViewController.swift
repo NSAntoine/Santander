@@ -7,6 +7,7 @@
 
 
 import UIKit
+import LocalAuthentication
 import UniformTypeIdentifiers
 
 class SettingsTableViewController: UITableViewController {
@@ -34,13 +35,14 @@ class SettingsTableViewController: UITableViewController {
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
-        return 3
+        return 4
     }
     
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
-        case 0, 1: return 3
-        case 2: return UserPreferences.useLastOpenedPathWhenLaunching ? 1 : 2
+        case 0: return 1
+        case 1, 2: return 3
+        case 3: return UserPreferences.useLastOpenedPathWhenLaunching ? 1 : 2
         default: fatalError("How'd we get here?")
         }
     }
@@ -49,13 +51,15 @@ class SettingsTableViewController: UITableViewController {
         
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
+            return cellWithView(settingsSwitch(forIndexPath: indexPath), text: "Root Helper")
+        case (1, 0):
             // TODO: - For anything that uses a switch, start using accessory views instead
             return cellWithView(settingsSwitch(forIndexPath: indexPath), text: "Large navigation titles")
-        case (0, 1):
+        case (1, 1):
             return cellWithView(settingsSwitch(forIndexPath: indexPath), text: "Always show search bar")
-        case (0, 2):
+        case (1, 2):
             return cellWithView(settingsSwitch(forIndexPath: indexPath), text: "Show information button")
-        case (1, 0):
+        case (2, 0):
             let cell = UITableViewCell()
             var conf = cell.defaultContentConfiguration()
             conf.text = "Tint Color"
@@ -63,13 +67,13 @@ class SettingsTableViewController: UITableViewController {
             
             cell.accessoryView = cell.colorCircleAccessoryView(color: UserPreferences.appTintColor.uiColor)
             return cell
-        case (1, 1):
-            return cellWithView(setupStyleButton(), text: "Table View Style")
-        case (1, 2):
-            return cellWithView(setupAppearanceButton(), text: "Appearance")
-        case (2, 0):
-            return cellWithView(setupLaunchPathButton(), text: "Launch Path")
         case (2, 1):
+            return cellWithView(setupStyleButton(), text: "Table View Style")
+        case (2, 2):
+            return cellWithView(setupAppearanceButton(), text: "Appearance")
+        case (3, 0):
+            return cellWithView(setupLaunchPathButton(), text: "Launch Path")
+        case (3, 1):
             let cell = UITableViewCell(style: .value1, reuseIdentifier: nil)
             var conf = cell.defaultContentConfiguration()
             conf.text = "Custom Launch Path"
@@ -146,18 +150,19 @@ class SettingsTableViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
-        case 0: return "Views"
-        case 1: return "Theming"
-        case 2: return "Other"
+        case 0: return "Root"
+        case 1: return "Views"
+        case 2: return "Theming"
+        case 3: return "Other"
         default: return nil
         }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch (indexPath.section, indexPath.row) {
-        case (1, 0):
+        case (2, 0):
             self.present(colorPickerVC, animated: true)
-        case (2, 1):
+        case (3, 1):
             self.changeCustomLaunchPathAlert()
         default:
             break
@@ -165,16 +170,18 @@ class SettingsTableViewController: UITableViewController {
     }
     
     override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
-        return (indexPath.section, indexPath.row) == (1, 0) || (indexPath.section, indexPath.row) == (2, 1)
+        return (indexPath.section, indexPath.row) == (2, 0) || (indexPath.section, indexPath.row) == (3, 1)
     }
     
     func defaultsKey(forIndexPath indexPath: IndexPath) -> String {
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
+            return "RootHelperEnabled"
+        case (1, 0):
             return "UseLargeNavTitles"
-        case (0, 1):
+        case (1, 1):
             return "AlwaysShowSearchBar"
-        case (0, 2):
+        case (1, 2):
             return "ShowInfoButton"
         default:
             fatalError()
@@ -210,10 +217,12 @@ class SettingsTableViewController: UITableViewController {
     func switchOptionIsEnabled(forIndexPath indexPath: IndexPath) -> Bool {
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
+            return UserPreferences.rootHelperIsEnabled
+        case (1, 0):
             return UserPreferences.useLargeNavigationTitles
-        case (0, 1):
+        case (1, 1):
             return UserPreferences.alwaysShowSearchBar
-        case (0, 2):
+        case (1, 2):
             return UserPreferences.showInfoButton
         default:
             fatalError("Got unknown index path in \(#function)! IndexPath: \(indexPath)")
@@ -221,14 +230,44 @@ class SettingsTableViewController: UITableViewController {
     }
     
     func settingsSwitch(forIndexPath indexPath: IndexPath) -> UISwitch {
+        // stupid ass swift doesn't allow you to name a variable "switch" without those ugly `` marks
         let s = UISwitch()
         s.isOn = switchOptionIsEnabled(forIndexPath: indexPath)
-        let action = UIAction { _ in
-            UserDefaults.standard.set(s.isOn, forKey: self.defaultsKey(forIndexPath: indexPath))
+        let action = UIAction { [self] _ in
+            // root helper
+            if (indexPath.section, indexPath.row) == (0, 0) {
+                rootHelperDidClickEnable()
+            } else {
+                UserDefaults.standard.set(s.isOn, forKey: defaultsKey(forIndexPath: indexPath))
+            }
         }
         
         s.addAction(action, for: .valueChanged)
         return s
+    }
+    
+    fileprivate func rootHelperDidClickEnable() {
+        let context = LAContext()
+        // no authentication for turning off or for when there is no authentication method
+        if UserPreferences.rootHelperIsEnabled || !context.canEvaluatePolicy(.deviceOwnerAuthentication, error: nil) {
+            UserPreferences.rootHelperIsEnabled.toggle()
+            return
+        }
+        
+        context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "To enable the Root Helper.") { didSucceed, error in
+            guard didSucceed else {
+                DispatchQueue.main.async {
+                    self.errorAlert(error?.localizedDescription ?? "Unknown Error", title: "Unable to authenticate")
+                    self.tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+                }
+                return
+            }
+            
+            UserPreferences.rootHelperIsEnabled = true
+            DispatchQueue.main.async {
+                self.tableView.reloadRows(at: [IndexPath(row: 0, section: 0)], with: .automatic)
+            }
+        }
     }
 }
 
@@ -239,7 +278,8 @@ extension SettingsTableViewController: UIColorPickerViewControllerDelegate {
         DispatchQueue.main.async {
             UserPreferences.appTintColor = CodableColor(color)
             self.view.window?.tintColor = color
-            self.tableView.reloadRows(at: [IndexPath(row: 0, section: 1)], with: .fade)
+            self.tableView.reloadRows(at: [IndexPath(row: 0, section: 2)], with: .fade)
         }
+        
     }
 }

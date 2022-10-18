@@ -94,6 +94,9 @@ enum UserPreferences {
     @Storage(key: "AssetCatalogControllerLayoutMode", defaultValue: AssetCatalogViewController.LayoutMode.horizantal.rawValue)
     static var assetCatalogControllerLayoutMode: Int
     
+    @Storage(key: "RootHelperEnabled", defaultValue: false)
+    static var rootHelperIsEnabled: Bool
+    
     @CodableStorage(key: "PathGroups", defaultValue: [.default], didChange: { groups in
         NotificationCenter.default.post(name: .pathGroupsDidChange, object: groups)
     })
