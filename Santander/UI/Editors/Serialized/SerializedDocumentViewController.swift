@@ -230,7 +230,8 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
         switch type {
         case .json:
             do {
-                try JSONSerialization.data(withJSONObject: newDict.asAnyDictionary(), options: .prettyPrinted).write(to: fileURL, options: .atomic)
+                let newData = try JSONSerialization.data(withJSONObject: newDict.asAnyDictionary(), options: .prettyPrinted)
+                try FSOperation.perform(.writeData(url: fileURL, data: newData), rootHelperConf: RootConf.shared)
                 self.serializedDict = newDict
                 return true
             } catch {
@@ -244,7 +245,8 @@ class SerializedDocumentViewController: UITableViewController, SerializedItemVie
             }
             
             do {
-                try PropertyListSerialization.data(fromPropertyList: newDict.asAnyDictionary(), format: format, options: 0).write(to: fileURL, options: .atomic)
+                let newData = try PropertyListSerialization.data(fromPropertyList: newDict.asAnyDictionary(), format: format, options: 0)
+                try FSOperation.perform(.writeData(url: fileURL, data: newData), rootHelperConf: RootConf.shared)
                 self.serializedDict = newDict
                 return true
             } catch {

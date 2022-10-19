@@ -168,7 +168,7 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
         let newContentsToSave = textView.text
         
         do {
-            try newContentsToSave.write(to: fileURL, atomically: true, encoding: .utf8)
+            try FSOperation.perform(.writeString(url: fileURL, string: newContentsToSave), rootHelperConf: RootConf.shared)
             self.dismiss(animated: true)
         } catch {
             self.errorAlert(error, title: "Unable to save to file")
