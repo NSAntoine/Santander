@@ -45,7 +45,6 @@
 		37C6E0CE28665B2A00BDDA16 /* PathOperationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0CD28665B2A00BDDA16 /* PathOperationViewController.swift */; };
 		37C6E0D028673AFF00BDDA16 /* Search.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0CF28673AFF00BDDA16 /* Search.swift */; };
 		37C6E0D22867653A00BDDA16 /* PathSidebarListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0D12867653A00BDDA16 /* PathSidebarListViewController.swift */; };
-		37CA828828AA4638000236D7 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37CA828728AA4638000236D7 /* CoreServices.framework */; };
 		37CA828A28AA675B000236D7 /* AppInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CA828928AA675B000236D7 /* AppInfoViewController.swift */; };
 		37DE0FA22864902400E5EBBC /* FilePreviewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */; };
 		37ECADA728B23ECC00B95733 /* ImageViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ECADA628B23ECB00B95733 /* ImageViewerViewController.swift */; };
@@ -59,11 +58,13 @@
 		CE1FDA2A28F20302000A16BE /* AssetCatalogGridPreviewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1FDA2928F20302000A16BE /* AssetCatalogGridPreviewCell.swift */; };
 		CE37904628DB44C300124029 /* AssetCatalogCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE37904528DB44C300124029 /* AssetCatalogCell.swift */; };
 		CE37904A28DB523500124029 /* AssetCatalogSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE37904928DB523500124029 /* AssetCatalogSectionHeader.swift */; };
+		CE3E8FBE28FF2285001B8FAA /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE920D9028FDDEBE003F74F1 /* Helper.swift */; };
 		CE5DFE8328C7BC89003E1095 /* BinaryExecutionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5DFE8228C7BC89003E1095 /* BinaryExecutionViewController.swift */; };
 		CE7228ED28E8188D00918C5F /* AssetCatalogRenditionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7228EC28E8188D00918C5F /* AssetCatalogRenditionViewController.swift */; };
-		CE7E99BA28FF029A00411628 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE920D9028FDDEBE003F74F1 /* Helper.swift */; };
-		CE7E99BE28FF02B500411628 /* AssetCatalogWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = CE7E99BD28FF02B500411628 /* AssetCatalogWrapper */; };
-		CE7E99C028FF02B500411628 /* FSOperations in Frameworks */ = {isa = PBXBuildFile; productRef = CE7E99BF28FF02B500411628 /* FSOperations */; };
+		CE7E02BB28FFF3910046A7D4 /* FSOperations in Frameworks */ = {isa = PBXBuildFile; productRef = CE7E02BA28FFF3910046A7D4 /* FSOperations */; };
+		CE7E02D528FFF7FD0046A7D4 /* AssetCatalogWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = CE7E02D428FFF7FD0046A7D4 /* AssetCatalogWrapper */; };
+		CE7E02E0290006C70046A7D4 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE7E02DE290006C70046A7D4 /* MobileCoreServices.framework */; };
+		CE7E02E1290006C70046A7D4 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE7E02DF290006C70046A7D4 /* CoreServices.framework */; };
 		CEB0566328F156F500B71017 /* BaseLayoutAnchorSupporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB0566228F156F500B71017 /* BaseLayoutAnchorSupporting.swift */; };
 		CECB3A0C28E330BC00328434 /* AssetCatalogDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECB3A0B28E330BC00328434 /* AssetCatalogDetailsView.swift */; };
 		CECF6EDA28C37F660080B805 /* FontViewerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECF6ED928C37F660080B805 /* FontViewerController.swift */; };
@@ -84,15 +85,6 @@
 			files = (
 			);
 			name = "Embed App Extensions";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		CE7E99AF28FF028A00411628 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "include/$(PRODUCT_NAME)";
-			dstSubfolderSpec = 16;
-			files = (
-			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -117,7 +109,6 @@
 		376F749C28BC8A33000E5D77 /* AudioPlayerToolbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioPlayerToolbarView.swift; sourceTree = "<group>"; };
 		3771D37A2862329D00E200B6 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		3771D37E2862493E00E200B6 /* PathInformationTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathInformationTableViewController.swift; sourceTree = "<group>"; };
-		3787DAFC28AB905B00ACA60B /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		3787DB0428ABECF200ACA60B /* FileEditorType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileEditorType.swift; sourceTree = "<group>"; };
 		3787DB0628ACB74D00ACA60B /* SerializedDocumentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SerializedDocumentViewController.swift; sourceTree = "<group>"; };
 		3787DB0928ACE4EE00ACA60B /* SerializedItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SerializedItemViewController.swift; sourceTree = "<group>"; };
@@ -139,7 +130,6 @@
 		37C6E0CD28665B2A00BDDA16 /* PathOperationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathOperationViewController.swift; sourceTree = "<group>"; };
 		37C6E0CF28673AFF00BDDA16 /* Search.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Search.swift; sourceTree = "<group>"; };
 		37C6E0D12867653A00BDDA16 /* PathSidebarListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathSidebarListViewController.swift; sourceTree = "<group>"; };
-		37CA828728AA4638000236D7 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		37CA828928AA675B000236D7 /* AppInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfoViewController.swift; sourceTree = "<group>"; };
 		37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewDataSource.swift; sourceTree = "<group>"; };
 		37ECADA628B23ECB00B95733 /* ImageViewerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerViewController.swift; sourceTree = "<group>"; };
@@ -157,14 +147,17 @@
 		CE13D1DC28D3572000F5C833 /* FSOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FSOperation.swift; sourceTree = "<group>"; };
 		CE1F1F6F28F7211700E44DF2 /* PathTransitioning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathTransitioning.swift; sourceTree = "<group>"; };
 		CE1FDA2928F20302000A16BE /* AssetCatalogGridPreviewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogGridPreviewCell.swift; sourceTree = "<group>"; };
+		CE33E5502900166000DB4D44 /* .github */ = {isa = PBXFileReference; lastKnownFileType = folder; path = .github; sourceTree = "<group>"; };
 		CE37904528DB44C300124029 /* AssetCatalogCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetCatalogCell.swift; sourceTree = "<group>"; };
 		CE37904928DB523500124029 /* AssetCatalogSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogSectionHeader.swift; sourceTree = "<group>"; };
+		CE3E8FC228FF24D3001B8FAA /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
 		CE5DFE8228C7BC89003E1095 /* BinaryExecutionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryExecutionViewController.swift; sourceTree = "<group>"; };
 		CE7228EC28E8188D00918C5F /* AssetCatalogRenditionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogRenditionViewController.swift; sourceTree = "<group>"; };
-		CE7E99A928FF010400411628 /* entitlements.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = entitlements.plist; sourceTree = "<group>"; };
-		CE7E99B128FF028A00411628 /* libRootHelper.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libRootHelper.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE7E02DE290006C70046A7D4 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		CE7E02DF290006C70046A7D4 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		CE920D9028FDDEBE003F74F1 /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
 		CEB0566228F156F500B71017 /* BaseLayoutAnchorSupporting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseLayoutAnchorSupporting.swift; sourceTree = "<group>"; };
+		CEC433C028FF20B400C18BD8 /* RootHelper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = RootHelper; sourceTree = BUILT_PRODUCTS_DIR; };
 		CECB3A0B28E330BC00328434 /* AssetCatalogDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogDetailsView.swift; sourceTree = "<group>"; };
 		CECF6ED928C37F660080B805 /* FontViewerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontViewerController.swift; sourceTree = "<group>"; };
 		CEF54FF428C3D4E30078A146 /* FontInformationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontInformationViewController.swift; sourceTree = "<group>"; };
@@ -176,20 +169,21 @@
 			buildActionMask = 2147483647;
 			files = (
 				CEDAF42028C36B2900DF03E6 /* Runestone in Frameworks */,
-				37CA828828AA4638000236D7 /* CoreServices.framework in Frameworks */,
 				CED78C4E28FDEC610097D2C5 /* NSTask in Frameworks */,
 				CED78C4A28FDEC610097D2C5 /* AssetCatalogWrapper in Frameworks */,
+				CE7E02E0290006C70046A7D4 /* MobileCoreServices.framework in Frameworks */,
 				CED78C4C28FDEC610097D2C5 /* FSOperations in Frameworks */,
+				CE7E02E1290006C70046A7D4 /* CoreServices.framework in Frameworks */,
 				CED78C4828FDEC610097D2C5 /* ApplicationsWrapper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		CE7E99AE28FF028A00411628 /* Frameworks */ = {
+		CEC433BD28FF20B400C18BD8 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE7E99C028FF02B500411628 /* FSOperations in Frameworks */,
-				CE7E99BE28FF02B500411628 /* AssetCatalogWrapper in Frameworks */,
+				CE7E02BB28FFF3910046A7D4 /* FSOperations in Frameworks */,
+				CE7E02D528FFF7FD0046A7D4 /* AssetCatalogWrapper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -282,11 +276,13 @@
 		3789B5D328622B7A00058688 = {
 			isa = PBXGroup;
 			children = (
-				375D568C28A5B01600E25591 /* entitlements.plist */,
+				CE33E5502900166000DB4D44 /* .github */,
 				3789B5DE28622B7A00058688 /* Santander */,
-				CE7E99B228FF028A00411628 /* RootHelper */,
+				CEC433C128FF20B400C18BD8 /* RootHelper */,
 				3789B5DD28622B7A00058688 /* Products */,
-				37CA828628AA4637000236D7 /* Frameworks */,
+				CE7E02DD290006C70046A7D4 /* Frameworks */,
+				375D568C28A5B01600E25591 /* entitlements.plist */,
+				CE3E8FC228FF24D3001B8FAA /* Makefile */,
 			);
 			sourceTree = "<group>";
 		};
@@ -294,7 +290,7 @@
 			isa = PBXGroup;
 			children = (
 				3789B5DC28622B7A00058688 /* Santander.app */,
-				CE7E99B128FF028A00411628 /* libRootHelper.a */,
+				CEC433C028FF20B400C18BD8 /* RootHelper */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -342,15 +338,6 @@
 				37C6E0C728662C4100BDDA16 /* DragAndDrop.swift */,
 			);
 			path = Path;
-			sourceTree = "<group>";
-		};
-		37CA828628AA4637000236D7 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				3787DAFC28AB905B00ACA60B /* MobileCoreServices.framework */,
-				37CA828728AA4638000236D7 /* CoreServices.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		37EEA02428A8BE4E00FA8CEB /* External */ = {
@@ -406,11 +393,19 @@
 			path = AssetCatalog;
 			sourceTree = "<group>";
 		};
-		CE7E99B228FF028A00411628 /* RootHelper */ = {
+		CE7E02DD290006C70046A7D4 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				CE7E02DF290006C70046A7D4 /* CoreServices.framework */,
+				CE7E02DE290006C70046A7D4 /* MobileCoreServices.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		CEC433C128FF20B400C18BD8 /* RootHelper */ = {
 			isa = PBXGroup;
 			children = (
 				CE920D9028FDDEBE003F74F1 /* Helper.swift */,
-				CE7E99A928FF010400411628 /* entitlements.plist */,
 			);
 			path = RootHelper;
 			sourceTree = "<group>";
@@ -452,26 +447,27 @@
 			productReference = 3789B5DC28622B7A00058688 /* Santander.app */;
 			productType = "com.apple.product-type.application";
 		};
-		CE7E99B028FF028A00411628 /* RootHelper */ = {
+		CEC433BF28FF20B400C18BD8 /* RootHelper */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = CE7E99B528FF028A00411628 /* Build configuration list for PBXNativeTarget "RootHelper" */;
+			buildConfigurationList = CEC433C428FF20B400C18BD8 /* Build configuration list for PBXNativeTarget "RootHelper" */;
 			buildPhases = (
-				CE7E99AD28FF028A00411628 /* Sources */,
-				CE7E99AE28FF028A00411628 /* Frameworks */,
-				CE7E99AF28FF028A00411628 /* CopyFiles */,
+				CEC433BC28FF20B400C18BD8 /* Sources */,
+				CEC433BD28FF20B400C18BD8 /* Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				CE7E02D728FFF8020046A7D4 /* PBXTargetDependency */,
+				CE7E02C528FFF44E0046A7D4 /* PBXTargetDependency */,
 			);
 			name = RootHelper;
 			packageProductDependencies = (
-				CE7E99BD28FF02B500411628 /* AssetCatalogWrapper */,
-				CE7E99BF28FF02B500411628 /* FSOperations */,
+				CE7E02BA28FFF3910046A7D4 /* FSOperations */,
+				CE7E02D428FFF7FD0046A7D4 /* AssetCatalogWrapper */,
 			);
 			productName = RootHelper;
-			productReference = CE7E99B128FF028A00411628 /* libRootHelper.a */;
-			productType = "com.apple.product-type.library.static";
+			productReference = CEC433C028FF20B400C18BD8 /* RootHelper */;
+			productType = "com.apple.product-type.library.dynamic";
 		};
 /* End PBXNativeTarget section */
 
@@ -486,7 +482,7 @@
 						CreatedOnToolsVersion = 13.4.1;
 						LastSwiftMigration = 1400;
 					};
-					CE7E99B028FF028A00411628 = {
+					CEC433BF28FF20B400C18BD8 = {
 						CreatedOnToolsVersion = 14.1;
 					};
 				};
@@ -509,7 +505,7 @@
 			projectRoot = "";
 			targets = (
 				3789B5DB28622B7A00058688 /* Santander */,
-				CE7E99B028FF028A00411628 /* RootHelper */,
+				CEC433BF28FF20B400C18BD8 /* RootHelper */,
 			);
 		};
 /* End PBXProject section */
@@ -589,15 +585,26 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		CE7E99AD28FF028A00411628 /* Sources */ = {
+		CEC433BC28FF20B400C18BD8 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE7E99BA28FF029A00411628 /* Helper.swift in Sources */,
+				CE3E8FBE28FF2285001B8FAA /* Helper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		CE7E02C528FFF44E0046A7D4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = CE7E02C428FFF44E0046A7D4 /* FSOperations */;
+		};
+		CE7E02D728FFF8020046A7D4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			productRef = CE7E02D628FFF8020046A7D4 /* AssetCatalogWrapper */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		3789B5EA28622B7C00058688 /* LaunchScreen.storyboard */ = {
@@ -792,13 +799,16 @@
 			};
 			name = Release;
 		};
-		CE7E99B628FF028A00411628 /* Debug */ = {
+		CEC433C528FF20B400C18BD8 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = L9735M962H;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				EXECUTABLE_SUFFIX = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MACH_O_TYPE = mh_execute;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -808,13 +818,16 @@
 			};
 			name = Debug;
 		};
-		CE7E99B728FF028A00411628 /* Release */ = {
+		CEC433C628FF20B400C18BD8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = L9735M962H;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				DYLIB_COMPATIBILITY_VERSION = "";
+				DYLIB_CURRENT_VERSION = "";
+				EXECUTABLE_SUFFIX = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				MACH_O_TYPE = mh_execute;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -845,11 +858,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		CE7E99B528FF028A00411628 /* Build configuration list for PBXNativeTarget "RootHelper" */ = {
+		CEC433C428FF20B400C18BD8 /* Build configuration list for PBXNativeTarget "RootHelper" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				CE7E99B628FF028A00411628 /* Debug */,
-				CE7E99B728FF028A00411628 /* Release */,
+				CEC433C528FF20B400C18BD8 /* Debug */,
+				CEC433C628FF20B400C18BD8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -876,15 +889,25 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		CE7E99BD28FF02B500411628 /* AssetCatalogWrapper */ = {
+		CE7E02BA28FFF3910046A7D4 /* FSOperations */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CED78C4628FDEC610097D2C5 /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
+			productName = FSOperations;
+		};
+		CE7E02C428FFF44E0046A7D4 /* FSOperations */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CED78C4628FDEC610097D2C5 /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
+			productName = FSOperations;
+		};
+		CE7E02D428FFF7FD0046A7D4 /* AssetCatalogWrapper */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = CED78C4628FDEC610097D2C5 /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
 			productName = AssetCatalogWrapper;
 		};
-		CE7E99BF28FF02B500411628 /* FSOperations */ = {
+		CE7E02D628FFF8020046A7D4 /* AssetCatalogWrapper */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = CED78C4628FDEC610097D2C5 /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
-			productName = FSOperations;
+			productName = AssetCatalogWrapper;
 		};
 		CED78C4728FDEC610097D2C5 /* ApplicationsWrapper */ = {
 			isa = XCSwiftPackageProductDependency;

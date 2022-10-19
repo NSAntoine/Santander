@@ -31,6 +31,7 @@ struct StringError: Error, LocalizedError, CustomStringConvertible {
 struct RootHelper {
     static func main() async throws {
         NSLog("Root Helper Awaken.")
+        NSLog("Bitch im back from my coma")
         try getRoot()
         
         let operationURL = Bundle.main.bundleURL.appendingPathComponent("CurrentRootOperation.json")
