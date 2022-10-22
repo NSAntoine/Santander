@@ -24,6 +24,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        
       - name: Set up Procursus
         uses: beerpiss/procursus-action@v1
         with:
@@ -31,23 +32,39 @@ jobs:
           cache: true
           cache-path: ~/__cache
           mirror: 'https://repo.quiprr.dev/procursus/'
+          
       - name: Select Xcode version (14.0)
         run: |
           sudo xcode-select --switch /Applications/Xcode_14.0.app
+          
       - name: Build IPA
         run: |
-            make
-      - name: Permasign built IPA
+          make
+          
+      - name: Make TrollStore IPA
+        run: |
+          make trollstore
+            
+      - name: Permasign IPA
         uses: permasigner/action@v1.1.0
         with:
           input: "${{ github.workspace }}/build/Santander.ipa"
           output: "${{ github.workspace }}/build/Santander.deb"
-          entitlements: "${{ github.workspace }}/entitlements.plist"
+          entitlements: "${{ github.workspace }}/trollentitlements.plist"
+          args: "--author Serena"
+          
       - name: Upload IPA
         uses: actions/upload-artifact@v3.1.0
         with:
           name: SantanderJailed
           path: ${{ github.workspace }}/build/SantanderJailed.ipa
+          
+      - name: Upload IPA
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: SantanderTrollStore
+          path: ${{ github.workspace }}/build/SantanderTrollStore.ipa
+          
       - name: Upload Permasign deb
         uses: actions/upload-artifact@v3.1.0
         with:
