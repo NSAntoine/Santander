@@ -40,17 +40,13 @@ jobs:
       - name: Build IPA
         run: |
           make
-          
-      - name: Make TrollStore IPA
-        run: |
-          make trollstore
             
       - name: Permasign IPA
         uses: permasigner/action@v1.1.0
         with:
           input: "${{ github.workspace }}/build/Santander.ipa"
           output: "${{ github.workspace }}/build/Santander.deb"
-          entitlements: "${{ github.workspace }}/trollentitlements.plist"
+          entitlements: "${{ github.workspace }}/entitlements-TS.plist"
           args: "--author Serena"
           
       - name: Upload IPA
