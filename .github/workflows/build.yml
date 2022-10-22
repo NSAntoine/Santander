@@ -23,7 +23,7 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         
       - name: Set up Procursus
         uses: beerpiss/procursus-action@v1
@@ -55,13 +55,13 @@ jobs:
           name: SantanderJailed
           path: ${{ github.workspace }}/build/SantanderJailed.ipa
           
-      - name: Upload IPA
+      - name: Upload IPA for TrollStore
         uses: actions/upload-artifact@v3.1.0
         with:
           name: SantanderTrollStore
-          path: ${{ github.workspace }}/build/SantanderTrollStore.ipa
+          path: ${{ github.workspace }}/build/SantanderTrollStore.tipa
           
-      - name: Upload Permasign deb
+      - name: Upload Permasigned deb
         uses: actions/upload-artifact@v3.1.0
         with:
           name: SantanderJailbroken
