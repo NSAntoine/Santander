@@ -42,7 +42,7 @@ package:
 	@rm -rf Payload
 	@mv TSPayload Payload
 	
-	@zip -r9 build/SantanderTrollStore.ipa Payload
+	@zip -r9 build/SantanderTrollStore.tipa Payload
 	@rm -rf Payload
 	@mv JailedPayload Payload
 	
