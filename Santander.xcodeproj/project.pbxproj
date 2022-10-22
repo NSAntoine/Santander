@@ -64,6 +64,8 @@
 		CE9907E62904780700D61057 /* CompressionWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = CE9907E52904780700D61057 /* CompressionWrapper */; };
 		CE9907E82904780700D61057 /* FSOperations in Frameworks */ = {isa = PBXBuildFile; productRef = CE9907E72904780700D61057 /* FSOperations */; };
 		CE9907EA2904780700D61057 /* NSTask in Frameworks */ = {isa = PBXBuildFile; productRef = CE9907E92904780700D61057 /* NSTask */; };
+		CE9907EC2904802F00D61057 /* AssetCatalogWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = CE9907EB2904802F00D61057 /* AssetCatalogWrapper */; };
+		CE9907EE2904802F00D61057 /* FSOperations in Frameworks */ = {isa = PBXBuildFile; productRef = CE9907ED2904802F00D61057 /* FSOperations */; };
 		CEB0566328F156F500B71017 /* BaseLayoutAnchorSupporting.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB0566228F156F500B71017 /* BaseLayoutAnchorSupporting.swift */; };
 		CECB3A0C28E330BC00328434 /* AssetCatalogDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECB3A0B28E330BC00328434 /* AssetCatalogDetailsView.swift */; };
 		CECF6EDA28C37F660080B805 /* FontViewerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECF6ED928C37F660080B805 /* FontViewerController.swift */; };
@@ -168,6 +170,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CE9907EC2904802F00D61057 /* AssetCatalogWrapper in Frameworks */,
+				CE9907EE2904802F00D61057 /* FSOperations in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -405,6 +409,8 @@
 			);
 			name = RootHelper;
 			packageProductDependencies = (
+				CE9907EB2904802F00D61057 /* AssetCatalogWrapper */,
+				CE9907ED2904802F00D61057 /* FSOperations */,
 			);
 			productName = RootHelper;
 			productReference = CEC433C028FF20B400C18BD8 /* RootHelper */;
@@ -868,6 +874,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CE9907E02904780700D61057 /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
 			productName = NSTask;
+		};
+		CE9907EB2904802F00D61057 /* AssetCatalogWrapper */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE9907E02904780700D61057 /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
+			productName = AssetCatalogWrapper;
+		};
+		CE9907ED2904802F00D61057 /* FSOperations */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CE9907E02904780700D61057 /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
+			productName = FSOperations;
 		};
 		CEDAF41F28C36B2900DF03E6 /* Runestone */ = {
 			isa = XCSwiftPackageProductDependency;
