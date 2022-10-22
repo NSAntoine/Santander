@@ -175,6 +175,19 @@ class PathInformationTableViewController: UITableViewController {
         return headerTitle(forSection: section)
     }
     
+    override func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let cell = self.tableView(tableView, cellForRowAt: indexPath)
+        guard let conf = cell.contentConfiguration as? UIListContentConfiguration, let secondaryText = conf.secondaryText else { return nil }
+        
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            let copyAction = UIAction(title: "Copy", image: UIImage(systemName: "doc.on.doc")) { _ in
+                UIPasteboard.general.string = secondaryText
+            }
+            
+            return UIMenu(children: [copyAction])
+        }
+    }
+    
     func headerTitle(forSection section: Int) -> String {
         switch section {
         case 0: return "General"

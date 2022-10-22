@@ -165,22 +165,11 @@ class AssetCatalogViewController: UIViewController {
         completionHandler: @escaping (Result<Void, Error>) -> Void
     ) {
         
-        let alertController = UIAlertController(title: "Extracting..", message: nil, preferredStyle: .alert)
-        let spinner = UIActivityIndicatorView()
-        spinner.translatesAutoresizingMaskIntoConstraints = false
-        spinner.startAnimating()
-        alertController.view.addSubview(spinner)
-        
-        NSLayoutConstraint.activate([
-            alertController.view.heightAnchor.constraint(equalToConstant: 95),
-            spinner.centerXAnchor.constraint(equalTo: alertController.view.centerXAnchor),
-            spinner.bottomAnchor.constraint(equalTo: alertController.view.bottomAnchor, constant: -20),
-        ])
+        let alertController = createAlertWithSpinner(title: "Extracting..")
         
         sourceVC.present(alertController, animated: true)
         let justRenditions = renditionCollection.flatMap(\.renditions)
-        // key: the item name
-        // value: why it failed
+        
         var caughtError: Error? = nil
         
         DispatchQueue.global(qos: .userInitiated).async {

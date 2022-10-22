@@ -191,6 +191,22 @@ extension UIViewController {
         vc.popoverPresentationController?.sourceRect = CGRect(x: bounds.midX, y: bounds.midY, width: 0, height: 0)
         self.present(vc, animated: true)
     }
+    
+    func createAlertWithSpinner(title: String, message: String? = nil, heightAnchorConstant: CGFloat = 95) -> UIAlertController {
+        let alertController = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let spinner = UIActivityIndicatorView()
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        spinner.startAnimating()
+        alertController.view.addSubview(spinner)
+        
+        NSLayoutConstraint.activate([
+            alertController.view.heightAnchor.constraint(equalToConstant: heightAnchorConstant),
+            spinner.centerXAnchor.constraint(equalTo: alertController.view.centerXAnchor),
+            spinner.bottomAnchor.constraint(equalTo: alertController.view.bottomAnchor, constant: -20),
+        ])
+        
+        return alertController
+    }
 }
 
 

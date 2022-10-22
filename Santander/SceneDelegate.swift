@@ -104,28 +104,54 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     // Path is being imported
     func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-        let urls = URLContexts.map(\.url)
+        // map them to file URLs instead of `santander://` URLs
+        let urls = URLContexts.map { ctx in
+            URL(fileURLWithPath: ctx.url.path)
+        }
         guard !urls.isEmpty else {
             return
         }
-        
-        // if opened with just one path
-        // we go to that path
-        // otherwise if we got more than one, import those
-        if urls.count == 1 {
-            let url = URL(fileURLWithPath: urls.first!.path)
-            // we're going to a directory, open it direclty
-            if url.isDirectory, url.deletingLastPathComponent() != .root {
-                visibleSubPathsVc?.goToPath(path: url)
-            } else {
-                // go to the file's parent, then the file itself
-                visibleSubPathsVc?.goToPath(path: url.deletingLastPathComponent())
-                visibleSubPathsVc?.goToFile(path: url)
-            }
-        } else {
-            let operationsVC = PathOperationViewController(paths: urls, operationType: .import)
-            self.window?.rootViewController?.present(UINavigationController(rootViewController: operationsVC), animated: true)
+  
+        let alertController = UIAlertController(title: "URL(s) being imported to app, would you like to copy it to another path?", message: nil, preferredStyle: .alert)
+        let copyAction = UIAlertAction(title: "Copy Path", style: .default) { _ in
+            self.window?.rootViewController?.present(UINavigationController(rootViewController: PathOperationViewController(paths: urls, operationType: .import)), animated: true)
         }
+        
+        alertController.addAction(copyAction)
+        // if there's just one item, display option to go it's path
+        if urls.count == 1 {
+            let viewItemAction = UIAlertAction(title: "View item", style: .default) { _ in
+                let item = urls[0]
+                let itemParentPath = item.deletingLastPathComponent()
+                let rootVC = self.window?.rootViewController as? UINavigationController
+                let vcToPush = SubPathsTableViewController(path: itemParentPath)
+                rootVC?.pushViewController(vcToPush, animated: true) {
+                    if let indx = vcToPush.contents.firstIndex(of: item) {
+                        let indexPath = IndexPath(row: indx, section: 0)
+                        vcToPush.tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+                        vcToPush.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .middle)
+                    }
+                }
+            }
+            
+            alertController.addAction(viewItemAction)
+        }
+        
+        alertController.addAction(.cancel())
+        window?.rootViewController?.present(alertController, animated: true)
+        
     }
 }
 
+fileprivate extension UINavigationController {
+    func pushViewController(_ viewController: UIViewController, animated: Bool, completion: @escaping (() -> Void)) {
+        pushViewController(viewController, animated: animated)
+        
+        guard animated, let coordinator = transitionCoordinator else {
+            completion()
+            return
+        }
+        
+        coordinator.animate(alongsideTransition: nil) { _ in completion() }
+    }
+}

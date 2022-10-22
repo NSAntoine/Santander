@@ -6,7 +6,7 @@
 //
 
 import UIKit
-
+import CompressionWrapper
 
 extension SubPathsTableViewController: AudioPlayerToolbarDelegate {
     
@@ -79,12 +79,8 @@ extension SubPathsTableViewController: AudioPlayerToolbarDelegate {
         var children = [symlinkAction, moveAction, copyAction]
         if let currentPath = currentPath {
             let compressAction = UIAction(title: "Compress", image: UIImage(systemName: "archivebox")) { _ in
-                do {
-                    let zipFilePath = currentPath.appendingPathComponent("Archive.zip")
-                    try Compression.shared.zipFiles(paths: self.selectedItems, zipFilePath: zipFilePath)
-                } catch {
-                    self.errorAlert(error, title: "Unable to compress items")
-                }
+                let destination = currentPath.appendingPathComponent("Archive.zip")
+                self.compressPaths(paths: self.selectedItems, destination: destination)
             }
             
             children.insert(compressAction, at: 0)
