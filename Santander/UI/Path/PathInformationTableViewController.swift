@@ -7,6 +7,7 @@
 	
 
 import UIKit
+import LaunchServicesBridge
 
 /// A Table View Controller displaying information for a given path
 class PathInformationTableViewController: UITableViewController {
@@ -16,12 +17,16 @@ class PathInformationTableViewController: UITableViewController {
     var showByteCount: Bool = false
     var showDisplayName: Bool = false
     var showRealPath: Bool = false
+    var showAppName: Bool
+    var appName: String?
     var sizeState: PathSizeState = .loading
     
     init(style: UITableView.Style, path: URL) {
         self.path = path
         self.metadata = PathMetadata(fileURL: path)
+        appName = path.applicationItem?.localizedName()
         
+        showAppName = (appName != nil)
         super.init(style: style)
     }
     
@@ -67,7 +72,12 @@ class PathInformationTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
-            showDisplayName.toggle()
+            if appName != nil {
+                showAppName.toggle()
+            } else if path.displayName != path.lastPathComponent {
+                showDisplayName.toggle()
+            }
+            
         case (0, 1):
             showRealPath.toggle()
         case (0, 2):
@@ -90,8 +100,17 @@ class PathInformationTableViewController: UITableViewController {
         var conf = cell.defaultContentConfiguration()
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
-            conf.text = showDisplayName ? "Display name" : "Name"
-            conf.secondaryText = showDisplayName ? self.path.displayName : self.path.lastPathComponent
+            if showDisplayName {
+                conf.text = "Display name"
+                conf.secondaryText = self.path.displayName
+            } else if showAppName {
+                conf.text = "App name"
+                conf.secondaryText = appName
+            } else {
+                conf.text = "Name"
+                conf.secondaryText = path.lastPathComponent
+            }
+            
         case (0, 1):
             conf.text = showRealPath ? "Real Path" : "Path"
             if showRealPath {
@@ -159,7 +178,7 @@ class PathInformationTableViewController: UITableViewController {
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
             // Only allow display name to be shown if it's different from the lastPathComponent
-            return path.displayName != path.lastPathComponent
+            return path.displayName != path.lastPathComponent || appName != nil
         case (0, 1):
             return (try? FileManager.default.destinationOfSymbolicLink(atPath: self.path.path)) != nil
         case (0, 2):
