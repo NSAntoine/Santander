@@ -7,8 +7,8 @@
 
 
 import UIKit
+import AssetCatalogWrapper
 
-// Todo: - make this look good, haha
 class AssetCatalogCell: UICollectionViewCell {
     let nameLabel: UILabel = UILabel()
     let subtitleLabel: UILabel = UILabel()

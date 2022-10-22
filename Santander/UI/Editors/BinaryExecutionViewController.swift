@@ -7,7 +7,7 @@
 	
 
 import UIKit
-import NSTaskiOS
+import NSTaskBridge
 
 class BinaryExecutionViewController: UIViewController {
     let executableURL: URL

@@ -7,70 +7,62 @@
 
 
 import Foundation
+@_exported import FSOperations // export FSOperations to rest of Santander module
+import NSTaskBridge
 
-// You may ask, hey, why is this an enum and not a struct / class with several functions?
-// well:
-// 1) this allows for just one unified function, rather than many
-// 2) this allows to redirect to a root helper
+fileprivate struct RootHelperAction: Codable {
+    let operation: FSOperation
+}
 
-/// Lists operations that can be done to the FileSystem
-enum FSOperation: Codable {
-    case removeItem
-    case createFile
-    case createDirectory
+struct RootConf: RootHelperConfiguration {
+    private init() {}
     
-    case moveItem(resultPath: URL)
-    case copyItem(resultPath: URL)
+    static let rootHelperURL = Bundle.main.bundleURL.appendingPathComponent("CurrentRootOperation.json")
+    static let shared = RootConf()
     
-    case symlink(destination: URL)
     
-    case setOwner(newOwner: String)
-    case setGroup(newGroup: String)
-    
-    case setPermissions(newOctalPermissions: Int)
-    
-    static private let fm = FileManager.default
-    
-    static func perform(_ operation: FSOperation, url: URL) throws {
-        switch operation {
-        case .removeItem:
-            try fm.removeItem(at: url)
-        case .createFile:
-            // fopen being nil: failed to make file
-            // mode a: create if the path doesn't exist
-            guard let file = fopen((url as NSURL).fileSystemRepresentation, "a") else {
-                throw _Errors.errnoError
-            }
-            
-            fclose(file) // close when we're done
-        case .createDirectory:
-            try fm.createDirectory(at: url, withIntermediateDirectories: true)
-        case .moveItem(let resultPath):
-            try fm.moveItem(at: url, to: resultPath)
-        case .copyItem(let resultPath):
-            try fm.copyItem(at: url, to: resultPath)
-        case .symlink(let destination):
-            try fm.createSymbolicLink(at: destination, withDestinationURL: url)
-        case .setGroup(let newGroup):
-            try fm.setAttributes([.groupOwnerAccountName: newGroup], ofItemAtPath: url.path)
-        case .setOwner(let newOwner):
-            try fm.setAttributes([.ownerAccountName: newOwner], ofItemAtPath: url.path)
-        case .setPermissions(let newOctalPermissions):
-            try fm.setAttributes([.posixPermissions: newOctalPermissions], ofItemAtPath: url.path)
+    var action: ActionHandler = { operation in
+        // encode the operation
+        try JSONEncoder().encode(RootHelperAction(operation: operation)).write(to: RootConf.rootHelperURL)
+        
+        guard let rootHelperURL = Bundle.main.url(forAuxiliaryExecutable: "RootHelper") else {
+            throw Errors.rootHelperUnavailable
+        }
+        
+        let task = NSTask()
+        task.executableURL = rootHelperURL
+        
+        try task.launchAndReturnError()
+        task.waitUntilExit()
+        guard task.terminationStatus == 0 else {
+            throw Errors.rootHelperReturnedFailure(task: task)
         }
     }
     
-    private enum _Errors: Error, LocalizedError {
-        case errnoError
-        case otherError(description: String)
+    var useRootHelper: Bool {
+        return UserPreferences.rootHelperIsEnabled
+    }
+    
+    private enum Errors: Error, LocalizedError, CustomStringConvertible {
+        case rootHelperUnavailable
+        case rootHelperReturnedFailure(task: NSTask)
+        
+        var description: String {
+            switch self {
+            case .rootHelperUnavailable:
+                return "Root Helper unavailable? is your install messed up?"
+            case .rootHelperReturnedFailure(let task):
+                var output: String? = nil
+                if let data = try? task.standardOutput.fileHandleForReading.readToEnd() {
+                    output = String(data: data, encoding: .utf8)
+                }
+                
+                return "Root Helper failed with exit code \(task.terminationStatus)\nOutput: \(output ?? "Unknown")"
+            }
+        }
         
         var errorDescription: String? {
-            switch self {
-            case .errnoError:
-                return String(cString: strerror(errno))
-            case .otherError(let description):
-                return description
-            }
+            description
         }
     }
 }

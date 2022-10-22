@@ -7,6 +7,7 @@
 
 
 import UIKit
+import AssetCatalogWrapper
 
 class AssetCatalogSectionHeader: UICollectionReusableView {
     static let reuseIdentifier = "AssetCatalogSectionHeader"

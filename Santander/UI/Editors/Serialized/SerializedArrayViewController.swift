@@ -175,7 +175,7 @@ class SerializedArrayViewController: UITableViewController {
                 newSerializedData = try PropertyListSerialization.data(fromPropertyList: newArray, format: format, options: 0)
             }
             
-            try newSerializedData.write(to: fileURL, options: .atomic)
+            try FSOperation.perform(.writeData(url: fileURL, data: newSerializedData), rootHelperConf: RootConf.shared)
             self.array = newArray
             return true
         } catch {

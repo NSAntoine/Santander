@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - serena/car-support
+      - serena/root-helper-proper
     paths-ignore:
       - '**/*.md'
       - '.gitignore'
@@ -36,24 +36,20 @@ jobs:
           sudo xcode-select --switch /Applications/Xcode_14.0.app
       - name: Build IPA
         run: |
-          xcodebuild build -scheme Santander -configuration "Release" CODE_SIGNING_ALLOWED="NO" CODE_SIGNING_REQUIRED="NO" CODE_SIGN_IDENTITY="" BUILD_DIR=${{ github.workspace }}/xcodebuild
-          mkdir -p ${{ github.workspace }}/ipadir/Payload
-          cp -R ${{ github.workspace }}/xcodebuild/Release-iphoneos/Santander.app ${{ github.workspace }}/ipadir/Payload
-          cd ${{ github.workspace }}/ipadir
-          zip -r ${{ github.workspace }}/Santander.ipa .
+            make
       - name: Permasign built IPA
         uses: permasigner/action@v1.1.0
         with:
-          input: "${{ github.workspace }}/Santander.ipa"
-          output: "${{ github.workspace }}/Santander.deb"
+          input: "${{ github.workspace }}/build/Santander.ipa"
+          output: "${{ github.workspace }}/build/Santander.deb"
           entitlements: "${{ github.workspace }}/entitlements.plist"
       - name: Upload IPA
         uses: actions/upload-artifact@v3.1.0
         with:
-          name: Santander
-          path: ${{ github.workspace }}/Santander.ipa
+          name: SantanderJailed
+          path: ${{ github.workspace }}/build/SantanderJailed.ipa
       - name: Upload Permasign deb
         uses: actions/upload-artifact@v3.1.0
         with:
           name: SantanderJailbroken
-          path: ${{ github.workspace }}/Santander.deb
+          path: ${{ github.workspace }}/build/Santander.deb

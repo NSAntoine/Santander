@@ -9,6 +9,7 @@
 import UIKit
 import QuickLook
 import UniformTypeIdentifiers
+import ApplicationsWrapper
 
 /// A table view controller showing the subpaths under a Directory, or a group
 class SubPathsTableViewController: UITableViewController, PathTransitioning {
@@ -478,8 +479,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         // Make sure we're opening a directory,
         // or the parent directory of the file selected (if searching)
         
-        // if we're going to a directory, or a search result,
-        // go to the directory path
+        // if we're going to a directory, go to the directory path
         if path.isDirectory {
             let parentDirectory = path.deletingLastPathComponent()
             
@@ -674,7 +674,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
                     
                     do {
                         let newPath = item.deletingLastPathComponent().appendingPathComponent(name)
-                        try FSOperation.perform(.copyItem(resultPath: newPath), url: item)
+                        try FSOperation.perform(.copyItem(items: [item], resultPath: newPath), rootHelperConf: RootConf.shared)
                     } catch {
                         self.errorAlert(error, title: "Unable to rename \(item.lastPathComponent)")
                     }
@@ -793,7 +793,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
     func presentOperationVC(forItems items: [URL], type: PathSelectionOperation) {
         let vc = PathOperationViewController(paths: items, operationType: type)
         present(UINavigationController(rootViewController: vc), animated: true) { [self] in
-            if let currentPath = currentPath {
+            if let currentPath = currentPath, currentPath != .root {
                 vc.goToPath(path: currentPath)
             }
         }
@@ -952,7 +952,7 @@ extension SubPathsTableViewController: UINavigationItemRenameDelegate {
         }
         
         do {
-            try FSOperation.perform(.moveItem(resultPath: newURL), url: currentPath)
+            try FSOperation.perform(.moveItem(items: [currentPath], resultPath: newURL), rootHelperConf: RootConf.shared)
             self.currentPath = newURL
         } catch {
             self.errorAlert(error, title: "Uname to rename \(newURL.lastPathComponent)")

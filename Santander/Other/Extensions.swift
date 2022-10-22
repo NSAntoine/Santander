@@ -10,7 +10,7 @@
 
 import UIKit
 import UniformTypeIdentifiers
-import LaunchServicesPrivate
+import ApplicationsWrapper
 
 extension URL {
     
@@ -106,7 +106,7 @@ extension URL {
     
     func setPermissions(forOwner owner: Permission, group: Permission = [], others: Permission = []) throws {
         let octal = Permission.octalRepresentation(of: [owner, group, others])
-        try FSOperation.perform(.setPermissions(newOctalPermissions: octal), url: self)
+        try FSOperation.perform(.setPermissions(url: self, newOctalPermissions: octal), rootHelperConf: RootConf.shared)
     }
     
     /// Returns an array of complete URLs to the URL's path components
@@ -488,7 +488,7 @@ extension UITableViewController {
         let confirmationController = UIAlertController(title: "Are you sure you want to delete \"\(url.lastPathComponent)\"?", message: nil, preferredStyle: .alert)
         let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { _ in
             do {
-                try FSOperation.perform(.removeItem, url: url)
+                try FSOperation.perform(.removeItems(items: [url]), rootHelperConf: RootConf.shared)
                 completionHandler(true)
             } catch {
                 self.errorAlert(error, title: "Failed to delete \"\(url.lastPathComponent)\"")

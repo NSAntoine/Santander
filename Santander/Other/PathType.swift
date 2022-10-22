@@ -25,9 +25,9 @@ extension UIViewController {
             do {
                 switch type {
                 case .file:
-                    try FSOperation.perform(.createFile, url: urlToCreate)
+                    try FSOperation.perform(.createFile(files: [urlToCreate]), rootHelperConf: RootConf.shared)
                 case .directory:
-                    try FSOperation.perform(.createDirectory, url: urlToCreate)
+                    try FSOperation.perform(.createDirectory(directories: [urlToCreate]), rootHelperConf: RootConf.shared)
                 }
             } catch {
                 self.errorAlert(error, title: "Unable to create \(name)")

@@ -17,24 +17,13 @@ extension SubPathsTableViewController: AudioPlayerToolbarDelegate {
             let confirmationController = UIAlertController(title: "Are you sure you want to delete \(self.selectedItems.count) item(s)?", message: nil, preferredStyle: .alert)
             
             let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { _ in
-                
-                // if we fail to delete one or multiple paths, save them to this dictionary to display them
-                var failedDict: [String: Error] = [:]
-                for item in self.selectedItems {
-                    do {
-                        try FSOperation.perform(.removeItem, url: item)
-                    } catch {
-                        failedDict[item.lastPathComponent] = error
-                    }
+  
+                do {
+                    try FSOperation.perform(.removeItems(items: self.selectedItems), rootHelperConf: RootConf.shared)
+                } catch {
+                    self.errorAlert(error, title: "Unable to remove items")
                 }
                 
-                if !failedDict.isEmpty {
-                    var message: String = ""
-                    for (item, error) in failedDict {
-                        message.append("\(item): \(error.localizedDescription)\n")
-                    }
-                    self.errorAlert(message, title: "Failed to delete \(failedDict.count) item(s)")
-                }
             }
             
             confirmationController.addAction(.cancel())

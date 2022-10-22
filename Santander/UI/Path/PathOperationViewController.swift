@@ -51,42 +51,29 @@ class PathOperationViewController: SubPathsTableViewController {
             return
         }
         
-        // in case we get errors while operating on one or multiple paths,
-        // save the path and the errors in a dictionary
-        var failedPaths: [String: Error] = [:]
-        for path in paths {
-            let destinationPath = currentPath.appendingPathComponent(path.lastPathComponent)
-            do {
-                switch operationType {
-                case .move:
-                    try FSOperation.perform(.moveItem(resultPath: destinationPath), url: path)
-                case .copy, .import:
-                    try FSOperation.perform(.copyItem(resultPath: destinationPath), url: path)
-                case .symlink:
-                    try FSOperation.perform(.symlink(destination: destinationPath), url: path)
-                case .custom(_, _, action: let action):
-                    try action(self, currentPath)
+        do {
+            switch operationType {
+            case .move:
+                try FSOperation.perform(.moveItem(items: paths, resultPath: currentPath), rootHelperConf: RootConf.shared)
+            case .copy, .import:
+                try FSOperation.perform(.copyItem(items: paths, resultPath: currentPath), rootHelperConf: RootConf.shared)
+            case .symlink:
+                var symlinkPathsAndDestinations: [URL : URL] = [:]
+                for path in paths {
+                    symlinkPathsAndDestinations[currentPath.appendingPathComponent(path.lastPathComponent)] = path
                 }
-            } catch {
-                failedPaths[path.lastPathComponent] = error
-            }
-        }
-        
-        if !failedPaths.isEmpty {
-            let alert = UIAlertController(title: "Failed to \(operationType.description) \(failedPaths.count) item(s)", message: "", preferredStyle: .alert)
-            for (path, error) in failedPaths {
-                alert.message?.append("\(path): \(error.localizedDescription)\n")
+                try FSOperation.perform(.symlink(symlinkPathsAndDestinations), rootHelperConf: RootConf.shared)
+            case .custom(_, _, let action):
+                try action(self, currentPath)
             }
             
-            let okAction = UIAlertAction(title: "OK", style: .cancel) { _ in
+            if dismissWhenDone {
                 self.dismiss(animated: true)
             }
-            
-            alert.addAction(okAction)
-            self.present(alert, animated: true)
-        } else if dismissWhenDone {
-            self.dismiss(animated: true)
+        } catch {
+            self.errorAlert(error, title: "Unable to \(operationType.description) items")
         }
+        
     }
     
     override func goToPath(path: URL) {
