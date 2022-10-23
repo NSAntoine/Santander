@@ -13,19 +13,25 @@ class PathGroupOwnerViewController: UITableViewController {
     var sourceVC: PathPermissionsViewController?
     let fileURL: URL
     
-    // all groups / users
-    var allData: [String] = []
-    
-    // allData but filtered by search text
-    var filteredData: [String] = [] {
-        didSet {
-            tableView.reloadData()
-        }
+    enum Section {
+        case main
     }
     
-    /// The data to display in the UI
-    var data: [String] {
-        return filteredData.isEmpty ? allData : filteredData
+    var allData: [ItemType] = []
+    
+    typealias DataSource = UITableViewDiffableDataSource<Section, ItemType>
+    lazy var dataSource = DataSource(tableView: tableView) { [self] tableView, indexPath, itemIdentifier in
+        let item = itemIdentifier.name
+        
+        let cell = UITableViewCell()
+        var conf = cell.defaultContentConfiguration()
+        
+        conf.text = item
+        cell.contentConfiguration = conf
+        if type.name == item {
+            cell.accessoryType = .checkmark
+        }
+        return cell
     }
     
     func typeName(capitalizingFirstLetter: Bool) -> String {
@@ -46,48 +52,31 @@ class PathGroupOwnerViewController: UITableViewController {
     }
     
     override func viewDidLoad() {
-        Task {
-            do {
-                self.allData = try self.type.getAll(forURL: self.fileURL)
-                self.tableView.reloadData()
-            } catch {
-                self.showError(error)
-            }
-        }
-        
         self.title = typeName(capitalizingFirstLetter: true)
         let searchController = UISearchController(searchResultsController: nil)
         searchController.searchBar.delegate = self
         navigationItem.hidesSearchBarWhenScrolling = false
         navigationItem.searchController = searchController
+        
+        // load data
+        Task { [self] in
+            do {
+                allData = try type.getAll(forURL: fileURL)
+                applyItems(allData, animatingDifference: true)
+            } catch {
+                showError(error)
+                searchController.searchBar.isUserInteractionEnabled = false
+            }
+        }
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
-    }
-    
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return data.count
-    }
-    
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = UITableViewCell()
-        let item = data[indexPath.row]
-        var conf = cell.defaultContentConfiguration()
-        conf.text = item
-        cell.contentConfiguration = conf
-        if type.name == item {
-            cell.accessoryType = .checkmark
-        }
-        return cell
-    }
-    
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let item = data[indexPath.row]
+        let item = dataSource.itemIdentifier(for: indexPath)!.name
+        let oldType = type
         var newType: ItemType
         switch type {
         case .owner(_):
@@ -99,7 +88,6 @@ class PathGroupOwnerViewController: UITableViewController {
         do {
             try newType.set(forURL: fileURL)
             self.type = newType
-            tableView.reloadData()
             
             // Update the parent permissions vc
             switch newType {
@@ -114,6 +102,16 @@ class PathGroupOwnerViewController: UITableViewController {
         }
         
         tableView.deselectRow(at: indexPath, animated: true)
+        var snapshot = dataSource.snapshot()
+        
+        var itemsToReload = [type]
+        // if the old item is visible, reload it
+        if let oldItemIndexPath = dataSource.indexPath(for: oldType), tableView.bounds.contains(tableView.rectForRow(at: oldItemIndexPath)) {
+            itemsToReload.append(oldType)
+        }
+        
+        snapshot.reloadItems(itemsToReload)
+        dataSource.apply(snapshot, animatingDifferences: false)
     }
     
     func showError(_ error: Error) {
@@ -126,20 +124,21 @@ class PathGroupOwnerViewController: UITableViewController {
         
         errorLabel.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(errorLabel)
+        let guide = view.layoutMarginsGuide
         NSLayoutConstraint.activate([
-            errorLabel.widthAnchor.constraint(equalTo: view.layoutMarginsGuide.widthAnchor),
-            errorLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            errorLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            errorLabel.widthAnchor.constraint(equalTo: guide.widthAnchor),
+            errorLabel.centerXAnchor.constraint(equalTo: guide.centerXAnchor),
+            errorLabel.centerYAnchor.constraint(equalTo: guide.centerYAnchor),
         ])
     }
     
     /// The list of items to display,
     /// either being groups or owners
-    enum ItemType: CustomStringConvertible {
+    enum ItemType: Hashable, CustomStringConvertible {
         case group(groupName: String), owner(ownerName: String)
         
         /// Returns a string array of either types
-        func getAll(forURL url: URL) throws -> [String] {
+        func getAll(forURL url: URL) throws -> [ItemType] {
             switch self {
             case .owner:
                 var arr: [String] = []
@@ -148,16 +147,16 @@ class PathGroupOwnerViewController: UITableViewController {
                 }
                 endpwent()
                 
-                return arr
+                return arr.map(ItemType.owner(ownerName:))
             case .group:
                 guard let owner = passwd(fileURLOwner: url) else {
-                    throw Errors.unableToGetGroups(description: "Failed to get groups:\nUnable to fetch the owner of the path in order to get the groups which the owner belongs to")
+                    throw Errors.unableToGetGroups(description: "Failed to fetch groups, cause: owner is unknown")
                 }
                 
                 var groups: Int32 = 0
                 var count: Int32 = Int32(sysconf(_SC_NGROUPS_MAX))
                 getgrouplist(owner.pw_name, Int32(owner.pw_gid), &groups, &count)
-                return convert(length: Int(count), data: &groups).compactMap { gid in
+                let converted = convert(length: Int(count), data: &groups).compactMap { gid -> String? in
                     guard let gr = getgrgid(gid_t(gid))?.pointee.gr_name else {
                         return nil
                     }
@@ -165,6 +164,7 @@ class PathGroupOwnerViewController: UITableViewController {
                     return String(cString: gr)
                 }
                 
+                return converted.map(ItemType.group(groupName:))
             }
         }
         
@@ -217,16 +217,30 @@ class PathGroupOwnerViewController: UITableViewController {
             return Array(buffer)
         }
     }
+    
+    func applyItems(_ items: [ItemType], animatingDifference: Bool = false) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, ItemType>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(items, toSection: .main)
+        dataSource.apply(snapshot, animatingDifferences: animatingDifference)
+    }
 }
 
 extension PathGroupOwnerViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        filteredData = allData.filter { _data in
-            return _data.localizedCaseInsensitiveContains(searchText)
+        if searchText.isEmpty {
+            applyItems(allData, animatingDifference: true)
+            return
         }
+        
+        let filtered = allData.filter { item in
+            item.name.localizedCaseInsensitiveContains(searchText)
+        }
+        
+        applyItems(filtered, animatingDifference: true)
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        filteredData = []
+        applyItems(allData, animatingDifference: true)
     }
 }
