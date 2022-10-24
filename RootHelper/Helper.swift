@@ -34,9 +34,12 @@ struct RootHelper {
         NSLog("Bitch im back from my coma")
         try getRoot()
         
-        let operationURL = Bundle.main.bundleURL.appendingPathComponent("CurrentRootOperation.json")
+        let operationURL = URL(fileURLWithPath: "/var/mobile/Library/Santander/CurrentOperation.json")
         let decoded = try JSONDecoder().decode(RootHelperAction.self, from: Data(contentsOf: operationURL))
         try FSOperation.perform(decoded.operation, rootHelperConf: nil)
+        
+        // empty the operation file after we're done
+        try? Data().write(to: operationURL)
     }
     
     static func getRoot() throws {

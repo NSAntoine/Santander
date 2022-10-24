@@ -17,13 +17,18 @@ fileprivate struct RootHelperAction: Codable {
 struct RootConf: RootHelperConfiguration {
     private init() {}
     
-    static let rootHelperURL = Bundle.main.bundleURL.appendingPathComponent("CurrentRootOperation.json")
+    static let libraryURL = URL(fileURLWithPath: "/var/mobile/Library/Santander")
     static let shared = RootConf()
     
     
     var action: ActionHandler = { operation in
+        if !FileManager.default.fileExists(atPath: libraryURL.path) {
+            try FSOperation.perform(.createDirectory(directories: [libraryURL]), rootHelperConf: nil)
+        }
+        
+        let operationURL = libraryURL.appendingPathComponent("CurrentOperation.json")
         // encode the operation
-        try JSONEncoder().encode(RootHelperAction(operation: operation)).write(to: RootConf.rootHelperURL)
+        try JSONEncoder().encode(RootHelperAction(operation: operation)).write(to: RootConf.libraryURL)
         
         guard let rootHelperURL = Bundle.main.url(forAuxiliaryExecutable: "RootHelper") else {
             throw Errors.rootHelperUnavailable
