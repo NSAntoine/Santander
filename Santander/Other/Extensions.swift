@@ -642,9 +642,7 @@ extension Dictionary where Key == String, Value == Any {
 }
 
 extension UIDevice {
-    var isiPad: Bool {
-        return userInterfaceIdiom == .pad
-    }
+    static let isiPad = current.userInterfaceIdiom == .pad
 }
 
 extension DateFormatter {

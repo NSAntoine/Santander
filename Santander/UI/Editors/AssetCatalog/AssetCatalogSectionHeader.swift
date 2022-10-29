@@ -10,7 +10,6 @@ import UIKit
 import AssetCatalogWrapper
 
 class AssetCatalogSectionHeader: UICollectionReusableView {
-    static let reuseIdentifier = "AssetCatalogSectionHeader"
     let stackView = UIStackView()
     
     let titleLabel = UILabel()

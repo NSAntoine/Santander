@@ -142,7 +142,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         }
         self.navigationItem.searchController = searchController
 #if compiler(>=5.7)
-        if #available(iOS 16.0, *), UIDevice.current.isiPad {
+        if #available(iOS 16.0, *), UIDevice.isiPad {
             self.navigationItem.style = .browser
             self.navigationItem.renameDelegate = self
         }
@@ -391,25 +391,10 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
     // A UIMenu containing different, common, locations to go to, as well as an option
     // to go to a specified URL
     func makeGoToMenu() -> UIMenu {
-        var menu = UIMenu(title: "Go to..", image: UIImage(systemName: "arrow.right"))
-        
-        let commonLocations: [String: URL?] = [
-            "Home" : .home,
-            "Applications": FileManager.default.urls(for: .applicationDirectory, in: .userDomainMask).first,
-            "Documents" : FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first,
-            "Downloads": FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first,
-            "Library": FileManager.default.urls(for: .libraryDirectory, in: .userDomainMask).first,
-            "/ (Root)" : .root
-        ]
-        
-        for (locationName, locationURL) in commonLocations {
-            guard let locationURL = locationURL, FileManager.default.fileExists(atPath: locationURL.path) else {
-                continue
+        var items: [UIMenuElement] = GoToItem.all.map { item in
+            return UIAction(title: item.displayName, image: item.image) { _ in
+                self.goToPath(path: item.url)
             }
-            
-            menu = menu.appending(UIAction(title: locationName, handler: { _ in
-                self.goToPath(path: locationURL)
-            }))
         }
         
         let otherLocationAction = UIAction(title: "Other..") { _ in
@@ -435,9 +420,9 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
             self.present(alert, animated: true)
         }
         
-        menu = menu.appending(otherLocationAction)
+        items.append(otherLocationAction)
         
-        return menu
+        return UIMenu(title: "Go to..", image: UIImage(systemName: "arrow.right"), children: items)
     }
     
     func decompressPath(path: URL) {
@@ -465,14 +450,14 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         }
     }
     
-    func compressPaths(paths: [URL], destination: URL) {
+    func compressPaths(paths: [URL], destination: URL, format: Compression.FormatType) {
         let alertController = createAlertWithSpinner(title: "Compressing..", heightAnchorConstant: 120)
         present(alertController, animated: true)
         
         DispatchQueue.global(qos: .userInitiated).async {
             var caughtError: Error? = nil
             do {
-                try Compression.shared.compress(paths: paths, outputPath: destination) { pathBeingProcessed in
+                try Compression.shared.compress(paths: paths, outputPath: destination, format: format) { pathBeingProcessed in
                     DispatchQueue.main.async { alertController.message = "Compressing \(pathBeingProcessed.lastPathComponent)" }
                 }
             } catch {
@@ -486,6 +471,16 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
                 }
             }
         }
+    }
+    
+    func makeCompressionMenu(paths: [URL], destination: @escaping (Compression.FormatType) -> URL) -> UIMenu {
+        let actions = Compression.FormatType.allCases.map { format in
+            UIAction(title: format.description) { _ in
+                self.compressPaths(paths: paths, destination: destination(format), format: format)
+            }
+        }
+        
+        return UIMenu(title: "Compress", image: UIImage(systemName: "archivebox"), children: actions)
     }
     
     func goToFile(path: URL) {
@@ -618,6 +613,8 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         forURL fsItem: URL,
         displayFullPathAsSubtitle useSubtitle: Bool = false
     ) -> UITableViewCell {
+        let pathName = fsItem.lastPathComponent
+        
         let cell = UITableViewCell(style: useSubtitle ? .subtitle : .default, reuseIdentifier: nil)
         var cellConf = cell.defaultContentConfiguration()
         defer {
@@ -628,7 +625,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         // otherwise, if currentPath is nil, check for if the parent dir of the path contains app UUIDs
         // performance is worse if we *always* do the first,
         // but `containsAppUUIDs` isn't nil as long as `currentPath` isn't nil.
-        if fsItem.pathExtension == "app" || (containsAppUUIDs ?? fsItem.deletingLastPathComponent().containsAppUUIDSubpaths),
+        if (fsItem.pathExtension == "app" || (containsAppUUIDs ?? fsItem.deletingLastPathComponent().containsAppUUIDSubpaths)),
            let app = fsItem.applicationItem {
             cellConf.text = app.localizedName()
             cellConf.image = ApplicationsManager.shared.icon(forApplication: app)
@@ -638,7 +635,6 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
             return cell
         }
         
-        let pathName = fsItem.lastPathComponent
         cellConf.text = pathName
         
         // if the item name starts is a dotfile / dotdirectory
@@ -733,11 +729,10 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
             
             var children: [UIMenuElement] = [informationAction, renameAction, shareAction]
             
-            let compressOrDecompressAction: UIAction
+            let compressOrDecompressAction: UIMenuElement
             if !(item.contentType?.isOfType(.archive) ?? false) {
-                compressOrDecompressAction = UIAction(title: "Compress", image: UIImage(systemName: "archivebox")) { _ in
-                    //TODO: Other types too
-                    self.compressPaths(paths: [item], destination: item.deletingPathExtension().appendingPathExtension("zip"))
+                compressOrDecompressAction = self.makeCompressionMenu(paths: [item]) { format in
+                    return item.deletingPathExtension().appendingPathExtension(format.fileExtension)
                 }
             } else {
                 compressOrDecompressAction = UIAction(title: "Decompress", image: UIImage(systemName: "archivebox")) { _ in
@@ -779,7 +774,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
                 children.append(UIMenu(title: "Open in..", children: actions))
             }
             
-            if UIDevice.current.isiPad {
+            if UIDevice.isiPad {
                 var menu = UIMenu(title: "Add to group..", image: UIImage(systemName: "sidebar.leading"), children: [])
                 
                 for (index, group) in UserPreferences.pathGroups.enumerated() {

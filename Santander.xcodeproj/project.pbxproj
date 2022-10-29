@@ -47,7 +47,8 @@
 		37C6E0D22867653A00BDDA16 /* PathSidebarListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37C6E0D12867653A00BDDA16 /* PathSidebarListViewController.swift */; };
 		37CA828A28AA675B000236D7 /* AppInfoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37CA828928AA675B000236D7 /* AppInfoViewController.swift */; };
 		37DE0FA22864902400E5EBBC /* FilePreviewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */; };
-		37ECADA728B23ECC00B95733 /* ImageViewerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ECADA628B23ECB00B95733 /* ImageViewerViewController.swift */; };
+		37ECADA728B23ECC00B95733 /* ImageViewerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 37ECADA628B23ECB00B95733 /* ImageViewerController.swift */; };
+		CE0D0B002906D6F300D17307 /* GoToItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0D0AFF2906D6F300D17307 /* GoToItem.swift */; };
 		CE0E513028D4D03300E9D611 /* AssetCatalogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0E512F28D4D03300E9D611 /* AssetCatalogViewController.swift */; };
 		CE13D1DD28D3572000F5C833 /* FSOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE13D1DC28D3572000F5C833 /* FSOperation.swift */; };
 		CE1F1F7028F7211700E44DF2 /* PathTransitioning.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1F1F6F28F7211700E44DF2 /* PathTransitioning.swift */; };
@@ -55,6 +56,7 @@
 		CE37904628DB44C300124029 /* AssetCatalogCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE37904528DB44C300124029 /* AssetCatalogCell.swift */; };
 		CE37904A28DB523500124029 /* AssetCatalogSectionHeader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE37904928DB523500124029 /* AssetCatalogSectionHeader.swift */; };
 		CE3E8FBE28FF2285001B8FAA /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE920D9028FDDEBE003F74F1 /* Helper.swift */; };
+		CE42B204290ABB6400FD9AC9 /* AssetCatalogSidebarListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE42B203290ABB6400FD9AC9 /* AssetCatalogSidebarListView.swift */; };
 		CE5DFE8328C7BC89003E1095 /* BinaryExecutionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE5DFE8228C7BC89003E1095 /* BinaryExecutionViewController.swift */; };
 		CE7228ED28E8188D00918C5F /* AssetCatalogRenditionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE7228EC28E8188D00918C5F /* AssetCatalogRenditionViewController.swift */; };
 		CE7E02E0290006C70046A7D4 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CE7E02DE290006C70046A7D4 /* MobileCoreServices.framework */; };
@@ -129,7 +131,8 @@
 		37C6E0D12867653A00BDDA16 /* PathSidebarListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathSidebarListViewController.swift; sourceTree = "<group>"; };
 		37CA828928AA675B000236D7 /* AppInfoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfoViewController.swift; sourceTree = "<group>"; };
 		37DE0FA12864902400E5EBBC /* FilePreviewDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FilePreviewDataSource.swift; sourceTree = "<group>"; };
-		37ECADA628B23ECB00B95733 /* ImageViewerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerViewController.swift; sourceTree = "<group>"; };
+		37ECADA628B23ECB00B95733 /* ImageViewerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageViewerController.swift; sourceTree = "<group>"; };
+		CE0D0AFF2906D6F300D17307 /* GoToItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoToItem.swift; sourceTree = "<group>"; };
 		CE0E512F28D4D03300E9D611 /* AssetCatalogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogViewController.swift; sourceTree = "<group>"; wrapsLines = 1; };
 		CE13D1DC28D3572000F5C833 /* FSOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FSOperation.swift; sourceTree = "<group>"; };
 		CE1F1F6F28F7211700E44DF2 /* PathTransitioning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PathTransitioning.swift; sourceTree = "<group>"; };
@@ -138,6 +141,7 @@
 		CE37904528DB44C300124029 /* AssetCatalogCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AssetCatalogCell.swift; sourceTree = "<group>"; };
 		CE37904928DB523500124029 /* AssetCatalogSectionHeader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogSectionHeader.swift; sourceTree = "<group>"; };
 		CE3E8FC228FF24D3001B8FAA /* Makefile */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		CE42B203290ABB6400FD9AC9 /* AssetCatalogSidebarListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogSidebarListView.swift; sourceTree = "<group>"; };
 		CE5DFE8228C7BC89003E1095 /* BinaryExecutionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BinaryExecutionViewController.swift; sourceTree = "<group>"; };
 		CE7228EC28E8188D00918C5F /* AssetCatalogRenditionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogRenditionViewController.swift; sourceTree = "<group>"; };
 		CE7E02DE290006C70046A7D4 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -181,7 +185,7 @@
 		3713292628B618AD009E4AEA /* Image */ = {
 			isa = PBXGroup;
 			children = (
-				37ECADA628B23ECB00B95733 /* ImageViewerViewController.swift */,
+				37ECADA628B23ECB00B95733 /* ImageViewerController.swift */,
 				3713292A28B74D34009E4AEA /* ImageLocationEditorViewController.swift */,
 				3713292828B61F98009E4AEA /* ImageMetadataViewController.swift */,
 			);
@@ -222,6 +226,7 @@
 			children = (
 				CEB0566228F156F500B71017 /* BaseLayoutAnchorSupporting.swift */,
 				3771D37A2862329D00E200B6 /* Extensions.swift */,
+				CE0D0AFF2906D6F300D17307 /* GoToItem.swift */,
 				375CF898289C4FF000BB7C60 /* PathMetadata.swift */,
 				37963F122869C96C00C4B72A /* PathType.swift */,
 				375CF89C289CF3A600BB7C60 /* Permissions.swift */,
@@ -329,6 +334,7 @@
 		CE76B0BD28D74EE900415675 /* AssetCatalog */ = {
 			isa = PBXGroup;
 			children = (
+				CE42B203290ABB6400FD9AC9 /* AssetCatalogSidebarListView.swift */,
 				CE0E512F28D4D03300E9D611 /* AssetCatalogViewController.swift */,
 				CECB3A0B28E330BC00328434 /* AssetCatalogDetailsView.swift */,
 				CE37904528DB44C300124029 /* AssetCatalogCell.swift */,
@@ -519,8 +525,10 @@
 				37C6E0D028673AFF00BDDA16 /* Search.swift in Sources */,
 				375CF89D289CF3A600BB7C60 /* Permissions.swift in Sources */,
 				CE13D1DD28D3572000F5C833 /* FSOperation.swift in Sources */,
+				CE0D0B002906D6F300D17307 /* GoToItem.swift in Sources */,
+				CE42B204290ABB6400FD9AC9 /* AssetCatalogSidebarListView.swift in Sources */,
 				37CA828A28AA675B000236D7 /* AppInfoViewController.swift in Sources */,
-				37ECADA728B23ECC00B95733 /* ImageViewerViewController.swift in Sources */,
+				37ECADA728B23ECC00B95733 /* ImageViewerController.swift in Sources */,
 				3771D37F2862493E00E200B6 /* PathInformationTableViewController.swift in Sources */,
 				37198B9A28721069000C8CDF /* TextEditorThemeSettingsViewController.swift in Sources */,
 				375CF899289C4FF000BB7C60 /* PathMetadata.swift in Sources */,

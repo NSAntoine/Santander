@@ -76,7 +76,6 @@ class PathGroupOwnerViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let item = dataSource.itemIdentifier(for: indexPath)!.name
-        let oldType = type
         var newType: ItemType
         switch type {
         case .owner(_):
@@ -104,13 +103,7 @@ class PathGroupOwnerViewController: UITableViewController {
         tableView.deselectRow(at: indexPath, animated: true)
         var snapshot = dataSource.snapshot()
         
-        var itemsToReload = [type]
-        // if the old item is visible, reload it
-        if let oldItemIndexPath = dataSource.indexPath(for: oldType), tableView.bounds.contains(tableView.rectForRow(at: oldItemIndexPath)) {
-            itemsToReload.append(oldType)
-        }
-        
-        snapshot.reloadItems(itemsToReload)
+        snapshot.reloadItems(snapshot.itemIdentifiers)
         dataSource.apply(snapshot, animatingDifferences: false)
     }
     

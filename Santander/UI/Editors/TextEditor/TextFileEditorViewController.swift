@@ -94,7 +94,7 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
   
         textView.constraintCompletely(to: view)
         
-        if UIDevice.current.isiPad {
+        if UIDevice.isiPad {
             let navVC = UINavigationController(rootViewController: themeController)
             splitViewController?.setViewController(navVC, for: .primary)
             splitViewController?.preferredDisplayMode = .oneBesideSecondary
@@ -201,7 +201,7 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
     }
     
     @objc func presentTextEditorSettings() {
-        if UIDevice.current.isiPad {
+        if UIDevice.isiPad {
             splitViewController?.show(.primary)
         } else {
             let navVC = UINavigationController(rootViewController: themeController)

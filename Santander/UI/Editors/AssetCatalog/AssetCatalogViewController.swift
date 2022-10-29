@@ -57,9 +57,13 @@ class AssetCatalogViewController: UIViewController {
         
         view.backgroundColor = .systemBackground
         
-        let filename = fileURL.deletingPathExtension()
-        title = filename.lastPathComponent
-        navigationController?.navigationBar.prefersLargeTitles = true
+        // on iPad, the title is instead displayed on the sidebar
+        if !UIDevice.isiPad {
+            let filename = fileURL.deletingPathExtension()
+            title = filename.lastPathComponent
+            navigationController?.navigationBar.prefersLargeTitles = true
+        }
+        
         navigationItem.hidesSearchBarWhenScrolling = false
         
         let searchController = UISearchController()
@@ -109,7 +113,7 @@ class AssetCatalogViewController: UIViewController {
         collectionView.constraintCompletely(to: view)
     }
     
-    func makeLeftItemMenu() -> UIMenu {
+    func makeMenuForBarButton() -> UIMenu {
         let extractAction = UIAction(title: "Extract to..") { _ in
             self.extractAction()
         }
@@ -131,10 +135,15 @@ class AssetCatalogViewController: UIViewController {
         }
         
         navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .close, primaryAction: dismissAction)
-        navigationItem.leftBarButtonItem = UIBarButtonItem(
-            image: UIImage(systemName: "ellipsis.circle"),
-            menu: makeLeftItemMenu()
-        )
+        let barButtonWithMenu = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: makeMenuForBarButton())
+        
+        // on iPad, leftButton fits more as the right bar button item for the sidebar
+        if UIDevice.isiPad {
+            splitViewController?.viewController(for: .primary)?.navigationItem.rightBarButtonItem = barButtonWithMenu
+        } else {
+            // otherwise, on other platforms, set it as the leftBarButtonItem
+            navigationItem.leftBarButtonItem = barButtonWithMenu
+        }
     }
     
     func extractAction() {
@@ -199,8 +208,8 @@ class AssetCatalogViewController: UIViewController {
         init(_ rawValue: Int) {
             // default to horizontal
             switch rawValue {
-            case LayoutMode.verical.rawValue: self = .verical
-            default: self = .horizantal
+            case LayoutMode.horizantal.rawValue: self = .horizantal
+            default: self = .verical
             }
         }
         
@@ -341,7 +350,7 @@ extension AssetCatalogViewController: UICollectionViewDelegate {
             // i tried to get color editing to work but for whatever reason
             // -[CUIMutableCommonAssetStorage setColor:forName:excludeFromFilter:] just doesn't work..
             if !item.type.isEditable {
-                attributes.insert(.disabled)
+                attributes = .disabled
             }
             
             let editAction = UIAction(title: "Edit", attributes: attributes) { _ in
@@ -387,6 +396,15 @@ extension AssetCatalogViewController: UICollectionViewDelegate {
         }
         
         dataSource.apply(snapshot, animatingDifferences: true)
+        
+        // update the sections on the iPad sidebar
+        if UIDevice.isiPad, let sidebar = splitViewController?.viewController(for: .primary) as? AssetCatalogSidebarListView {
+            let sections = dataSource.snapshot().sectionIdentifiers
+            var sidebarSnapshot = AssetCatalogSidebarListView.Snapshot()
+            sidebarSnapshot.appendSections([.main])
+            sidebarSnapshot.appendItems(sections, toSection: .main)
+            sidebar.dataSource.apply(sidebarSnapshot)
+        }
     }
     
     func editItem(_ item: Rendition) {
@@ -402,9 +420,12 @@ extension AssetCatalogViewController: UICollectionViewDelegate {
             let photoVC = PHPickerViewController(configuration: conf)
             photoVC.delegate = editorDelegate
             vc = photoVC
-        case .color(_):
+        case .color(let currentCgColor):
             let colorVC = UIColorPickerViewController()
             colorVC.delegate = editorDelegate
+            // when presenting the color picker controller,
+            // set the default selected color as the item's current CGColor
+            colorVC.selectedColor = UIColor(cgColor: currentCgColor)
             vc = colorVC
         }
         
@@ -481,12 +502,31 @@ extension AssetCatalogViewController: UISearchBarDelegate {
     
 }
 
+extension AssetCatalogViewController {
+    // if we get to a new section, then alert the sidebar list on the iPad to select the new section
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        guard UIDevice.isiPad, !decelerate else { return }
+        
+        // https://stackoverflow.com/questions/18649920/uicollectionview-current-visible-cell-index
+        let visibleRect = CGRect(origin: collectionView.contentOffset, size: collectionView.bounds.size)
+        let visiblePoint = CGPoint(x: visibleRect.midX, y: visibleRect.midY)
+        
+        guard let visibleIndexPath = collectionView.indexPathForItem(at: visiblePoint),
+              let sidebar = splitViewController?.viewController(for: .primary) as? AssetCatalogSidebarListView else {
+            return
+        }
+        
+        sidebar.collectionView.selectItem(at: IndexPath(row: visibleIndexPath.section, section: 0), animated: true, scrollPosition: .top)
+    }
+}
 /// A class which acts as a delegate for the Photo / Color controllers when editing an item
 ///  rom AssetCatalogViewController
 class AssetCatalogControllerItemEditorDelegate: NSObject, PHPickerViewControllerDelegate, UIColorPickerViewControllerDelegate {
     
+    // the sender asset catalog view
     let sender: AssetCatalogViewController
-    // The rendition to edit to this photo
+    
+    // The rendition to edit
     let selectedRendition: Rendition
     
     init(sender: AssetCatalogViewController, selectedRendition: Rendition) {
@@ -523,20 +563,4 @@ class AssetCatalogControllerItemEditorDelegate: NSObject, PHPickerViewController
         }
     }
     
-}
-
-fileprivate
-enum _ExtractErrors: Error, LocalizedError {
-    case failedToExtractCatalog(failedItems: [String: String])
-    
-    var errorDescription: String? {
-        switch self {
-        case .failedToExtractCatalog(let failedItems):
-            var message = ""
-            for (item, itemMessage) in failedItems {
-                message.append("\(item): \(itemMessage)\n")
-            }
-            return message.trimmingCharacters(in: .whitespacesAndNewlines)
-        }
-    }
 }

@@ -27,8 +27,11 @@ struct Permission: OptionSet, CustomStringConvertible, Equatable {
     /// see `ownerPermsConstants`, `groupPermsConstants`, and `otherUsersPermsConstants`
     init(buffer: stat, constants: [UInt16: Permission]) {
         self = constants.filter { (constant, _) in
-            return buffer.st_mode & constant != 0
-        }.map(\.value).reducingToSingleOptionSet()
+            return (buffer.st_mode & constant) != 0
+        }
+        
+        .map(\.value)
+        .reducingToSingleOptionSet()
     }
     
     var binaryRepresentation: String {

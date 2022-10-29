@@ -49,6 +49,7 @@ class BinaryExecutionViewController: UIViewController {
             self.spawnExecutable(pathAndArgs: executableTextField.text!)
         }
         
+        executableTextField.autocorrectionType = .no
         executableTextField.returnKeyType = .go
         executableTextField.addAction(action, for: .primaryActionTriggered)
         executableTextField.text = executableURL.path

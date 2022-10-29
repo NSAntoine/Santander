@@ -76,14 +76,13 @@ extension SubPathsTableViewController: AudioPlayerToolbarDelegate {
             self.present(UINavigationController(rootViewController: vc), animated: true)
         }
         
-        var children = [symlinkAction, moveAction, copyAction]
+        var children: [UIMenuElement] = [symlinkAction, moveAction, copyAction]
         if let currentPath = currentPath {
-            let compressAction = UIAction(title: "Compress", image: UIImage(systemName: "archivebox")) { _ in
-                let destination = currentPath.appendingPathComponent("Archive.zip")
-                self.compressPaths(paths: self.selectedItems, destination: destination)
+            let compresMenu = makeCompressionMenu(paths: self.selectedItems) { format in
+                return currentPath.appendingPathComponent("Archive").appendingPathExtension(format.fileExtension)
             }
             
-            children.insert(compressAction, at: 0)
+            children.append(compresMenu)
         }
         
         return UIMenu(children: children)

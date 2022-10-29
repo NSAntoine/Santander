@@ -129,7 +129,7 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
             }
             
             let textVC = TextFileEditorViewController(fileURL: path, contents: stringContents)
-            if UIDevice.current.isiPad {
+            if UIDevice.isiPad {
                 let splitVC = UISplitViewController(style: .doubleColumn)
                 splitVC.setViewController(textVC, for: .secondary)
                 return splitVC
@@ -141,7 +141,7 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
                 return nil
             }
             
-            return ImageViewerViewController(fileURL: path, image: image)
+            return ImageViewerController(fileURL: path, image: image)
         case .video:
             let type = path.contentType
             guard (type?.isOfType(.movie) ?? false || type?.isOfType(.video) ?? false) else {
@@ -163,6 +163,12 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
             guard path.pathExtension == "car",
                   let vc = try? AssetCatalogViewController(catalogFileURL: path) else {
                 return nil
+            }
+            
+            if UIDevice.isiPad {
+                let splitVC = UISplitViewController(style: .doubleColumn)
+                splitVC.setViewController(AssetCatalogSidebarListView(catalogController: vc), for: .primary)
+                return splitVC
             }
             
             return vc
@@ -196,10 +202,10 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
         switch self {
         case .text, .image, .video, .executable:
             return true
-        case .audio, .font, .assetCatalog:
+        case .audio, .font:
             return false
-        case .propertyList, .json:
-            return UIDevice.current.isiPad
+        case .propertyList, .json, .assetCatalog:
+            return UIDevice.isiPad
         }
     }
     
@@ -207,8 +213,8 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
         switch self {
         case .video:
             return false
-        case .text:
-            return !UIDevice.current.isiPad
+        case .text, .assetCatalog:
+            return !UIDevice.isiPad
         default:
             return true
         }

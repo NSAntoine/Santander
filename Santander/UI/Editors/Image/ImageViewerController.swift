@@ -1,5 +1,5 @@
 //
-//  ImageViewerViewController.swift
+//  ImageViewerController.swift
 //  Santander
 //
 //  Created by Serena on 21/08/2022.
@@ -10,7 +10,7 @@ import ObjectiveC
 import PDFKit // Hacky workaround, but PDFView is the best way to display the image due to the built in scroll view support
 
 /// A ViewController displaying a UIImage
-class ImageViewerViewController: UIViewController {
+class ImageViewerController: UIViewController {
     let fileURL: URL?
     let image: UIImage
     var metadata: ImageMetadata?

@@ -38,7 +38,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         let subPathsVC: PathTransitioning
         let window = UIWindow(windowScene: windowScene)
-        if UIDevice.current.isiPad {
+        if UIDevice.isiPad {
             let splitVC = UISplitViewController(style: .doubleColumn)
             let vc = PathSidebarListViewController()
             subPathsVC = vc

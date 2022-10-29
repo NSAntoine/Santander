@@ -87,7 +87,7 @@ class AssetCatalogRenditionViewController: UIViewController {
     
     func addItems() {
         var snapshot = NSDiffableDataSourceSnapshot<Section, ItemType>()
-        snapshot.appendSections(Section.allCases)
+        snapshot.appendSections([.itemPreview, .itemInfo, .renditionInformation])
         let size = rendition.cuiRend.unslicedSize()
         
         var itemDetails: [DetailItem] = [
@@ -148,6 +148,7 @@ class AssetCatalogRenditionViewController: UIViewController {
                 DetailItem(primaryText: "Green", secondaryText: String(format: "%.3f", codableColor.green)),
             ]
             
+            snapshot.appendSections([.specificTypeInfo])
             snapshot.appendItems(ItemType.fromDetails(colorDetails), toSection: .specificTypeInfo)
         default:
             break
@@ -225,7 +226,7 @@ class AssetCatalogRenditionViewController: UIViewController {
             self.secondaryText = secondaryText ?? "N/A"
         }
         
-        init(primaryText: String, secondaryText: CustomStringConvertible?) {
+        init<TextType: CustomStringConvertible>(primaryText: String, secondaryText: TextType?) {
             self.primaryText = primaryText
             self.secondaryText = secondaryText?.description ?? "N/A"
         }
