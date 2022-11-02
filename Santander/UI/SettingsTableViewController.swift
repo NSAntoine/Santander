@@ -95,7 +95,7 @@ class SettingsTableViewController: UITableViewController {
             return UIAction(title: style.description, state: chosenStyle == style.rawValue ? .on : .off) { _ in
                 self.view.window?.overrideUserInterfaceStyle = style
                 UserPreferences.preferredInterfaceStyle = style.rawValue
-                self.tableView.reloadRows(at: [IndexPath(row: 2, section: 1)], with: .fade)
+                self.tableView.reloadRows(at: [IndexPath(row: 2, section: 2)], with: .fade)
             }
         }
         
@@ -113,7 +113,7 @@ class SettingsTableViewController: UITableViewController {
         let actions = UITableView.Style.allCases.map { style in
             return UIAction(title: style.description, state: selectedStyle == style ? .on : .off) { _ in
                 UserPreferences.preferredTableViewStyle = style.rawValue
-                self.tableView.reloadRows(at: [IndexPath(row: 1, section: 1)], with: .none)
+                self.tableView.reloadRows(at: [IndexPath(row: 1, section: 2)], with: .none)
             }
         }
         

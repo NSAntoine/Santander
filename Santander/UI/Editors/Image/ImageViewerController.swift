@@ -122,7 +122,7 @@ class ImageViewerController: UIViewController {
         
         let shareMenuButton = UIBarButtonItem(image: UIImage(systemName: "square.and.arrow.up"), primaryAction: shareMenuAction)
         let saveImageAction = UIAction(title: "Save Image") { _ in
-            UIImageWriteToSavedPhotosAlbum(self.image, self, #selector(self.didSaveImage(_:error:context:)), nil)
+            self.saveImage(self.image)
         }
         
         // the places to set the wallpaper, represented by a UIAction
@@ -137,13 +137,6 @@ class ImageViewerController: UIViewController {
         let actionsMenu = UIMenu(children: [saveImageAction, setAsWallpaperMenu])
         self.toolbarItems = [shareMenuButton, .flexibleSpace(), UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: actionsMenu)]
         self.navigationController?.setToolbarHidden(false, animated: true)
-    }
-    
-    @objc
-    func didSaveImage(_ im: UIImage, error: Error?, context: UnsafeMutableRawPointer?) {
-        if let error = error {
-            errorAlert(error, title: "Unable to save image to camera roll")
-        }
     }
     
     func setImageAsWallpaper(to location: WallpaperLocation) {

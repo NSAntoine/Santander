@@ -222,6 +222,11 @@ class AssetCatalogViewController: UIViewController {
             }
         }
     }
+    
+    enum Item: Hashable {
+        case header(RenditionType)
+        case rendition(Rendition)
+    }
 }
 
 // Mark: - Layout & Data Source stuff
@@ -317,7 +322,7 @@ extension AssetCatalogViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let item = dataSource.itemIdentifier(for: indexPath) else { return }
-        let vc = AssetCatalogRenditionViewController(rendition: item)
+        let vc = AssetCatalogRenditionViewController(rendition: item, sender: self)
         present(UINavigationController(rootViewController: vc), animated: true)
     }
     
@@ -338,7 +343,7 @@ extension AssetCatalogViewController: UICollectionViewDelegate {
                 children.append(copyImageAction)
                 
                 let saveImageAction = UIAction(title: "Save Image", image: UIImage(systemName: "square.and.arrow.down")) { _ in
-                    UIImageWriteToSavedPhotosAlbum(uiImage, self, #selector(self.didSaveImage(_:error:context:)), nil)
+                    self.saveImage(uiImage)
                 }
                 
                 children.append(saveImageAction)
@@ -381,13 +386,6 @@ extension AssetCatalogViewController: UICollectionViewDelegate {
         
     }
     
-    @objc
-    func didSaveImage(_ im: UIImage, error: Error?, context: UnsafeMutableRawPointer?) {
-        if let error = error {
-            errorAlert(error, title: "Unable to save image")
-        }
-    }
-    
     func updateDataSourceItems(collection: RenditionCollection) {
         var snapshot = NSDiffableDataSourceSnapshot<RenditionType, Rendition>()
         for (section, items) in collection {
@@ -407,10 +405,19 @@ extension AssetCatalogViewController: UICollectionViewDelegate {
         }
     }
     
-    func editItem(_ item: Rendition) {
-        guard let preview = item.preview else { return }
+    func editItem(_ item: Rendition, presentingFrom optionalVcToPresentFrom: UIViewController? = nil, callback: ((Error?) -> Void)? = nil) {
+        guard let preview = item.representation else { return }
         
-        editorDelegate = AssetCatalogControllerItemEditorDelegate(sender: self, selectedRendition: item)
+        let vcToPresentFrom = optionalVcToPresentFrom ?? self
+        
+        let errorCallback: AssetCatalogControllerItemEditorDelegate.ErrorCallback = callback ?? { error in
+            if let error = error {
+                vcToPresentFrom.errorAlert(error, title: "Failed to edit item")
+            }
+        }
+
+        
+        editorDelegate = AssetCatalogControllerItemEditorDelegate(sender: self, selectedRendition: item, finishedEditingCallback: errorCallback)
         let vc: UIViewController
         switch preview {
         case .image(_):
@@ -429,7 +436,7 @@ extension AssetCatalogViewController: UICollectionViewDelegate {
             vc = colorVC
         }
         
-        present(vc, animated: true)
+        vcToPresentFrom.present(vc, animated: true)
     }
 }
 
@@ -529,9 +536,13 @@ class AssetCatalogControllerItemEditorDelegate: NSObject, PHPickerViewController
     // The rendition to edit
     let selectedRendition: Rendition
     
-    init(sender: AssetCatalogViewController, selectedRendition: Rendition) {
+    typealias ErrorCallback = ((Error?) -> Void)
+    var finishedEditingCallback: ErrorCallback?
+    
+    init(sender: AssetCatalogViewController, selectedRendition: Rendition, finishedEditingCallback: ErrorCallback?) {
         self.sender = sender
         self.selectedRendition = selectedRendition
+        self.finishedEditingCallback = finishedEditingCallback
         super.init()
     }
     
@@ -552,15 +563,15 @@ class AssetCatalogControllerItemEditorDelegate: NSObject, PHPickerViewController
         edit(to: .color(viewController.selectedColor.cgColor))
     }
     
-    func edit(to newItem: RenditionPreview) {
+    func edit(to newItem: Rendition.Representation) {
         DispatchQueue.main.async { [self] in
             do {
                 try sender.catalog.editItem(selectedRendition, fileURL: sender.fileURL, to: newItem)
+                finishedEditingCallback?(nil)
                 sender.fetchItemsFromFile()
             } catch {
-                sender.errorAlert(error, title: "Unable to edit item")
+                finishedEditingCallback?(error)
             }
         }
     }
-    
 }

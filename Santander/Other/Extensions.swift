@@ -207,6 +207,17 @@ extension UIViewController {
         
         return alertController
     }
+    
+    func saveImage(_ image: UIImage) {
+        UIImageWriteToSavedPhotosAlbum(image, self, #selector(didSaveImage(_:error:context:)), nil)
+    }
+    
+    @objc
+    func didSaveImage(_ im: UIImage, error: Error?, context: UnsafeMutableRawPointer?) {
+        if let error = error {
+            errorAlert(error, title: "Unable to save image")
+        }
+    }
 }
 
 

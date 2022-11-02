@@ -12,11 +12,13 @@ import AssetCatalogWrapper
 class AssetCatalogCell: UICollectionViewCell {
     let nameLabel: UILabel = UILabel()
     let subtitleLabel: UILabel = UILabel()
-    lazy var circleView: UIView? = rendition?.preview?.uiView
+    lazy var circleView: UIView? = rendition?.representation?.uiView
     var rendition: Rendition?
 }
 
 extension AssetCatalogCell {
+    static let cellBackgroundColor: UIColor = .quaternarySystemFill
+    
     func configure() {
         setupShape()
         
@@ -63,7 +65,7 @@ extension AssetCatalogCell {
     
     func setupShape() {
         var bgConf = UIBackgroundConfiguration.clear()
-        bgConf.backgroundColor = .quaternarySystemFill
+        bgConf.backgroundColor = AssetCatalogCell.cellBackgroundColor
         bgConf.cornerRadius = 14
         backgroundConfiguration = bgConf
     }

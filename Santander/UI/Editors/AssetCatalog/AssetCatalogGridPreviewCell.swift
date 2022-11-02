@@ -26,7 +26,7 @@ class AssetCatalogGridPreviewCell: UICollectionViewCell {
     
     func configure() {
         var constraintCompletely: Bool = true
-        if let preview = rendition.preview {
+        if let preview = rendition.representation {
             previewView = preview.uiView
         } else {
             let noPreviewLabel = UILabel()
