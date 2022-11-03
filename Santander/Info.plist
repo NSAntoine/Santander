@@ -2,12 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-    <key>TSRootBinaries</key>
-    <array>
-        <string>RootHelper</string>
-    </array>
-    
-    <key>CFBundleDocumentTypes</key>
+	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
 			<key>CFBundleTypeName</key>
@@ -30,6 +25,10 @@
 				<string>santander</string>
 			</array>
 		</dict>
+	</array>
+	<key>TSRootBinaries</key>
+	<array>
+		<string>RootHelper</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>

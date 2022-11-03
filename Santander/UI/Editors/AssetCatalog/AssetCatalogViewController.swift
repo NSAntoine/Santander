@@ -366,17 +366,7 @@ extension AssetCatalogViewController: UICollectionViewDelegate {
             
             
             let deleteItemAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { [self] _ in
-                do {
-                    try catalog.removeItem(item, fileURL: fileURL)
-                    
-                    // update the catalog and rendition collection
-                    let (newCatalog, newRenditions) = try AssetCatalogWrapper.shared.renditions(forCarArchive: fileURL)
-                    self.catalog = newCatalog
-                    self.renditionCollection = newRenditions
-                    updateDataSourceItems(collection: renditionCollection)
-                } catch {
-                    errorAlert(error, title: "Unable to delete items and update file")
-                }
+                deleteItem(item, completion: nil)
             }
             
             children.append(deleteItemAction)
@@ -384,6 +374,25 @@ extension AssetCatalogViewController: UICollectionViewDelegate {
             return UIMenu(children: children)
         }
         
+    }
+    
+    func deleteItem(_ item: Rendition, completion: ((Error?) -> Void)?) {
+        do {
+            try catalog.removeItem(item, fileURL: fileURL)
+            
+            // update the catalog and rendition collection
+            let (newCatalog, newRenditions) = try AssetCatalogWrapper.shared.renditions(forCarArchive: fileURL)
+            self.catalog = newCatalog
+            self.renditionCollection = newRenditions
+            updateDataSourceItems(collection: renditionCollection)
+            completion?(nil)
+        } catch {
+            let completion = completion ?? { error in
+                self.errorAlert(error, title: "Failed to delete item and update contents of file")
+            }
+            
+            completion(error)
+        }
     }
     
     func updateDataSourceItems(collection: RenditionCollection) {

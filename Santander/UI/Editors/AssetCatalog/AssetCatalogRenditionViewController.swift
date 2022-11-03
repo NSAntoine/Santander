@@ -96,6 +96,11 @@ class AssetCatalogRenditionViewController: UIViewController {
             var conf = cell.defaultContentConfiguration()
             conf.text = itemIdentifier.displayText
             conf.image = itemIdentifier.displayImage
+            
+            if let color = itemIdentifier.textColor {
+                conf.textProperties.color = color
+            }
+            
             conf.imageToTextPadding = 10
             cell.contentConfiguration = conf
             cell.backgroundConfiguration = detailCellBackgroundConf
@@ -149,8 +154,7 @@ class AssetCatalogRenditionViewController: UIViewController {
         
         let size = rendition.cuiRend.unslicedSize()
         
-        var itemDetails: [DetailItem] = [
-        ]
+        var itemDetails: [DetailItem] = []
         
         // if rendition name is different than lookup name,
         // then display just "Name"
@@ -223,8 +227,35 @@ class AssetCatalogRenditionViewController: UIViewController {
             break
         }
         
-        snapshot.appendSections([.renditionInformation])
-        snapshot.appendItems(ItemType.fromDetails(rendInfo), toSection: .renditionInformation)
+        snapshot.appendSections([.renditionKeyInfo])
+        snapshot.appendItems(ItemType.fromDetails(rendInfo), toSection: .renditionKeyInfo)
+        
+        if let sender = sender {
+            let deleteImage = UIImage(systemName: "trash")?.withTintColor(.systemRed, renderingMode: .alwaysOriginal)
+            let deleteAction = ItemAction(displayText: "Delete", displayImage: deleteImage, textColor: .systemRed) {
+                let confirmationAlert = UIAlertController(title: "Are you sure you want to delete this item?", message: nil, preferredStyle: .actionSheet)
+                let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { [self] _ in
+                    sender.deleteItem(rendition) { [self] error in
+                        if let error = error {
+                            errorAlert(error, title: "Failed to delete item")
+                        } else {
+                            dismiss(animated: true)
+                        }
+                    }
+                }
+                
+                confirmationAlert.addAction(deleteAction)
+                confirmationAlert.addAction(.cancel())
+                
+                
+                self.present(confirmationAlert, animated: true)
+            }
+            
+            
+            snapshot.appendSections([.deleteItem])
+            snapshot.appendItems([.action(deleteAction)], toSection: .deleteItem)
+        }
+        
         dataSource.apply(snapshot)
     }
     
@@ -278,14 +309,15 @@ class AssetCatalogRenditionViewController: UIViewController {
         return layout
     }
     
-    enum Section: Int, Hashable, CaseIterable {
+    enum Section: Hashable {
         /// The item preview, ie, the image or color's view
         case itemPreview
         
         /// Actions to do, such as saving the image if available
         case itemActions
         
-        /// The item information, in a list layout
+        /// The core item information, in a list layout, such as the name / width / height
+        /// this is available for *all* renditions
         case itemInfo
         
         /// The item information that is specific to it's type,
@@ -294,7 +326,10 @@ class AssetCatalogRenditionViewController: UIViewController {
         
         /// The information specifically related to the rendition,
         /// coming from CUIRenditionKey
-        case renditionInformation
+        case renditionKeyInfo
+        
+        /// The delete item button
+        case deleteItem
     }
     
     enum ItemType: Hashable {
@@ -334,11 +369,21 @@ class AssetCatalogRenditionViewController: UIViewController {
         
         let displayText: String
         let displayImage: UIImage?
+        let textColor: UIColor?
         let action: (() -> Void)
+        
+        
+        init(displayText: String, displayImage: UIImage?, textColor: UIColor? = nil, action: @escaping () -> Void) {
+            self.displayText = displayText
+            self.displayImage = displayImage
+            self.textColor = textColor
+            self.action = action
+        }
         
         func hash(into hasher: inout Hasher) {
             hasher.combine(displayText)
             hasher.combine(displayImage)
+            hasher.combine(textColor)
         }
     }
 }
