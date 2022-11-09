@@ -22,7 +22,7 @@ class AssetCatalogViewController: UIViewController {
     let fileURL: URL
     var renditionCollection: RenditionCollection
     var catalog: CUICatalog
-    fileprivate var editorDelegate: AssetCatalogControllerItemEditorDelegate?
+    fileprivate var editorDelegate: ItemEditorDelegate?
     
     var collectionView: UICollectionView!
     var dataSource: DataSource!
@@ -54,8 +54,6 @@ class AssetCatalogViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = .systemBackground
         
         // on iPad, the title is instead displayed on the sidebar
         if !UIDevice.isiPad {
@@ -105,6 +103,7 @@ class AssetCatalogViewController: UIViewController {
     func configureCollectionView() {
         self.collectionView = UICollectionView(frame: .zero, collectionViewLayout: createLayout())
         collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.backgroundColor = .systemBackground
         collectionView.dragDelegate = self
         collectionView.delegate = self
         
@@ -151,11 +150,10 @@ class AssetCatalogViewController: UIViewController {
             let extractionPath = selectedPath
                 .appendingPathComponent("\(fileURL.lastPathComponent)-Extracted")
             
-            extractItems(extractionPath: extractionPath, sourceVC: operationVC) { result in
-                switch result {
-                case .failure(let failure):
-                    operationVC.errorAlert(failure, title: "Unable to extract items")
-                default:
+            extractItems(extractionPath: extractionPath, sourceVC: operationVC) { error in
+                if let error = error {
+                    operationVC.errorAlert(error, title: "Unable to extract items")
+                } else {
                     operationVC.dismiss(animated: true)
                 }
             }
@@ -171,7 +169,7 @@ class AssetCatalogViewController: UIViewController {
     func extractItems(
         extractionPath savePath: URL,
         sourceVC: UIViewController,
-        completionHandler: @escaping (Result<Void, Error>) -> Void
+        completionHandler: @escaping (Error?) -> Void
     ) {
         
         let alertController = createAlertWithSpinner(title: "Extracting..")
@@ -187,16 +185,11 @@ class AssetCatalogViewController: UIViewController {
             } catch {
                 caughtError = error
             }
-
         }
 
         DispatchQueue.main.async {
             alertController.dismiss(animated: true) {
-                if let caughtError = caughtError {
-                    return completionHandler(.failure(caughtError))
-                } else {
-                    return completionHandler(.success(()))
-                }
+                return completionHandler(caughtError)
             }
         }
     }
@@ -222,14 +215,9 @@ class AssetCatalogViewController: UIViewController {
             }
         }
     }
-    
-    enum Item: Hashable {
-        case header(RenditionType)
-        case rendition(Rendition)
-    }
 }
 
-// Mark: - Layout & Data Source stuff
+// MARK: - Layout & Data Source stuff
 extension AssetCatalogViewController: UICollectionViewDelegate {
     func createLayout() -> UICollectionViewLayout {
         let section: NSCollectionLayoutSection
@@ -244,11 +232,11 @@ extension AssetCatalogViewController: UICollectionViewDelegate {
             
             let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitem: item, count: 1)
             let spacing = CGFloat(10)
-            group.interItemSpacing = .fixed(10)
+            group.interItemSpacing = .fixed(spacing)
             
             section = NSCollectionLayoutSection(group: group)
             section.interGroupSpacing = spacing
-            section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: 10, bottom: 0, trailing: 10)
+            section.contentInsets = NSDirectionalEdgeInsets(top: 0, leading: spacing, bottom: 0, trailing: spacing)
         case .horizantal:
             let itemSize = NSCollectionLayoutSize(
                 widthDimension: .fractionalWidth(1),
@@ -419,14 +407,14 @@ extension AssetCatalogViewController: UICollectionViewDelegate {
         
         let vcToPresentFrom = optionalVcToPresentFrom ?? self
         
-        let errorCallback: AssetCatalogControllerItemEditorDelegate.ErrorCallback = callback ?? { error in
+        let errorCallback: ItemEditorDelegate.ErrorCallback = callback ?? { error in
             if let error = error {
                 vcToPresentFrom.errorAlert(error, title: "Failed to edit item")
             }
         }
 
         
-        editorDelegate = AssetCatalogControllerItemEditorDelegate(sender: self, selectedRendition: item, finishedEditingCallback: errorCallback)
+        editorDelegate = ItemEditorDelegate(sender: self, selectedRendition: item, finishedEditingCallback: errorCallback)
         let vc: UIViewController
         switch preview {
         case .image(_):
@@ -518,6 +506,7 @@ extension AssetCatalogViewController: UISearchBarDelegate {
     
 }
 
+// MARK: - Scroll view stuff
 extension AssetCatalogViewController {
     // if we get to a new section, then alert the sidebar list on the iPad to select the new section
     func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
@@ -534,52 +523,57 @@ extension AssetCatalogViewController {
         
         sidebar.collectionView.selectItem(at: IndexPath(row: visibleIndexPath.section, section: 0), animated: true, scrollPosition: .top)
     }
+    
 }
-/// A class which acts as a delegate for the Photo / Color controllers when editing an item
-///  rom AssetCatalogViewController
-class AssetCatalogControllerItemEditorDelegate: NSObject, PHPickerViewControllerDelegate, UIColorPickerViewControllerDelegate {
-    
-    // the sender asset catalog view
-    let sender: AssetCatalogViewController
-    
-    // The rendition to edit
-    let selectedRendition: Rendition
-    
-    typealias ErrorCallback = ((Error?) -> Void)
-    var finishedEditingCallback: ErrorCallback?
-    
-    init(sender: AssetCatalogViewController, selectedRendition: Rendition, finishedEditingCallback: ErrorCallback?) {
-        self.sender = sender
-        self.selectedRendition = selectedRendition
-        self.finishedEditingCallback = finishedEditingCallback
-        super.init()
-    }
-    
-    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-        picker.dismiss(animated: true)
-        guard let first = results.first else { return }
-        first.itemProvider.loadObject(ofClass: UIImage.self) { [self] image, error in
-            guard let image = image as? UIImage, let cgImage = image.cgImage else {
-                sender.errorAlert("Unable to acquire image selected", title: "Unable to edit item")
-                return
-            }
-            
-            edit(to: .image(cgImage))
+
+// MARK: - Editor Delegate
+extension AssetCatalogViewController {
+    /// A class which acts as a delegate for the Photo / Color controllers when editing an item
+    /// from AssetCatalogViewController
+    class ItemEditorDelegate: NSObject, PHPickerViewControllerDelegate, UIColorPickerViewControllerDelegate {
+        
+        // the sender asset catalog view
+        let sender: AssetCatalogViewController
+        
+        // The rendition to edit
+        let selectedRendition: Rendition
+        
+        typealias ErrorCallback = ((Error?) -> Void)
+        var finishedEditingCallback: ErrorCallback?
+        
+        init(sender: AssetCatalogViewController, selectedRendition: Rendition, finishedEditingCallback: ErrorCallback?) {
+            self.sender = sender
+            self.selectedRendition = selectedRendition
+            self.finishedEditingCallback = finishedEditingCallback
+            super.init()
         }
-    }
-    
-    func colorPickerViewControllerDidFinish(_ viewController: UIColorPickerViewController) {
-        edit(to: .color(viewController.selectedColor.cgColor))
-    }
-    
-    func edit(to newItem: Rendition.Representation) {
-        DispatchQueue.main.async { [self] in
-            do {
-                try sender.catalog.editItem(selectedRendition, fileURL: sender.fileURL, to: newItem)
-                finishedEditingCallback?(nil)
-                sender.fetchItemsFromFile()
-            } catch {
-                finishedEditingCallback?(error)
+        
+        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            picker.dismiss(animated: true)
+            guard let first = results.first else { return }
+            first.itemProvider.loadObject(ofClass: UIImage.self) { [self] image, error in
+                guard let image = image as? UIImage, let cgImage = image.cgImage else {
+                    sender.errorAlert("Unable to acquire image selected", title: "Unable to edit item")
+                    return
+                }
+                
+                edit(to: .image(cgImage))
+            }
+        }
+        
+        func colorPickerViewControllerDidFinish(_ viewController: UIColorPickerViewController) {
+            edit(to: .color(viewController.selectedColor.cgColor))
+        }
+        
+        func edit(to newItem: Rendition.Representation) {
+            DispatchQueue.main.async { [self] in
+                do {
+                    try sender.catalog.editItem(selectedRendition, fileURL: sender.fileURL, to: newItem)
+                    finishedEditingCallback?(nil)
+                    sender.fetchItemsFromFile()
+                } catch {
+                    finishedEditingCallback?(error)
+                }
             }
         }
     }

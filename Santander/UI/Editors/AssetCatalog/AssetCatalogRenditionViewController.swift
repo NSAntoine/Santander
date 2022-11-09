@@ -45,6 +45,7 @@ class AssetCatalogRenditionViewController: UIViewController {
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         collectionView.delegate = self
         collectionView.dragDelegate = self
+        collectionView.backgroundColor = .secondarySystemBackground
         view.addSubview(collectionView)
         
         collectionView.constraintCompletely(to: view)
