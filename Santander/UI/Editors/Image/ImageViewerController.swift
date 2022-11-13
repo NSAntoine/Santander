@@ -126,7 +126,7 @@ class ImageViewerController: UIViewController {
         }
         
         // the places to set the wallpaper, represented by a UIAction
-        let setWallpaperActions = WallpaperLocation.allCases.map { location in
+        let setWallpaperActions = WallpaperDestination.allCases.map { location in
             return UIAction(title: location.description) { _ in
                 self.setImageAsWallpaper(to: location)
             }
@@ -139,7 +139,7 @@ class ImageViewerController: UIViewController {
         self.navigationController?.setToolbarHidden(false, animated: true)
     }
     
-    func setImageAsWallpaper(to location: WallpaperLocation) {
+    func setImageAsWallpaper(to location: WallpaperDestination) {
         // for SBFWallpaperOptions
         let sbF = dlopen("/System/Library/PrivateFrameworks/SpringBoardFoundation.framework/SpringBoardFoundation", RTLD_LAZY)
         // for SBSUIWallpaperSetImages
@@ -171,13 +171,15 @@ class ImageViewerController: UIViewController {
         let result = setWallpaper(NSDictionary(dictionary: imagesDict), NSDictionary(dictionary: optionsDict), location.rawValue, traitCollection.userInterfaceStyle.rawValue)
         // 1 is success
         if result != 1 {
-            errorAlert(nil, title: "Unable to set image as wallpaper")
+            errorAlert("SBSUIWallpaperSetImages returned status code \(result) (should be 1)", title: "Unable to set image as wallpaper")
         }
     }
     
     /// The places where an image can be set as the Wallpaper
     /// The integer values here are passed directly to `SBSUIWallpaperSetImages`
-    enum WallpaperLocation: Int, CustomStringConvertible, CaseIterable {
+    enum WallpaperDestination: Int, CustomStringConvertible, CaseIterable {
+        static let allCases: [WallpaperDestination] = [.homeScreen, .lockScreen, .both]
+        
         case lockScreen = 1
         case homeScreen = 2
         case both = 3
@@ -189,7 +191,7 @@ class ImageViewerController: UIViewController {
             case .homeScreen:
                 return "Home Screen"
             case .both:
-                return "Both"
+                return "Home Screen & Lock Screen"
             }
         }
     }

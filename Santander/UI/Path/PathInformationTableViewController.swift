@@ -19,7 +19,8 @@ class PathInformationTableViewController: UITableViewController {
     var showRealPath: Bool = false
     var showAppName: Bool
     var appName: String?
-    var sizeState: PathSizeState = .loading
+    
+    var sizeState: LoadingValueState<Int> = .loading
     
     init(style: UITableView.Style, path: URL) {
         self.path = path
@@ -38,16 +39,19 @@ class PathInformationTableViewController: UITableViewController {
         super.viewDidLoad()
         
         self.title = self.path.lastPathComponent
-        DispatchQueue.global(qos: .userInteractive).sync { [self] in
+        DispatchQueue.global(qos: .userInteractive).async { [self] in
             if let size = path.size {
-                sizeState = .size(size)
+                sizeState = .value(size)
             } else {
                 sizeState = .unavailable
             }
             
+            
+            DispatchQueue.main.async {
+                self.tableView.reloadRows(at: [IndexPath(row: 2, section: 0)], with: .fade)
+            }
         }
         
-        self.tableView.reloadRows(at: [IndexPath(row: 2, section: 0)], with: .fade)
     }
     
     override func numberOfSections(in tableView: UITableView) -> Int {
@@ -135,7 +139,7 @@ class PathInformationTableViewController: UITableViewController {
                 
             case .unavailable:
                 conf.secondaryText = "N/A"
-            case .size(let size):
+            case .value(let size):
                 let formatter = ByteCountFormatter()
                 formatter.countStyle = .file
                 formatter.allowedUnits = .useAll
@@ -216,10 +220,4 @@ class PathInformationTableViewController: UITableViewController {
         default: fatalError("\(#function): Unknown Section num \(section)")
         }
     }
-}
-
-enum PathSizeState {
-    case loading
-    case unavailable
-    case size(Int)
 }

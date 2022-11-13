@@ -13,8 +13,9 @@ import UniformTypeIdentifiers
 class TypesSelectionCollectionViewController: UICollectionViewController {
     typealias DismissHandler = (([UTType]) -> Void)
     
-    typealias DataSource = UICollectionViewDiffableDataSource<Section, ItemType>
-    typealias CellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, ItemType>
+    typealias Item = DiffableDataSourceItem<Section, UTType>
+    typealias DataSource = UICollectionViewDiffableDataSource<Section, Item>
+    typealias CellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, Item>
     
     var dismissHandler: DismissHandler
     var dataSource: DataSource!
@@ -76,11 +77,11 @@ class TypesSelectionCollectionViewController: UICollectionViewController {
         let cellRegistration = CellRegistration { [self] cell, indexPath, itemIdentifier in
             var conf: UIListContentConfiguration
             switch itemIdentifier {
-            case .header(let section):
+            case .section(let section):
                 conf = .sidebarHeader()
                 conf.text = section.description
                 cell.accessories = [.outlineDisclosure()]
-            case .type(let type):
+            case .item(let type):
                 conf = cell.defaultContentConfiguration()
                 conf.text = type.localizedDescription
                 cell.accessories = selectedTypes.contains(type) ? [.checkmark()] : []
@@ -97,16 +98,17 @@ class TypesSelectionCollectionViewController: UICollectionViewController {
     }
     
     func showItems(fromCollections coll: [TypesCollection], animatingDifferences: Bool = false) {
-        var snapshot = NSDiffableDataSourceSnapshot<Section, ItemType>()
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
         let justSections = coll.map(\.section)
         snapshot.appendSections(justSections)
         dataSource.apply(snapshot, animatingDifferences: false)
         
         for collection in coll {
-            let collectionSection = ItemType.header(collection.section)
-            var section = NSDiffableDataSourceSectionSnapshot<ItemType>()
+            let collectionSection = Item.section(collection.section)
+            var section = NSDiffableDataSourceSectionSnapshot<Item>()
             section.append([collectionSection])
-            let types = ItemType.fromTypes(collection.types)
+            
+            let types = Item.fromItems(collection.types)
             section.append(types, to: collectionSection)
             section.expand([collectionSection])
             dataSource.apply(section, to: collection.section, animatingDifferences: animatingDifferences)
@@ -119,8 +121,8 @@ class TypesSelectionCollectionViewController: UICollectionViewController {
         collectionView.deselectItem(at: indexPath, animated: false)
         let item = dataSource.itemIdentifier(for: indexPath)!
         switch item {
-        case .header(_): break // never supposed to get here
-        case .type(let type):
+        case .section(_): break // never supposed to get here
+        case .item(let type):
             // if the item is already selected, remove this UTType from selectedTyps
             // otherwise, insert it to our selected types
             if selectedTypes.contains(type) {
@@ -130,18 +132,8 @@ class TypesSelectionCollectionViewController: UICollectionViewController {
             }
             
             var snapshot = dataSource.snapshot()
-            snapshot.reloadItems([.type(type)])
+            snapshot.reloadItems([.item(type)])
             dataSource.apply(snapshot, animatingDifferences: true)
-        }
-    }
-    enum ItemType: Hashable {
-        case header(Section)
-        case type(UTType)
-        
-        static func fromTypes(_ types: [UTType]) -> [ItemType] {
-            return types.map { type in
-                ItemType.type(type)
-            }
         }
     }
     
@@ -202,18 +194,19 @@ extension TypesSelectionCollectionViewController: UISearchBarDelegate {
             return
         }
         
-        let filtered = allItems.map { collection in
-            let newTypes = collection.types.filter { type in
+        var newCollection: [TypesCollection] = []
+        for collection in allItems {
+            let filtered = collection.types.filter { type in
                 type.localizedDescription?.localizedCaseInsensitiveContains(searchText) ?? false ||
                 type.preferredFilenameExtension?.localizedCaseInsensitiveContains(searchText) ?? false
             }
-
-            return TypesCollection(section: collection.section, types: newTypes)
-        }.filter { collection in
-            !collection.types.isEmpty
+            
+            if !filtered.isEmpty {
+                newCollection.append(TypesCollection(section: collection.section, types: filtered))
+            }
         }
-
-        showItems(fromCollections: filtered, animatingDifferences: false)
+        
+        showItems(fromCollections: newCollection, animatingDifferences: false)
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {

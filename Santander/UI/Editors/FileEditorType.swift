@@ -13,12 +13,12 @@ struct FileEditor {
     let viewController: UIViewController
     
     static func preferred(forURL url: URL) -> FileEditor? {
-        guard let data = try? Data(contentsOf: url) else {
-            return nil
+        if url.pathExtension == "car", let carVC = FileEditorType.assetCatalog.viewController(forPath: url, data: nil) {
+            return FileEditor(type: .assetCatalog, viewController: carVC)
         }
         
-        if url.pathExtension == "car", let carVC = FileEditorType.assetCatalog.viewController(forPath: url, data: data) {
-            return FileEditor(type: .assetCatalog, viewController: carVC)
+        guard let data = try? Data(contentsOf: url) else {
+            return nil
         }
         
         let type = url.contentType
@@ -60,9 +60,7 @@ struct FileEditor {
     }
     
     static func allEditors(forURL url: URL) -> [FileEditor] {
-        guard let data = try? Data(contentsOf: url) else {
-            return []
-        }
+        let data = try? Data(contentsOf: url)
         
         return FileEditorType.allCases.compactMap { type in
             guard let vc = type.viewController(forPath: url, data: data) else {
@@ -97,7 +95,22 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
     /// Returns the view controller to be used for the file editor type
     /// the Data parameter is used so that, when looping over all editor types,
     /// it tries to get the data for only one time
-    func viewController(forPath path: URL, data: Data) -> UIViewController? {
+    func viewController(forPath path: URL, data: Data?) -> UIViewController? {
+        if self == .assetCatalog {
+            guard path.pathExtension == "car",
+                  let vc = try? AssetCatalogViewController(catalogFileURL: path) else {
+                return nil
+            }
+            
+            if UIDevice.isiPad {
+                return __makeSplitViewController(with: AssetCatalogSidebarListView(catalogController: vc), for: .primary)
+            }
+            
+            return vc
+        }
+        
+        guard let data = data else { return nil }
+        
         switch self {
         case .audio:
             return try? AudioPlayerViewController(fileURL: path, data: data)
@@ -130,9 +143,7 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
             
             let textVC = TextFileEditorViewController(fileURL: path, contents: stringContents)
             if UIDevice.isiPad {
-                let splitVC = UISplitViewController(style: .doubleColumn)
-                splitVC.setViewController(textVC, for: .secondary)
-                return splitVC
+                return __makeSplitViewController(with: textVC, for: .secondary)
             }
             
             return textVC
@@ -159,20 +170,14 @@ enum FileEditorType: CustomStringConvertible, CaseIterable {
             return FontViewerController(selectedFont: descriptors.first!.uiFont, descriptors: descriptors)
         case .executable:
             return BinaryExecutionViewController(executableURL: path)
-        case .assetCatalog:
-            guard path.pathExtension == "car",
-                  let vc = try? AssetCatalogViewController(catalogFileURL: path) else {
-                return nil
-            }
-            
-            if UIDevice.isiPad {
-                let splitVC = UISplitViewController(style: .doubleColumn)
-                splitVC.setViewController(AssetCatalogSidebarListView(catalogController: vc), for: .primary)
-                return splitVC
-            }
-            
-            return vc
+        case .assetCatalog: return nil // already covered!
         }
+    }
+    
+    private func __makeSplitViewController(with vc: UIViewController, for column: UISplitViewController.Column) -> UISplitViewController {
+        let splitVC = UISplitViewController(style: .doubleColumn)
+        splitVC.setViewController(vc, for: column)
+        return splitVC
     }
     
     var description: String {

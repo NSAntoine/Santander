@@ -58,11 +58,7 @@ class PathOperationViewController: SubPathsTableViewController {
             case .copy, .import:
                 try FSOperation.perform(.copyItem(items: paths, resultPath: currentPath), rootHelperConf: RootConf.shared)
             case .symlink:
-                var symlinkPathsAndDestinations: [URL : URL] = [:]
-                for path in paths {
-                    symlinkPathsAndDestinations[currentPath.appendingPathComponent(path.lastPathComponent)] = path
-                }
-                try FSOperation.perform(.symlink(symlinkPathsAndDestinations), rootHelperConf: RootConf.shared)
+                try FSOperation.perform(.symlink(items: paths, resultPath: currentPath), rootHelperConf: RootConf.shared)
             case .custom(_, _, let action):
                 try action(self, currentPath)
             }

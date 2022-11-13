@@ -15,64 +15,126 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
         updateResults(searchBar: searchController.searchBar)
     }
     
-    
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        showPaths()
-        setupPermissionDeniedLabelIfNeeded()
+        DispatchQueue.main.async { [self] in
+            searchItem?.cancel()
+            isSearching = false
+            displayingSearchSuggestions = false
+            reloadTableData()
+            
+            setupPermissionDeniedLabelIfNeeded()
+        }
     }
     
     func searchBar(_ searchBar: UISearchBar, selectedScopeButtonIndexDidChange selectedScope: Int) {
         updateResults(searchBar: searchBar)
     }
     
+    @objc
     func updateResults(searchBar: UISearchBar) {
-        let searchText = searchBar.searchTextField.text ?? ""
+        let selectedScope = searchBar.selectedScopeButtonIndex
+        let query = SearchQuery(searchBar: searchBar)
         
-        // Make sure that we have search conditions or that the search text isn't empty
-        guard !(searchText.isEmpty && searchBar.searchTextField.tokens.isEmpty) else {
-            self.isSearching = false
-            setFilteredContents([])
-            return
-        }
+        self.searchItem?.cancel()
+        isSearching = true
+        guard !query.isEmpty else { return }
+        displayingSearchSuggestions = false
         
-        self.isSearching = true
-        var results: [URL] = []
-        if let currentPath = currentPath, searchBar.selectedScopeButtonIndex == 1 {
-            results = FileManager.default.enumerator(at: currentPath, includingPropertiesForKeys: [])?.allObjects.compactMap { $0 as? URL } ?? []
-        } else {
-            results = unfilteredContents
-        }
-        
-        // Get the conditions that were set (if any)
-        let conditions = searchBar.searchTextField.tokens.compactMap { token in
-            token.representedObject as? ((URL) -> Bool)
-        }
-        
-        self.displayingSearchSuggestions = false
-        let newFiltered = results.filter { url in
-            let allConditionsMet = conditions.map { condition in
-                condition(url)
-            }.allSatisfy { isCondtionTrue in
-                return isCondtionTrue
-            }
+        let newWorkItem = DispatchWorkItem(qos: .userInteractive) { [self] in
             
-            if !searchText.isEmpty {
-                return allConditionsMet &&
-                (url.lastPathComponent.localizedCaseInsensitiveContains(searchText))
+            switch selectedScope {
+            case 0: // searching in current directory
+                let filtered = unfilteredContents.filter { url in
+                    return query.matches(url: url)
+                }
+                
+                DispatchQueue.main.async {
+                    self.setFilteredContents(filtered)
+                }
+                
+            case 1: // searching in subdirectories of the directory
+                var snapshot = SnapshotType()
+                snapshot.appendSections([0])
+                __enumeratePaths(unfilteredContents, withQuery: query, doBreak: { !isSearching }) { [self] path in
+                    DispatchQueue.main.async {
+                        let row: SubPathsRowItem = .path(path)
+                        if !snapshot.itemIdentifiers.contains(row) {
+                            snapshot.appendItems([row])
+                            self.dataSource.apply(snapshot, animatingDifferences: false)
+                        }
+                    }
+                }
+            default: // should never get here
+                break
             }
-            
-            return allConditionsMet
         }
         
-        setFilteredContents(newFiltered)
+        self.searchItem = newWorkItem
+        DispatchQueue.global(qos: .userInteractive).asyncAfter(
+            deadline: .now().advanced(by: .milliseconds(2)),
+            execute: newWorkItem
+        )
     }
     
     func presentSearchController(_ searchController: UISearchController) {
-        if self.isEditing {
+        if isEditing {
             setEditing(false, animated: true)
         }
+        
         switchToSearchSuggestions()
         permissionDeniedLabel?.removeFromSuperview()
+    }
+    
+    private func __enumeratePaths(_ paths: [URL], withQuery query: SearchQuery, doBreak: () -> Bool, handler: (URL) -> ()) {
+        for path in paths {
+            if doBreak() { break }
+            
+            if query.matches(url: path) {
+                handler(path)
+            }
+            
+            if path.isDirectory {
+                __enumeratePaths(path.contents, withQuery: query, doBreak: doBreak, handler: handler)
+            }
+        }
+    }
+    
+    fileprivate struct SearchQuery {
+        let searchText: String
+        let conditions: [SearchSuggestion.Condition]
+        let isSearchTextEmpty: Bool
+        
+        // whether or not the given URL should be displayed in search results
+        // according to this query
+        func matches(url: URL) -> Bool {
+            let allConditionsSatisfied = conditions.allSatisfy { handler in
+                handler(url)
+            }
+            
+            if isSearchTextEmpty {
+                return allConditionsSatisfied
+            }
+            
+            return url.lastPathComponent.localizedCaseInsensitiveContains(searchText) && allConditionsSatisfied
+        }
+        
+        var isEmpty: Bool {
+            return isSearchTextEmpty && conditions.isEmpty
+        }
+        
+        init(searchText: String, conditions: [SearchSuggestion.Condition]) {
+            self.searchText = searchText
+            self.conditions = conditions
+            
+            self.isSearchTextEmpty = searchText.isEmpty
+        }
+        
+        init(searchBar: UISearchBar) {
+            self.searchText = searchBar.text ?? ""
+            self.conditions = searchBar.searchTextField.tokens.compactMap { $0.representedObject as? SearchSuggestion.Condition }
+            
+            self.isSearchTextEmpty = searchText.isEmpty
+        }
     }
 }
 
@@ -81,6 +143,9 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
 /// with a given condition for the search results.
 @available(iOS 14.0, *)
 struct SearchSuggestion: Hashable {
+    
+    typealias Condition = (URL) -> Bool
+    
     /// The name to be displayed in the search suggestion
     var name: String
     
@@ -88,7 +153,7 @@ struct SearchSuggestion: Hashable {
     let image: UIImage?
     
     /// The condition to which the given URL should abide to
-    var condition: ((URL) -> Bool)
+    var condition: Condition
     
     var searchToken: UISearchToken {
         let token = UISearchToken(icon: image, text: name)
@@ -140,13 +205,11 @@ struct SearchSuggestion: Hashable {
         }
     }
     
-    /// Describes the sections and rows for search suggestions
-    /// Key: Sections
-    /// Value: Array of rows
+    /// The index paths of the search suggestions
     static let searchSuggestionSectionAndRows = [
-        0: [0],
-        1: [0, 1, 2],
-        2: [0, 1, 2]
+        IndexPath(row: 0, section: 0),
+        IndexPath(row: 0, section: 1), IndexPath(row: 1, section: 1), IndexPath(row: 2, section: 1),
+        IndexPath(row: 0, section: 2), IndexPath(row: 1, section: 2), IndexPath(row: 2, section: 2)
     ]
     
     static func == (lhs: SearchSuggestion, rhs: SearchSuggestion) -> Bool {

@@ -91,7 +91,7 @@ enum UserPreferences {
     @Storage(key: "FontViewerFontSize", defaultValue: 30)
     static var fontViewerFontSize: CGFloat
     
-    @Storage(key: "AssetCatalogControllerLayoutMode", defaultValue: AssetCatalogViewController.LayoutMode.horizantal.rawValue)
+    @Storage(key: "AssetCatalogControllerLayoutMode", defaultValue: AssetCatalogViewController.LayoutMode.verical.rawValue)
     static var assetCatalogControllerLayoutMode: Int
     
     @Storage(key: "RootHelperEnabled", defaultValue: false)
@@ -108,8 +108,8 @@ enum UserPreferences {
         useLastOpenedPathWhenLaunching ? lastOpenedPath : userPreferredLaunchPath
     }
     
-    @CodableStorage(key: "TextEditorTheme", defaultValue: CodableTheme(), didChange: nil)
-    static var textEditorTheme: CodableTheme
+    @CodableStorage(key: "TextEditorTheme", defaultValue: CodableTextEditorTheme(), didChange: nil)
+    static var textEditorTheme: CodableTextEditorTheme
     
     @CodableStorage(key: "AppTintColor", defaultValue: CodableColor(.systemBlue), didChange: nil)
     static var appTintColor: CodableColor
@@ -121,4 +121,9 @@ struct PathGroup: Codable, Hashable {
     var paths: [URL]
     
     static let `default` = PathGroup(name: "Default", paths: [.root])
+    
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(name)
+        hasher.combine(paths)
+    }
 }

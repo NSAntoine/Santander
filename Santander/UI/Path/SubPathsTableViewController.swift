@@ -77,6 +77,8 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
     /// Whether or not the current path contains subpaths that are app UUIDs
     var containsAppUUIDs: Bool?
     
+    var searchItem: DispatchWorkItem?
+    
     typealias SnapshotType = NSDiffableDataSourceSnapshot<Int, SubPathsRowItem>
     typealias DataSourceType = UITableViewDiffableDataSource<Int, SubPathsRowItem>
     lazy var dataSource = DataSourceType(tableView: self.tableView) { tableView, indexPath, itemIdentifier in
@@ -226,17 +228,21 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         
         snapshot.appendSections([0, 1, 2])
         
-        for (section, items) in SearchSuggestion.searchSuggestionSectionAndRows {
-            let mapped = items.map { item in
-                SearchSuggestion.displaySearchSuggestions(for: IndexPath(row: item, section: section))
-            }.map { suggestion in
-                SubPathsRowItem.searchSuggestion(suggestion)
-            }
-            
-            snapshot.appendItems(mapped, toSection: section)
+        for indexPath in SearchSuggestion.searchSuggestionSectionAndRows {
+            let item = SubPathsRowItem.searchSuggestion(.displaySearchSuggestions(for: indexPath))
+            snapshot.appendItems([item], toSection: indexPath.section)
         }
         
         dataSource.apply(snapshot, animatingDifferences: false)
+    }
+    
+    func path(forIndexPath indexPath: IndexPath) -> URL {
+        switch dataSource.itemIdentifier(for: indexPath) {
+        case .path(let path):
+            return path
+        default:
+            fatalError("NEVER SUPPOSED TO BE HERE!")
+        }
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -247,7 +253,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if self.isEditing {
-            selectedItems.append(contents[indexPath.row])
+            selectedItems.append(path(forIndexPath: indexPath)) // PLACE 1
             setupOrUpdateToolbar()
             setLeftBarSelectionButtonItem()
             return
@@ -279,7 +285,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
             }
             
         } else {
-            let selectedItem = contents[indexPath.row]
+            let selectedItem = path(forIndexPath: indexPath) // PLACE 2
             goToPath(path: selectedItem)
             tableView.deselectRow(at: indexPath, animated: true)
         }
@@ -290,7 +296,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
             return
         }
         
-        let selected = contents[indexPath.row]
+        let selected = path(forIndexPath: indexPath) // PLACE 3
         selectedItems.removeAll { path in
             path == selected
         }
@@ -305,7 +311,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
             return nil
         }
         
-        let selectedItem = self.contents[indexPath.row]
+        let selectedItem = self.path(forIndexPath: indexPath) // PLACE 4
         let itemAlreadyBookmarked = UserPreferences.bookmarks.contains(selectedItem)
         let favouriteAction = UIContextualAction(style: .normal, title: nil) { _, _, handler in
             self.removeOrAddItemToBookmarks(selectedItem, alreadyBookmarked: itemAlreadyBookmarked)
@@ -595,7 +601,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
     }
     
     override func tableView(_ tableView: UITableView, accessoryButtonTappedForRowWith indexPath: IndexPath) {
-        self.openInfoBottomSheet(path: contents[indexPath.row])
+        self.openInfoBottomSheet(path: path(forIndexPath: indexPath)) // PLACE 5
     }
     
     /// Returns the cell row to be used for a search suggestion
@@ -666,7 +672,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
             return nil // No context menu for search suggestions
         }
         
-        let item = contents[indexPath.row]
+        let item = path(forIndexPath: indexPath) // PLACE 6
         return UIContextMenuConfiguration(identifier: nil) {
             // The following is the preview provider for the item
             // Being the cell row, but manually made for 2 reasons:
@@ -775,17 +781,14 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
             }
             
             if UIDevice.isiPad {
-                var menu = UIMenu(title: "Add to group..", image: UIImage(systemName: "sidebar.leading"), children: [])
-                
-                for (index, group) in UserPreferences.pathGroups.enumerated() {
-                    let addAction = UIAction(title: group.name) { _ in
+                let addActions = UserPreferences.pathGroups.enumerated().map { (index, group) in
+                    return UIAction(title: group.name) { _ in
                         UserPreferences.pathGroups[index].paths.append(item)
                     }
-                    
-                    menu = menu.appending(addAction)
                 }
                 
-                children.append(menu)
+                let addToPathGroupsMenu = UIMenu(title: "Add to group..", image: UIImage(systemName: "sidebar.leading"), children: addActions)
+                children.append(addToPathGroupsMenu)
             }
             
             let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
@@ -860,6 +863,17 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
             }
             
             menuActions.append(showInfoAction)
+            /*
+            if let toPaste = UIPasteboard.general.probableURL {
+                let pasteAction = UIAction(title: "Paste") { _ in
+                    do {
+                        try FSOperation.perform(.moveItem(items: [toPaste], resultPath: currentPath), rootHelperConf: RootConf.shared)
+                    } catch {
+                        errorAlert(error, title: <#T##String#>)
+                    }
+                }
+            }
+             */
         }
         
         let settingsAction = UIAction(title: "Settings", image: UIImage(systemName: "gear")) { _ in
@@ -930,7 +944,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
     }
     
     func setupPermissionDeniedLabelIfNeeded() {
-        guard let currentPath = currentPath, !currentPath.isReadable else {
+        guard let currentPath = currentPath, contents.isEmpty, !currentPath.isReadable else {
             return
         }
         

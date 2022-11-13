@@ -18,7 +18,7 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
     
     var textView: TextView = TextView()
     var keyboardToolsView: KeyboardToolsView!
-    var theme: CodableTheme = UserPreferences.textEditorTheme {
+    var theme: CodableTextEditorTheme = UserPreferences.textEditorTheme {
         didSet {
             UserPreferences.textEditorTheme = theme
             DispatchQueue.global(qos: .userInitiated).sync {
@@ -213,7 +213,7 @@ class TextFileEditorViewController: UIViewController, TextViewDelegate, EditorTh
         }
     }
     
-    func themeDidChange(to newTheme: CodableTheme) {
+    func themeDidChange(to newTheme: CodableTextEditorTheme) {
         self.theme = newTheme
     }
     

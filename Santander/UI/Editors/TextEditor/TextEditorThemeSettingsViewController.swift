@@ -13,13 +13,13 @@ class TextEditorThemeSettingsViewController: SettingsTableViewController {
     
     weak var delegate: EditorThemeSettingsDelegate?
     var selectedIndexPath: IndexPath? = nil
-    var theme: CodableTheme
+    var theme: CodableTextEditorTheme
     
     var editorBackgroundColor: UIColor {
         theme.textEditorBackgroundColor?.uiColor ?? .tertiarySystemBackground
     }
     
-    init(style: UITableView.Style, theme: CodableTheme) {
+    init(style: UITableView.Style, theme: CodableTextEditorTheme) {
         self.theme = theme
         super.init(style: style)
     }
@@ -219,7 +219,7 @@ extension TextEditorThemeSettingsViewController: UIFontPickerViewControllerDeleg
 }
                                                     
 protocol EditorThemeSettingsDelegate: AnyObject {
-    func themeDidChange(to newTheme: CodableTheme)
+    func themeDidChange(to newTheme: CodableTextEditorTheme)
     func wrapLinesConfigurationDidChange(wrapLines: Bool)
     func showLineCountConfigurationDidChange(showLineCount: Bool)
     func characterPairConfigurationDidChange(useCharacterPairs: Bool)

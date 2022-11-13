@@ -154,7 +154,22 @@ class AssetCatalogViewController: UIViewController {
                 if let error = error {
                     operationVC.errorAlert(error, title: "Unable to extract items")
                 } else {
-                    operationVC.dismiss(animated: true)
+                    // once we're done with extracting,
+                    // go to the directory where the extracted items are
+                    operationVC.dismiss(animated: true) {
+                        self.dismiss(animated: true) {
+                            let rootVC = UIApplication.shared.sceneKeyWindow?.rootViewController
+                            let vcToPushFrom: PathTransitioning?
+                            
+                            if UIDevice.isiPad {
+                                vcToPushFrom = (rootVC as? UISplitViewController)?.viewController(for: .primary) as? PathTransitioning
+                            } else {
+                                vcToPushFrom = (rootVC as? UINavigationController)?.visibleViewController as? PathTransitioning
+                            }
+                            
+                            vcToPushFrom?.goToPath(path: extractionPath)
+                        }
+                    }
                 }
             }
         }
@@ -175,13 +190,12 @@ class AssetCatalogViewController: UIViewController {
         let alertController = createAlertWithSpinner(title: "Extracting..")
         
         sourceVC.present(alertController, animated: true)
-        let justRenditions = renditionCollection.flatMap(\.renditions)
         
         var caughtError: Error? = nil
         
         DispatchQueue.global(qos: .userInitiated).async {
             do {
-                try FSOperation.perform(.extractCatalog(renditions: justRenditions.toCodable(), resultPath: savePath), rootHelperConf: RootConf.shared)
+                try FSOperation.perform(.extractCatalog(catalogFileURL: self.fileURL, resultPath: savePath), rootHelperConf: RootConf.shared)
             } catch {
                 caughtError = error
             }
@@ -567,8 +581,23 @@ extension AssetCatalogViewController {
         
         func edit(to newItem: Rendition.Representation) {
             DispatchQueue.main.async { [self] in
+                // So, because CoreUI is dumb,
+                // CUIMutableCommonAssetStorage fails to init for some paths??
+                // so if we move the fileURL to a temporary directory, the asset storage will most definitely init
+                // then, we edit the file at the temporary directory, and overwrite the original file with this new one
+                
+                let tmpFilename = "\(sender.fileURL.lastPathComponent)-TMP-EDIT-\(UUID().uuidString.prefix(5))"
+                let temporaryFileURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(tmpFilename)
                 do {
-                    try sender.catalog.editItem(selectedRendition, fileURL: sender.fileURL, to: newItem)
+                    // create the temporary file
+                    try FileManager.default.copyItem(at: sender.fileURL, to: temporaryFileURL)
+                    // edit the temporary file
+                    try sender.catalog.editItem(selectedRendition, fileURL: temporaryFileURL, to: newItem)
+                    // overwrite original file with the temporary one
+                    
+                    try FileManager.default.removeItem(at: sender.fileURL)
+                    try FileManager.default.moveItem(at: temporaryFileURL, to: sender.fileURL)
+                    
                     finishedEditingCallback?(nil)
                     sender.fetchItemsFromFile()
                 } catch {

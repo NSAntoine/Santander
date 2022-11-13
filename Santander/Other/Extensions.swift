@@ -26,6 +26,11 @@ extension URL {
     }
     
     var contents: [URL] {
+        // if not readable, invoke the root helper to get the contents
+        if !isReadable {
+            return (try? RootConf.shared.contents(of: resolvedURL)) ?? []
+        }
+        
         let _contents = try? FileManager.default.contentsOfDirectory(at: self.resolvedURL, includingPropertiesForKeys: [])
         return _contents ?? []
     }
@@ -52,9 +57,13 @@ extension URL {
     }
     
     var size: Int? {
-        if self.isDirectory {
-            #warning("Do this for directories")
-            return nil
+        if isDirectory {
+            var _size: Int = 0
+            for content in contents {
+                _size += content.size ?? 0
+            }
+            
+            return _size
         }
         
         return try? resourceValues(forKeys: [.fileSizeKey]).fileSize
@@ -680,5 +689,13 @@ extension UIApplication {
 extension CTFontDescriptor {
     var uiFont: UIFont {
         return CTFontCreateWithFontDescriptor(self, UserPreferences.fontViewerFontSize, nil) as UIFont
+    }
+}
+
+extension UIPasteboard {
+    var probableURL: URL? {
+        if let url = url { return url }
+        if let string = string, string.hasPrefix("/") { return URL(fileURLWithPath: string) }
+        return nil
     }
 }

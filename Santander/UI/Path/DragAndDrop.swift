@@ -47,7 +47,7 @@ extension SubPathsTableViewController: UITableViewDropDelegate, UITableViewDragD
             return []
         }
         
-        let selectedItem = contents[indexPath.row]
+        let selectedItem = path(forIndexPath: indexPath)
         let itemProvider = NSItemProvider()
         
         let typeID = selectedItem.contentType?.identifier ?? UTType.content.identifier

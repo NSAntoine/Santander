@@ -8,9 +8,12 @@
 
 import UIKit
 
+#warning("Make a view controller to create a new group")
 class PathSidebarListViewController: UIViewController, PathTransitioning, UICollectionViewDelegate {
-    typealias DataSource = UICollectionViewDiffableDataSource<String, ItemType>
-    typealias CellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, ItemType>
+    
+    typealias Item = DiffableDataSourceItem<String, URL>
+    typealias DataSource = UICollectionViewDiffableDataSource<String, Item>
+    typealias CellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, Item>
     
     var dataSource: DataSource!
     var pathGroups = UserPreferences.pathGroups
@@ -55,20 +58,26 @@ class PathSidebarListViewController: UIViewController, PathTransitioning, UIColl
         let layout = UICollectionViewCompositionalLayout { _, env in
             var layoutConf = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
             layoutConf.headerMode = .firstItemInSection
-            layoutConf.trailingSwipeActionsConfigurationProvider = { indexPath in
-                // dont allow the first item (/) to be removed
-                if (indexPath.section, indexPath.row) == (0, 1) {
+            layoutConf.trailingSwipeActionsConfigurationProvider = { (indexPath: IndexPath) -> UISwipeActionsConfiguration? in
+                let sectionAndRow = (indexPath.section, indexPath.row)
+                
+                // dont allow the first section or the first item of the first section (/) to be removed
+                guard sectionAndRow != (0, 0) && sectionAndRow != (0, 1) else {
                     return nil
                 }
                 
-                let removeAction = UIContextualAction(style: .destructive, title: nil) { _, _, completion in
-                    // remove the item
-                    var newPathGroups = self.pathGroups
-                    var currentGroup = newPathGroups[indexPath.section]
-                    currentGroup.paths.remove(at: indexPath.row - 1)
-                    newPathGroups[indexPath.section] = currentGroup
-                    UserPreferences.pathGroups = newPathGroups
-                    completion(true)
+                let removeAction = UIContextualAction(style: .destructive, title: nil) { [self] _, _, completion in
+                    switch dataSource.itemIdentifier(for: indexPath) {
+                    case .section(let name): // removing a section
+                        UserPreferences.pathGroups.remove(at: indexPath.section)
+                        removeSection(name)
+                    case .item(_): // removing a row
+                        UserPreferences.pathGroups[indexPath.section].paths.remove(at: indexPath.row - 1)
+                    default: // should never get here (we only get here if itemIdentifier returns nil)
+                        return completion(false)
+                    }
+                    
+                    return completion(true)
                 }
                 
                 removeAction.image = .remove
@@ -90,11 +99,11 @@ class PathSidebarListViewController: UIViewController, PathTransitioning, UIColl
         let cellRegistration = CellRegistration { cell, indexPath, itemIdentifier in
             var conf: UIListContentConfiguration
             switch itemIdentifier {
-            case .header(let headerTitle):
+            case .section(let headerTitle):
                 conf = .sidebarHeader()
                 conf.text = headerTitle
                 cell.accessories = [.outlineDisclosure()]
-            case .path(let path):
+            case .item(let path):
                 conf = cell.defaultContentConfiguration()
                 conf.text = path.lastPathComponent
                 conf.image = path.displayImage
@@ -111,25 +120,37 @@ class PathSidebarListViewController: UIViewController, PathTransitioning, UIColl
     }
     
     func addItems() {
-        var snapshot = NSDiffableDataSourceSnapshot<String, ItemType>()
-        let justSections = pathGroups.map(\.name)
-        snapshot.appendSections(justSections)
-        dataSource.apply(snapshot, animatingDifferences: false)
+        var snapshot = dataSource.snapshot()
+        if snapshot.sectionIdentifiers.isEmpty {
+            snapshot.appendSections(pathGroups.map(\.name))
+            dataSource.apply(snapshot)
+        }
         
         for group in pathGroups {
-            var sectionSnapshot = NSDiffableDataSourceSectionSnapshot<ItemType>()
-            let header: ItemType = .header(group.name)
-            sectionSnapshot.append([header])
+            var sectionSnapshot = NSDiffableDataSourceSectionSnapshot<Item>()
+            let section: Item = .section(group.name)
+            sectionSnapshot.append([section])
+            sectionSnapshot.expand([section])
             
-            let paths = ItemType.fromPaths(group.paths)
-            sectionSnapshot.append(paths, to: header)
-            sectionSnapshot.expand([header])
+            let items = Item.fromItems(group.paths)
+            sectionSnapshot.append(items, to: section)
             dataSource.apply(sectionSnapshot, to: group.name)
         }
     }
     
+    func removeSection(_ name: String) {
+        var snapshot = dataSource.snapshot()
+        snapshot.deleteSections([name])
+        dataSource.apply(snapshot)
+    }
+    
     func goToPath(path: URL) {
         let secondary = subPathsSecondary
+        if !path.isDirectory {
+            secondary?.goToFile(path: path)
+            return
+        }
+        
         if let currentSubpathsPath = secondary?.currentPath {
             // make sure we're not going to a directory that the secondary column is already showing
             // or is a subpath of
@@ -149,7 +170,6 @@ class PathSidebarListViewController: UIViewController, PathTransitioning, UIColl
                 // call the traverse function
                 secondary?.traverseThroughPath(path)
             } else {
-                // if we're going to a path that is directly a
                 splitViewController?.setViewController(SubPathsTableViewController(path: path), for: .secondary)
             }
             
@@ -160,22 +180,12 @@ class PathSidebarListViewController: UIViewController, PathTransitioning, UIColl
         }
     }
     
-    enum ItemType: Hashable {
-        case header(String)
-        case path(URL)
-        
-        static func fromPaths(_ paths: [URL]) -> [ItemType] {
-            return paths.map { path in
-                ItemType.path(path)
-            }
-        }
-    }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         guard let item = dataSource.itemIdentifier(for: indexPath) else { return }
         switch item {
-        case .header(_): break // shouldn't get here
-        case .path(let path):
+        case .section(_): break // shouldn't get here
+        case .item(let path):
             goToPath(path: path)
         }
     }
