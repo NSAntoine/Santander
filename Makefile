@@ -31,6 +31,9 @@ package:
 	@$(TARGET_CODESIGN) -Sentitlements-TS.plist $(APP_STAGE_DIR)/TSPayload/SantanderTS.app/
 	@$(TARGET_CODESIGN) -Sentitlements-TS.plist $(APP_STAGE_DIR)/TSPayload/SantanderTS.app/RootHelper
 
+	chmod 6755 $(APP_STAGE_DIR)/Payload/Santander.app/RootHelper
+	chmod 6755 $(APP_STAGE_DIR)/TSPayload/SantanderTS.app/RootHelper
+	
 	@ln -sf $(APP_STAGE_DIR)/Payload Payload
 	@ln -sf $(APP_STAGE_DIR)/JailedPayload JailedPayload
 	@ln -sf $(APP_STAGE_DIR)/TSPayload TSPayload
