@@ -11,6 +11,7 @@ import ArgumentParser
 import NSTaskBridge
 
 // get the parent caller, and make sure it's Santander, otherwise, gtfo
+/*
 var buffer = [CChar](repeating: 0, count: 1024)
 proc_pidpath(getppid(), &buffer, 1024)
 
@@ -19,6 +20,7 @@ let path = String(cString: buffer)
 guard path == "/Applications/Santander.app/Santander" else {
     fatalError("incorrect parent calling, goodbye!")
 }
+ */
 
 setuid(0)
 setgid(0)
