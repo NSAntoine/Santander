@@ -79,9 +79,10 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
     
     var searchItem: DispatchWorkItem?
     
-    typealias SnapshotType = NSDiffableDataSourceSnapshot<Int, SubPathsRowItem>
-    typealias DataSourceType = UITableViewDiffableDataSource<Int, SubPathsRowItem>
-    lazy var dataSource = DataSourceType(tableView: self.tableView) { tableView, indexPath, itemIdentifier in
+    typealias Snapshot = NSDiffableDataSourceSnapshot<Int, SubPathsRowItem>
+    typealias DataSource = UITableViewDiffableDataSource<Int, SubPathsRowItem>
+    
+    lazy var dataSource = DataSource(tableView: tableView) { tableView, indexPath, itemIdentifier in
         switch itemIdentifier {
         case .path(let url):
             return self.pathCellRow(forURL: url, displayFullPathAsSubtitle: self.isSearching || self.isBookmarksSheet)
@@ -214,7 +215,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
     /// Setup the snapshot to show the paths given
     func showPaths(animatingDifferences: Bool = false) {
         self.displayingSearchSuggestions = false
-        var snapshot = SnapshotType()
+        var snapshot = Snapshot()
         
         snapshot.appendSections([0])
         snapshot.appendItems(SubPathsRowItem.fromPaths(contents))
@@ -224,7 +225,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
     /// Show the search suggestions
     func switchToSearchSuggestions() {
         displayingSearchSuggestions = true
-        var snapshot = SnapshotType()
+        var snapshot = Snapshot()
         
         snapshot.appendSections([0, 1, 2])
         
@@ -815,6 +816,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         }
         
         let copyPath = UIAction(title: "Copy path") { _ in
+            UIPasteboard.general.url = url
             UIPasteboard.general.string = url.path
         }
         
@@ -863,17 +865,20 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
             }
             
             menuActions.append(showInfoAction)
-            /*
-            if let toPaste = UIPasteboard.general.probableURL {
-                let pasteAction = UIAction(title: "Paste") { _ in
-                    do {
-                        try FSOperation.perform(.moveItem(items: [toPaste], resultPath: currentPath), rootHelperConf: RootConf.shared)
-                    } catch {
-                        errorAlert(error, title: <#T##String#>)
-                    }
+            let pasteAction = UIAction(title: "Paste") { _ in
+                guard let probableURL = UIPasteboard.general.probableURL else {
+                    self.errorAlert(nil, title: "No path to paste.")
+                    return
+                }
+                
+                do {
+                    try FSOperation.perform(.copyItem(items: [probableURL], resultPath: currentPath), rootHelperConf: RootConf.shared)
+                } catch {
+                    self.errorAlert(error, title: "Failed to copy item to current directory.")
                 }
             }
-             */
+            
+            menuActions.insert(UIMenu(options: .displayInline, children: [pasteAction]), at: 1)
         }
         
         let settingsAction = UIAction(title: "Settings", image: UIImage(systemName: "gear")) { _ in

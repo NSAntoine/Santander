@@ -53,7 +53,7 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
                 }
                 
             case 1: // searching in subdirectories of the directory
-                var snapshot = SnapshotType()
+                var snapshot = Snapshot()
                 snapshot.appendSections([0])
                 __enumeratePaths(unfilteredContents, withQuery: query, doBreak: { !isSearching }) { [self] path in
                     DispatchQueue.main.async {

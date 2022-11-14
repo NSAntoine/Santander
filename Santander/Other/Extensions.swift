@@ -27,9 +27,11 @@ extension URL {
     
     var contents: [URL] {
         // if not readable, invoke the root helper to get the contents
+        /*
         if !isReadable {
             return (try? RootConf.shared.contents(of: resolvedURL)) ?? []
         }
+         */
         
         let _contents = try? FileManager.default.contentsOfDirectory(at: self.resolvedURL, includingPropertiesForKeys: [])
         return _contents ?? []
