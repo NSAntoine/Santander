@@ -701,3 +701,15 @@ extension UIPasteboard {
         return nil
     }
 }
+
+extension UIApplication {
+    func setShortcutItems<URLCollection: Collection<URL>>(intoURLs urls: URLCollection) {
+        shortcutItems = urls.map { bookmark in
+            return UIApplicationShortcutItem(type: bookmark.absoluteString,
+                                             localizedTitle: bookmark.lastPathComponent,
+                                             localizedSubtitle: bookmark.path,
+                                             icon: nil,
+                                             userInfo: ["ShortcutURLToOpenTo": bookmark.path] as [String: NSSecureCoding])
+        }
+    }
+}

@@ -21,7 +21,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let vc = UINavigationController(rootViewController: SubPathsTableViewController.bookmarks())
             window?.rootViewController?.present(vc, animated: true)
         default:
-            break
+            // URL, go to it.
+            if let pathToTopenTo = shortcut.userInfo?["ShortcutURLToOpenTo"] as? String {
+                visibleSubPathsVc?.goToPath(path: URL(fileURLWithPath: pathToTopenTo))
+            }
         }
     }
     

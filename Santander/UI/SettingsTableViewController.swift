@@ -41,14 +41,14 @@ class SettingsTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         switch section {
         case 0: return 1
-        case 1, 2: return 3
+        case 1: return 4
+        case 2: return 3
         case 3: return UserPreferences.useLastOpenedPathWhenLaunching ? 1 : 2
         default: fatalError("How'd we get here?")
         }
     }
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
         switch (indexPath.section, indexPath.row) {
         case (0, 0):
             return cellWithView(settingsSwitch(forIndexPath: indexPath), text: "Root Helper")
@@ -59,6 +59,8 @@ class SettingsTableViewController: UITableViewController {
             return cellWithView(settingsSwitch(forIndexPath: indexPath), text: "Always show search bar")
         case (1, 2):
             return cellWithView(settingsSwitch(forIndexPath: indexPath), text: "Show information button")
+        case (1, 3):
+            return cellWithView(settingsSwitch(forIndexPath: indexPath), text: "List recently used items in application shortcuts")
         case (2, 0):
             let cell = UITableViewCell()
             var conf = cell.defaultContentConfiguration()
@@ -183,6 +185,8 @@ class SettingsTableViewController: UITableViewController {
             return "AlwaysShowSearchBar"
         case (1, 2):
             return "ShowInfoButton"
+        case (1, 3):
+            return "DisplayRecentlyUsedPathsInAppShortcuts"
         default:
             fatalError()
         }
@@ -224,6 +228,8 @@ class SettingsTableViewController: UITableViewController {
             return UserPreferences.alwaysShowSearchBar
         case (1, 2):
             return UserPreferences.showInfoButton
+        case (1, 3):
+            return UserPreferences.displayRecentlyBookmarked
         default:
             fatalError("Got unknown index path in \(#function)! IndexPath: \(indexPath)")
         }

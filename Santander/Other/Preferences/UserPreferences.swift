@@ -42,6 +42,12 @@ enum UserPreferences {
             _bookmarksData = newValue.compactMap { url in
                 try? url.bookmarkData()
             }
+            
+            if displayRecentlyBookmarked {
+                // put last 5 items as the short cut items
+                let bookmarks: [URL] = newValue.suffix(5)
+                UIApplication.shared.setShortcutItems(intoURLs: bookmarks)
+            }
         }
     }
     
@@ -96,6 +102,9 @@ enum UserPreferences {
     
     @Storage(key: "RootHelperEnabled", defaultValue: false)
     static var rootHelperIsEnabled: Bool
+    
+    @Storage(key: "DisplayRecentlyUsedPathsInAppShortcuts", defaultValue: true)
+    static var displayRecentlyBookmarked: Bool
     
     @CodableStorage(key: "PathGroups", defaultValue: [.default], didChange: { groups in
         NotificationCenter.default.post(name: .pathGroupsDidChange, object: groups)
