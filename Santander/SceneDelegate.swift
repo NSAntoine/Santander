@@ -11,19 +11,19 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     var window: UIWindow?
-    var visibleSubPathsVc: SubPathsTableViewController? {
-        (window?.rootViewController as? UINavigationController)?.visibleViewController as? SubPathsTableViewController
+    var visibleSubPathsVc: PathListViewController? {
+        (window?.rootViewController as? UINavigationController)?.visibleViewController as? PathListViewController
     }
     
     func performShortcut(_ shortcut: UIApplicationShortcutItem) {
         switch shortcut.type {
         case "com.serena.santander.bookmarks":
-            let vc = UINavigationController(rootViewController: SubPathsTableViewController.bookmarks())
+            let vc = UINavigationController(rootViewController: PathListViewController.bookmarks())
             window?.rootViewController?.present(vc, animated: true)
         default:
             // URL, go to it.
             if let pathToTopenTo = shortcut.userInfo?["ShortcutURLToOpenTo"] as? String {
-                visibleSubPathsVc?.goToPath(path: URL(fileURLWithPath: pathToTopenTo))
+                visibleSubPathsVc?.goToPath(path: Path(stringLiteral: pathToTopenTo))
             }
         }
     }
@@ -48,7 +48,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             splitVC.setViewController(vc, for: .primary)
             window.rootViewController = splitVC
         } else {
-            let vc = SubPathsTableViewController(style: .userPreferred, path: .root)
+            let vc = PathListViewController(style: .userPreferred, path: .root)
             subPathsVC = vc
             window.rootViewController = UINavigationController(rootViewController: vc)
         }
@@ -64,7 +64,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         (window.rootViewController as? UISplitViewController)?.show(.primary)
         if let launchPath = UserPreferences.launchPath,
             FileManager.default.fileExists(atPath: launchPath) {
-            subPathsVC.goToPath(path: URL(fileURLWithPath: launchPath))
+            subPathsVC.goToPath(path: Path(stringLiteral: launchPath))
         }
         
         window.makeKeyAndVisible()
@@ -127,9 +127,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
                 let item = urls[0]
                 let itemParentPath = item.deletingLastPathComponent()
                 let rootVC = self.window?.rootViewController as? UINavigationController
-                let vcToPush = SubPathsTableViewController(path: itemParentPath)
+                let vcToPush = PathListViewController(path: Path(url: itemParentPath))
                 rootVC?.pushViewController(vcToPush, animated: true) {
-                    if let indx = vcToPush.contents.firstIndex(of: item) {
+                    if let indx = vcToPush.contents.firstIndex(of: Path(url: item)) {
                         let indexPath = IndexPath(row: indx, section: 0)
                         vcToPush.tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
                         vcToPush.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .middle)

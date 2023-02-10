@@ -8,7 +8,7 @@
 import UIKit
 import CompressionWrapper
 
-extension SubPathsTableViewController: AudioPlayerToolbarDelegate {
+extension PathListViewController: AudioPlayerToolbarDelegate {
     
     @objc
     func setupOrUpdateToolbar() {
@@ -19,7 +19,7 @@ extension SubPathsTableViewController: AudioPlayerToolbarDelegate {
             let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { _ in
   
                 do {
-                    try FSOperation.perform(.removeItems(items: self.selectedItems), rootHelperConf: RootConf.shared)
+                    try FSOperation.perform(.removeItems(items: self.selectedItems.map(\.url)), rootHelperConf: RootConf.shared)
                 } catch {
                     self.errorAlert(error, title: "Unable to remove items")
                 }
@@ -62,17 +62,17 @@ extension SubPathsTableViewController: AudioPlayerToolbarDelegate {
     
     fileprivate func makeToolbarMoreItemsMenu() -> UIMenu {
         let moveAction = UIAction(title: "Move", image: UIImage(systemName: "arrow.right")) { _ in
-            let vc = PathOperationViewController(paths: self.selectedItems, operationType: .move)
+            let vc = PathOperationViewController(paths: self.selectedItems.toURL(), operationType: .move)
             self.present(UINavigationController(rootViewController: vc), animated: true)
         }
         
         let copyAction = UIAction(title: "Copy", image: UIImage(systemName: "doc.on.doc")) { _ in
-            let vc = PathOperationViewController(paths: self.selectedItems, operationType: .copy)
+            let vc = PathOperationViewController(paths: self.selectedItems.toURL(), operationType: .copy)
             self.present(UINavigationController(rootViewController: vc), animated: true)
         }
         
         let symlinkAction = UIAction(title: "Alias", image: UIImage(systemName: "link")) { _ in
-            let vc = PathOperationViewController(paths: self.selectedItems, operationType: .symlink)
+            let vc = PathOperationViewController(paths: self.selectedItems.toURL(), operationType: .symlink)
             self.present(UINavigationController(rootViewController: vc), animated: true)
         }
         

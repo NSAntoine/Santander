@@ -1,5 +1,5 @@
 //
-//  SubPathsTableViewController.swift
+//  PathListViewController.swift
 //  Santander
 //
 //  Created by Serena on 21/06/2022
@@ -13,22 +13,22 @@ import ApplicationsWrapper
 import CompressionWrapper
 
 /// A table view controller showing the subpaths under a Directory, or a group
-class SubPathsTableViewController: UITableViewController, PathTransitioning {
+class PathListViewController: UITableViewController, PathTransitioning {
     
     /// The contents of the path, unfiltered
-    var unfilteredContents: [URL]
+    var unfilteredContents: [Path]
     
     /// The contents of the path, filtered by the search or hiding dotfiles
-    var filteredSearchContents: [URL] = []
+    var filteredSearchContents: [Path] = []
     
     /// The items selected by the user while editing
-    var selectedItems: [URL] = []
+    var selectedItems: [Path] = []
     
     /// A Boolean representing if the user is currently searching
     var isSearching: Bool = false
     
     /// The contents of the path to show in UI
-    var contents: [URL] {
+    var contents: [Path] {
         get {
             return filteredSearchContents.isEmpty && !self.isSearching ? unfilteredContents : filteredSearchContents
         }
@@ -46,7 +46,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
     let isBookmarksSheet: Bool
     
     /// The current path from which items are presented
-    var currentPath: URL? = nil
+    var currentPath: Path? = nil
     
     let showInfoButton: Bool = UserPreferences.showInfoButton
     
@@ -91,16 +91,16 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         }
     }
     
-    /// Returns the SubPathsTableViewController for bookmarks paths
-    class func bookmarks() -> SubPathsTableViewController {
-        return SubPathsTableViewController(
+    /// Returns the PathListViewController for bookmarks paths
+    class func bookmarks() -> PathListViewController {
+        return PathListViewController(
             contents: Array(UserPreferences.bookmarks),
             title: "Bookmarks",
             isBookmarksSheet: true)
     }
     
     /// Initialize with a given path URL
-    init(style: UITableView.Style = .userPreferred, path: URL, isBookmarksSheet: Bool = false) {
+    init(style: UITableView.Style = .userPreferred, path: Path, isBookmarksSheet: Bool = false) {
         self.unfilteredContents = self.sortMethod.sorting(URLs: path.contents, sortOrder: .userPreferred)
         self.currentPath = path
         self.isBookmarksSheet = isBookmarksSheet
@@ -110,7 +110,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
     }
     
     /// Initialize with the given specified URLs
-    init(style: UITableView.Style = .userPreferred, contents: [URL], title: String, isBookmarksSheet: Bool = false) {
+    init(style: UITableView.Style = .userPreferred, contents: [Path], title: String, isBookmarksSheet: Bool = false) {
         self.unfilteredContents = self.sortMethod.sorting(URLs: contents, sortOrder: .userPreferred)
         self.isBookmarksSheet = isBookmarksSheet
         
@@ -168,7 +168,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         // then comes back
         if let currentPath = self.currentPath {
             if directoryMonitor == nil {
-                directoryMonitor = DirectoryMonitor(url: currentPath)
+                directoryMonitor = DirectoryMonitor(path: currentPath)
                 directoryMonitor?.delegate = self
             }
             
@@ -199,7 +199,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         }
     }
     
-    func setupRefreshControl(forPath path: URL) {
+    func setupRefreshControl(forPath path: Path) {
         let refreshControl = UIRefreshControl()
         let refreshAction = UIAction { [self] in
             unfilteredContents = sortMethod.sorting(URLs: path.contents, sortOrder: .userPreferred)
@@ -237,7 +237,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         dataSource.apply(snapshot, animatingDifferences: false)
     }
     
-    func path(forIndexPath indexPath: IndexPath) -> URL {
+    func path(forIndexPath indexPath: IndexPath) -> Path {
         switch dataSource.itemIdentifier(for: indexPath) {
         case .path(let path):
             return path
@@ -334,7 +334,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         return config
     }
     
-    func removeOrAddItemToBookmarks(_ item: URL, alreadyBookmarked: Bool) {
+    func removeOrAddItemToBookmarks(_ item: Path, alreadyBookmarked: Bool) {
         if alreadyBookmarked {
             UserPreferences.bookmarks.remove(item)
             
@@ -400,7 +400,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
     func makeGoToMenu() -> UIMenu {
         var items: [UIMenuElement] = GoToItem.all.map { item in
             return UIAction(title: item.displayName, image: item.image) { _ in
-                self.goToPath(path: item.url)
+                self.goToPath(path: Path(url: item.url))
             }
         }
         
@@ -417,8 +417,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
                     return
                 }
                 
-                let url = URL(fileURLWithPath: text)
-                self.goToPath(path: url)
+                self.goToPath(path: Path(stringLiteral: text))
             }
             
             alert.addAction(.cancel())
@@ -432,7 +431,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         return UIMenu(title: "Go to..", image: UIImage(systemName: "arrow.right"), children: items)
     }
     
-    func decompressPath(path: URL) {
+    func decompressPath(path: Path) {
         let alertController = createAlertWithSpinner(title: "Decompressing..")
         present(alertController, animated: true)
         DispatchQueue.global(qos: .userInitiated).async {
@@ -443,7 +442,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
                 // ie, unzipping Library.zip would create ./CurrentDirectory/Library/Library,
                 // rather than the intended ./CurrentDirectory/Library/,
                 let destination = path.deletingLastPathComponent()
-                try Compression.shared.extract(path: path, to: destination)
+                try Compression.shared.extract(path: path.url, to: destination.url)
             } catch {
                 caughtError = error
             }
@@ -457,14 +456,14 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         }
     }
     
-    func compressPaths(paths: [URL], destination: URL, format: Compression.FormatType) {
+    func compressPaths(paths: [Path], destination: URL, format: Compression.FormatType) {
         let alertController = createAlertWithSpinner(title: "Compressing..", heightAnchorConstant: 120)
         present(alertController, animated: true)
         
         DispatchQueue.global(qos: .userInitiated).async {
             var caughtError: Error? = nil
             do {
-                try Compression.shared.compress(paths: paths, outputPath: destination, format: format) { pathBeingProcessed in
+                try Compression.shared.compress(paths: paths.map(\.url), outputPath: destination, format: format) { pathBeingProcessed in
                     DispatchQueue.main.async { alertController.message = "Compressing \(pathBeingProcessed.lastPathComponent)" }
                 }
             } catch {
@@ -480,17 +479,17 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         }
     }
     
-    func makeCompressionMenu(paths: [URL], destination: @escaping (Compression.FormatType) -> URL) -> UIMenu {
+    func makeCompressionMenu(paths: [Path], destination: @escaping (Compression.FormatType) -> Path) -> UIMenu {
         let actions = Compression.FormatType.allCases.map { format in
             UIAction(title: format.description) { _ in
-                self.compressPaths(paths: paths, destination: destination(format), format: format)
+                self.compressPaths(paths: paths, destination: destination(format).url, format: format)
             }
         }
         
         return UIMenu(title: "Compress", image: UIImage(systemName: "archivebox"), children: actions)
     }
     
-    func goToFile(path: URL) {
+    func goToFile(path: Path) {
         if path.contentType?.isOfType(.archive) ?? false {
             decompressPath(path: path)
         } else if let preferred = FileEditor.preferred(forURL: path) {
@@ -507,19 +506,19 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
             }
             
         } else {
-            openQuickLookPreview(forURL: path)
+            openQuickLookPreview(forPath: path)
         }
     }
     
-    func openQuickLookPreview(forURL url: URL) {
+    func openQuickLookPreview(forPath path: Path) {
         let controller = QLPreviewController()
-        let shared = FilePreviewDataSource(fileURL: url)
+        let shared = FilePreviewDataSource(fileURL: path.url)
         controller.dataSource = shared
         self.present(controller, animated: true)
     }
     
     /// Opens a path in the UI
-    func goToPath(path: URL) {
+    func goToPath(path: Path) {
         // Make sure we're opening a directory,
         // or the parent directory of the file selected (if searching)
         
@@ -531,7 +530,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
             // simply push through the navigation controller
             // rather than traversing through each parent path
             if isBookmarksSheet || parentDirectory == self.currentPath {
-                let vc = SubPathsTableViewController(path: path, isBookmarksSheet: self.isBookmarksSheet)
+                let vc = PathListViewController(path: path, isBookmarksSheet: self.isBookmarksSheet)
                 self.navigationController?.pushViewController(vc, animated: true)
             } else {
                 traverseThroughPath(path)
@@ -541,9 +540,9 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         }
     }
     
-    func traverseThroughPath(_ path: URL) {
-        let vcs = path.fullPathComponents().map {
-            SubPathsTableViewController(path: $0, isBookmarksSheet: self.isBookmarksSheet)
+    func traverseThroughPath(_ path: Path) {
+        let vcs = path.url.fullPathComponents().map {
+            PathListViewController(path: Path(url: $0), isBookmarksSheet: self.isBookmarksSheet)
         }
         
         self.navigationController?.setViewControllers(vcs, animated: true)
@@ -555,7 +554,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
     }
     
     /// Opens the information bottom sheet for a specified path
-    func openInfoBottomSheet(path: URL) {
+    func openInfoBottomSheet(path: Path) {
         if let app = path.applicationItem {
             // if we can get the app info too,
             // present an action sheet to choose between either
@@ -617,9 +616,10 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
     
     /// Returns the cell row to be used to display a path
     func pathCellRow(
-        forURL fsItem: URL,
+        forURL fsItem: Path,
         displayFullPathAsSubtitle useSubtitle: Bool = false
     ) -> UITableViewCell {
+        var fsItem = fsItem
         let pathName = fsItem.lastPathComponent
         
         let cell = UITableViewCell(style: useSubtitle ? .subtitle : .default, reuseIdentifier: nil)
@@ -688,15 +688,15 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         } actionProvider: { _ in
             
             let movePath = UIAction(title: "Move to..", image: UIImage(systemName: "arrow.right")) { _ in
-                self.presentOperationVC(forItems: [item], type: .move)
+                self.presentOperationVC(forItems: [item.url], type: .move)
             }
             
             let copyPath = UIAction(title: "Copy to..", image: UIImage(systemName: "doc.on.doc")) { _ in
-                self.presentOperationVC(forItems: [item], type: .copy)
+                self.presentOperationVC(forItems: [item.url], type: .copy)
             }
             
             let createSymlink = UIAction(title: "Create symbolic link to..", image: UIImage(systemName: "link")) { _ in
-                self.presentOperationVC(forItems: [item], type: .symlink)
+                self.presentOperationVC(forItems: [item.url], type: .symlink)
             }
             
             let pasteboardOptions = UIMenu(options: .displayInline, children: self.makePasteboardMenuElements(for: item))
@@ -718,8 +718,8 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
                     }
                     
                     do {
-                        let newPath = item.deletingLastPathComponent().appendingPathComponent(name)
-                        try FSOperation.perform(.copyItem(items: [item], resultPath: newPath), rootHelperConf: RootConf.shared)
+                        let newPath: URL = item.deletingLastPathComponent().appendingPathComponent(name)
+                        try FSOperation.perform(.rename(item: item.url, newPath: newPath), rootHelperConf: RootConf.shared)
                     } catch {
                         self.errorAlert(error, title: "Unable to rename \(item.lastPathComponent)")
                     }
@@ -762,7 +762,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
             }
             
             if !item.isDirectory {
-                let allEditors = FileEditor.allEditors(forURL: item)
+                let allEditors = FileEditor.allEditors(forPath: item)
                 var actions = allEditors.map { editor in
                     UIAction(title: editor.type.description) { _ in
                         editor.display(senderVC: self)
@@ -771,7 +771,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
                 
                 // always have a QuickLook action
                 let qlAction = UIAction(title: "QuickLook") { _ in
-                    self.openQuickLookPreview(forURL: item)
+                    self.openQuickLookPreview(forPath: item)
                 }
                 
                 actions.append(qlAction)
@@ -784,7 +784,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
             if UIDevice.isiPad {
                 let addActions = UserPreferences.pathGroups.enumerated().map { (index, group) in
                     return UIAction(title: group.name) { _ in
-                        UserPreferences.pathGroups[index].paths.append(item)
+                        UserPreferences.pathGroups[index].paths.append(item.url)
                     }
                 }
                 
@@ -810,14 +810,14 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         }
     }
     
-    func makePasteboardMenuElements(for url: URL) -> [UIMenuElement] {
+    func makePasteboardMenuElements(for path: Path) -> [UIMenuElement] {
         let copyName = UIAction(title: "Copy name") { _ in
-            UIPasteboard.general.string = url.lastPathComponent
+            UIPasteboard.general.string = path.lastPathComponent
         }
         
         let copyPath = UIAction(title: "Copy path") { _ in
-            UIPasteboard.general.url = url
-            UIPasteboard.general.string = url.path
+            UIPasteboard.general.url = path.url
+            UIPasteboard.general.string = path.path
         }
         
         return [copyName, copyPath]
@@ -843,7 +843,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         var firstMenuItems = [selectionMenu, makeSortMenu(), makeGoToMenu()]
         
         if let currentPath = currentPath {
-            firstMenuItems.append(makeNewItemMenu(forURL: currentPath))
+            firstMenuItems.append(makeNewItemMenu(forURL: currentPath.url))
         }
         
         let firstMenu = UIMenu(options: .displayInline, children: firstMenuItems)
@@ -852,7 +852,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         // if we're in the "Bookmarks" sheet, don't display the Bookmarks button
         if !isBookmarksSheet {
             let presentBookmarks = UIAction(title: "Bookmarks", image: UIImage(systemName: "bookmark")) { _ in
-                let newVC = UINavigationController(rootViewController: SubPathsTableViewController.bookmarks())
+                let newVC = UINavigationController(rootViewController: PathListViewController.bookmarks())
                 self.present(newVC, animated: true)
             }
             
@@ -872,7 +872,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
                 }
                 
                 do {
-                    try FSOperation.perform(.copyItem(items: [probableURL], resultPath: currentPath), rootHelperConf: RootConf.shared)
+                    try FSOperation.perform(.copyItem(items: [probableURL], resultPath: currentPath.url), rootHelperConf: RootConf.shared)
                 } catch {
                     self.errorAlert(error, title: "Failed to copy item to current directory.")
                 }
@@ -941,7 +941,7 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
         }
     }
     
-    func setFilteredContents(_ newContents: [URL], animatingDifferences: Bool = false) {
+    func setFilteredContents(_ newContents: [Path], animatingDifferences: Bool = false) {
         self.filteredSearchContents = newContents
         if !displayingSearchSuggestions {
             self.showPaths(animatingDifferences: animatingDifferences)
@@ -969,10 +969,10 @@ class SubPathsTableViewController: UITableViewController, PathTransitioning {
     }
 }
 
-extension SubPathsTableViewController: DirectoryMonitorDelegate {
+extension PathListViewController: DirectoryMonitorDelegate {
     func directoryMonitorDidObserveChange(directoryMonitor: DirectoryMonitor) {
         DispatchQueue.main.async {
-            let items = self.sortMethod.sorting(URLs: directoryMonitor.url.contents, sortOrder: .userPreferred)
+            let items = self.sortMethod.sorting(URLs: directoryMonitor.path.contents, sortOrder: .userPreferred)
             self.unfilteredContents = items
             self.reloadTableData(animatingDifferences: true)
             
@@ -985,13 +985,13 @@ extension SubPathsTableViewController: DirectoryMonitorDelegate {
     }
 }
 #if compiler(>=5.7)
-extension SubPathsTableViewController: UINavigationItemRenameDelegate {
+extension PathListViewController: UINavigationItemRenameDelegate {
     func navigationItem(_: UINavigationItem, didEndRenamingWith title: String) {
         guard let currentPath = currentPath else {
             return
         }
         
-        let newURL = currentPath.deletingLastPathComponent().appendingPathComponent(title)
+        let newURL: Path = currentPath.deletingLastPathComponent().appendingPathComponent(title)
         
         // new name is the exact same, don't continue renaming
         guard currentPath != newURL else {
@@ -999,7 +999,7 @@ extension SubPathsTableViewController: UINavigationItemRenameDelegate {
         }
         
         do {
-            try FSOperation.perform(.moveItem(items: [currentPath], resultPath: newURL), rootHelperConf: RootConf.shared)
+            try FSOperation.perform(.moveItem(items: [currentPath.url], resultPath: newURL.url), rootHelperConf: RootConf.shared)
             self.currentPath = newURL
         } catch {
             self.errorAlert(error, title: "Uname to rename \(newURL.lastPathComponent)")
@@ -1040,10 +1040,10 @@ enum SubPathsRowItem: Hashable {
     }
     
     case searchSuggestion(SearchSuggestion)
-    case path(URL)
+    case path(Path)
     
     /// Return an array of items from an array of URLs
-    static func fromPaths(_ paths: [URL]) -> [SubPathsRowItem] {
+    static func fromPaths(_ paths: [Path]) -> [SubPathsRowItem] {
         return paths.map { url in
             return .path(url)
         }

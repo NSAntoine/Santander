@@ -27,11 +27,9 @@ extension URL {
     
     var contents: [URL] {
         // if not readable, invoke the root helper to get the contents
-        /*
         if !isReadable {
             return (try? RootConf.shared.contents(of: resolvedURL)) ?? []
         }
-         */
         
         let _contents = try? FileManager.default.contentsOfDirectory(at: self.resolvedURL, includingPropertiesForKeys: [])
         return _contents ?? []
@@ -137,7 +135,7 @@ extension URL {
     }
     
     var containsAppUUIDSubpaths: Bool {
-        applicationPaths.contains(self.path)
+        return pathComponents.contains("Containers") || pathComponents.contains("containers")
     }
     
     var applicationItem: LSApplicationProxy? {
@@ -522,14 +520,14 @@ extension UITableViewController {
         return result
     }
     
-    func deleteURL(_ url: URL, completionHandler: @escaping (Bool) -> Void) {
-        let confirmationController = UIAlertController(title: "Are you sure you want to delete \"\(url.lastPathComponent)\"?", message: nil, preferredStyle: .alert)
+    func deleteURL(_ path: Path, completionHandler: @escaping (Bool) -> Void) {
+        let confirmationController = UIAlertController(title: "Are you sure you want to delete \"\(path.lastPathComponent)\"?", message: nil, preferredStyle: .alert)
         let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { _ in
             do {
-                try FSOperation.perform(.removeItems(items: [url]), rootHelperConf: RootConf.shared)
+                try FSOperation.perform(.removeItems(items: [path.url]), rootHelperConf: RootConf.shared)
                 completionHandler(true)
             } catch {
-                self.errorAlert(error, title: "Failed to delete \"\(url.lastPathComponent)\"")
+                self.errorAlert(error, title: "Failed to delete \"\(path.lastPathComponent)\"")
                 completionHandler(false)
             }
         }
@@ -703,13 +701,19 @@ extension UIPasteboard {
 }
 
 extension UIApplication {
-    func setShortcutItems<URLCollection: Collection<URL>>(intoURLs urls: URLCollection) {
+    func setShortcutItems<URLCollection: Collection<Path>>(intoURLs urls: URLCollection) {
         shortcutItems = urls.map { bookmark in
-            return UIApplicationShortcutItem(type: bookmark.absoluteString,
+            return UIApplicationShortcutItem(type: bookmark.url.absoluteString,
                                              localizedTitle: bookmark.lastPathComponent,
                                              localizedSubtitle: bookmark.path,
                                              icon: nil,
                                              userInfo: ["ShortcutURLToOpenTo": bookmark.path] as [String: NSSecureCoding])
         }
+    }
+}
+
+extension Array<Path> {
+    func toURL() -> [URL] {
+        map(\.url)
     }
 }

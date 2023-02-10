@@ -35,13 +35,13 @@ struct PathMetadata {
     /// The applied permissions of the path
     var permissions: PathPermissions?
     
-    init(fileURL url: URL, resourceValues: Set<URLResourceKey> = resourceValueKeys) {
-        let resourceValues = try? url.resourceValues(forKeys: resourceValues)
+    init(filePath path: Path, resourceValues: Set<URLResourceKey> = resourceValueKeys) {
+        let resourceValues = try? path.url.resourceValues(forKeys: resourceValues)
         self.creationDate = resourceValues?.creationDate
         self.addedToDirectoryDate = resourceValues?.addedToDirectoryDate
         self.lastModifiedDate = resourceValues?.contentModificationDate
         self.lastAccessedDate = resourceValues?.contentAccessDate
         self.contentType = resourceValues?.contentType
-        self.permissions = PathPermissions(fileURL: url)
+        self.permissions = PathPermissions(fileURL: path.url)
     }
 }

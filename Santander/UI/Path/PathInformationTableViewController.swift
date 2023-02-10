@@ -11,7 +11,7 @@ import LaunchServicesBridge
 
 /// A Table View Controller displaying information for a given path
 class PathInformationTableViewController: UITableViewController {
-    let path: URL
+    let path: Path
     let metadata: PathMetadata
     
     var showByteCount: Bool = false
@@ -22,9 +22,9 @@ class PathInformationTableViewController: UITableViewController {
     
     var sizeState: LoadingValueState<Int> = .loading
     
-    init(style: UITableView.Style, path: URL) {
+    init(style: UITableView.Style, path: Path) {
         self.path = path
-        self.metadata = PathMetadata(fileURL: path)
+        self.metadata = PathMetadata(filePath: path)
         appName = path.applicationItem?.localizedName()
         
         showAppName = (appName != nil)
@@ -40,6 +40,7 @@ class PathInformationTableViewController: UITableViewController {
         
         self.title = self.path.lastPathComponent
         DispatchQueue.global(qos: .userInteractive).async { [self] in
+            var path = path
             if let size = path.size {
                 sizeState = .value(size)
             } else {

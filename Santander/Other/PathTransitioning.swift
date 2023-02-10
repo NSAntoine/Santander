@@ -10,5 +10,5 @@ import Foundation
 
 /// A Protocol describing an object which can move from it's current path to another
 protocol PathTransitioning {
-    func goToPath(path: URL)
+    func goToPath(path: Path)
 }

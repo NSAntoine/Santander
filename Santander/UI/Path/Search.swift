@@ -9,7 +9,7 @@
 import UIKit
 import UniformTypeIdentifiers
 
-extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate {
+extension PathListViewController: UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate {
     
     func updateSearchResults(for searchController: UISearchController) {
         updateResults(searchBar: searchController.searchBar)
@@ -85,7 +85,7 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
         permissionDeniedLabel?.removeFromSuperview()
     }
     
-    private func __enumeratePaths(_ paths: [URL], withQuery query: SearchQuery, doBreak: () -> Bool, handler: (URL) -> ()) {
+    private func __enumeratePaths(_ paths: [Path], withQuery query: SearchQuery, doBreak: () -> Bool, handler: (Path) -> ()) {
         for path in paths {
             if doBreak() { break }
             
@@ -106,7 +106,7 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
         
         // whether or not the given URL should be displayed in search results
         // according to this query
-        func matches(url: URL) -> Bool {
+        func matches(url: Path) -> Bool {
             let allConditionsSatisfied = conditions.allSatisfy { handler in
                 handler(url)
             }
@@ -144,7 +144,7 @@ extension SubPathsTableViewController: UISearchResultsUpdating, UISearchControll
 @available(iOS 14.0, *)
 struct SearchSuggestion: Hashable {
     
-    typealias Condition = (URL) -> Bool
+    typealias Condition = (Path) -> Bool
     
     /// The name to be displayed in the search suggestion
     var name: String
@@ -187,7 +187,7 @@ struct SearchSuggestion: Hashable {
             }
         case (1, 2):
             return SearchSuggestion(name: "Symbolic Link", image: UIImage(systemName: "link")) { url in
-                return url.isSymlink
+                return url.url.isSymlink
             }
         case (2, 0):
             return SearchSuggestion(name: "Executable", image: UIImage(systemName: "terminal")) { url in

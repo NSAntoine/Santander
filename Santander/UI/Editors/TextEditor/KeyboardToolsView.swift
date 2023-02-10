@@ -9,7 +9,6 @@ import Runestone
 import UIKit
 
 // Stolen directly from Runestone example source code, modified for use by Serena
-
 fileprivate func _makeGenericButton(image: UIImage?) -> UIButton {
     let button = UIButton(type: .system)
     button.translatesAutoresizingMaskIntoConstraints = false
@@ -26,7 +25,8 @@ final class KeyboardToolsView: UIInputView {
     private let redoButton = _makeGenericButton(image: UIImage(systemName: "arrow.uturn.forward"))
     
     private let dismissButton = _makeGenericButton(image: UIImage(systemName: "keyboard.chevron.compact.down"))
-
+    private let searchButton = _makeGenericButton(image: UIImage(systemName: "magnifyingglass"))
+    
     private weak var textView: TextView?
 
     init(textView: TextView) {
@@ -54,11 +54,14 @@ final class KeyboardToolsView: UIInputView {
         addSubview(undoButton)
         addSubview(redoButton)
         addSubview(dismissButton)
+        addSubview(searchButton)
+        
         shiftLeftButton.addTarget(self, action: #selector(shiftLeft), for: .touchUpInside)
         shiftRightButton.addTarget(self, action: #selector(shiftRight), for: .touchUpInside)
         undoButton.addTarget(self, action: #selector(undo), for: .touchUpInside)
         redoButton.addTarget(self, action: #selector(redo), for: .touchUpInside)
         dismissButton.addTarget(self, action: #selector(dismissKeyboard), for: .touchUpInside)
+        searchButton.addTarget(self, action: #selector(switchToSearch), for: .touchUpInside)
         updateUndoRedoButtonStates()
     }
 
@@ -75,14 +78,18 @@ final class KeyboardToolsView: UIInputView {
             undoButton.trailingAnchor.constraint(equalTo: redoButton.leadingAnchor, constant: -10),
             undoButton.topAnchor.constraint(equalTo: topAnchor),
             undoButton.bottomAnchor.constraint(equalTo: bottomAnchor),
-
-            redoButton.trailingAnchor.constraint(equalTo: dismissButton.leadingAnchor, constant: -30),
+            
+            redoButton.trailingAnchor.constraint(equalTo: dismissButton.leadingAnchor, constant: -46),
             redoButton.topAnchor.constraint(equalTo: topAnchor),
             redoButton.bottomAnchor.constraint(equalTo: bottomAnchor),
 
             dismissButton.trailingAnchor.constraint(equalTo: layoutMarginsGuide.trailingAnchor),
             dismissButton.topAnchor.constraint(equalTo: topAnchor),
-            dismissButton.bottomAnchor.constraint(equalTo: bottomAnchor)
+            dismissButton.bottomAnchor.constraint(equalTo: bottomAnchor),
+            
+            searchButton.trailingAnchor.constraint(equalTo: dismissButton.trailingAnchor, constant: -35),
+            searchButton.topAnchor.constraint(equalTo: topAnchor),
+            searchButton.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
     }
 }
@@ -108,6 +115,13 @@ private extension KeyboardToolsView {
         textView?.resignFirstResponder()
     }
 
+    @objc private func switchToSearch() {
+        guard let textView else { return }
+        textView.inputAccessoryView = KeyboardSearchView(textView: textView)
+        textView.resignFirstResponder()
+        textView.becomeFirstResponder()
+    }
+    
     @objc private func updateUndoRedoButtonStates() {
         let undoManager = textView?.undoManager
         undoButton.isEnabled = undoManager?.canUndo ?? false

@@ -12,9 +12,9 @@ import ApplicationsWrapper
 class AppInfoViewController: UITableViewController {
     let app: LSApplicationProxy
     // used to go to a path if selected in the current view controller
-    let subPathsSender: SubPathsTableViewController
+    let subPathsSender: PathListViewController
     
-    init(style: UITableView.Style, app: LSApplicationProxy, subPathsSender: SubPathsTableViewController) {
+    init(style: UITableView.Style, app: LSApplicationProxy, subPathsSender: PathListViewController) {
         self.app = app
         self.subPathsSender = subPathsSender
         super.init(style: style)
@@ -153,6 +153,6 @@ class AppInfoViewController: UITableViewController {
     func dismissAndGoToURL(_ url: URL) {
         self.dismiss(animated: true)
         
-        subPathsSender.goToPath(path: url)
+        subPathsSender.goToPath(path: Path(url: url))
     }
 }

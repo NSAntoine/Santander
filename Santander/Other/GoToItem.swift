@@ -32,7 +32,7 @@ struct GoToItem: Hashable {
     private static func _generateAll() -> [GoToItem] {
         // these items always exist and will always be displayed
         let coreItems: [GoToItem] = [
-            GoToItem(displayName: "Root", url: .root, image: nil),
+            GoToItem(displayName: "Root", url: URL(fileURLWithPath: "/var/root"), image: nil),
             GoToItem(displayName: "Home", url: .home, image: UIImage(systemName: "house"))
         ]
   

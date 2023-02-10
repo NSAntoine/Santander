@@ -46,9 +46,11 @@ enum PathsSortMethods: String, CaseIterable, CustomStringConvertible {
     }
     
     /// Sorts an array of URLs with the current sort method
-    func sorting(URLs urls: [URL], sortOrder: SortOrder) -> [URL] {
-        return urls.sorted { (firstURL: URL, secondURL: URL) in
+    func sorting(URLs urls: [Path], sortOrder: SortOrder) -> [Path] {
+        return urls.sorted { (first: Path, second: Path) in
             let ascending: Bool
+            let firstURL = first.url
+            let secondURL = second.url
             switch self {
             case .alphabetically:
                 ascending = firstURL.lastPathComponent < secondURL.lastPathComponent

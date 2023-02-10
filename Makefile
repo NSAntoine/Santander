@@ -8,10 +8,10 @@ APP_HELPER_PATH = $(APP_TMP)/Build/Products/Release-iphoneos/RootHelper
 
 package:
 	@set -o pipefail; \
-		xcodebuild -jobs $(shell sysctl -n hw.ncpu) -project 'Santander.xcodeproj' -scheme Santander -configuration Release -arch arm64 -sdk iphoneos -derivedDataPath $(APP_TMP) \
+		xcodebuild -quiet -jobs $(shell sysctl -n hw.ncpu) -project 'Santander.xcodeproj' -scheme Santander -configuration Release -arch arm64 -sdk iphoneos -derivedDataPath $(APP_TMP) \
 		CODE_SIGNING_ALLOWED=NO DSTROOT=$(APP_TMP)/install ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES=NO
 	@set -o pipefail; \
-		xcodebuild -jobs $(shell sysctl -n hw.ncpu) -project 'Santander.xcodeproj' -scheme RootHelper -configuration Release -arch arm64 -sdk iphoneos -derivedDataPath $(APP_TMP) \
+		xcodebuild -quiet -jobs $(shell sysctl -n hw.ncpu) -project 'Santander.xcodeproj' -scheme RootHelper -configuration Release -arch arm64 -sdk iphoneos -derivedDataPath $(APP_TMP) \
 		CODE_SIGNING_ALLOWED=NO DSTROOT=$(APP_TMP)/install ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES=NO
 	@rm -rf Payload
 	

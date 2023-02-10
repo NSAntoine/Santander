@@ -19,20 +19,20 @@ enum UserPreferences {
     static private var _bookmarksData: [Data]
     
     /// Bookmarked paths by saved the user
-    static var bookmarks: Set<URL> {
+    static var bookmarks: Set<Path> {
         get {
             var dataArr = self._bookmarksData
-            let arr = dataArr.compactMap { data in
+            let arr: [Path] = dataArr.compactMap { data in
                 var isStale: Bool = false
-                let url = try? URL(resolvingBookmarkData: data, bookmarkDataIsStale: &isStale)
+                guard let url = try? URL(resolvingBookmarkData: data, bookmarkDataIsStale: &isStale) else { return nil }
                 
                 // replace if stale
-                if isStale, let indx = dataArr.firstIndex(of: data), let urlData = try? url?.bookmarkData() {
+                if isStale, let indx = dataArr.firstIndex(of: data), let urlData = try? url.bookmarkData() {
                     dataArr[indx] = urlData
                     self._bookmarksData = dataArr
                 }
                 
-                return url
+                return Path(url: url)
             }
             
             return Set(arr)
@@ -40,12 +40,12 @@ enum UserPreferences {
         
         set {
             _bookmarksData = newValue.compactMap { url in
-                try? url.bookmarkData()
+                try? url.url.bookmarkData()
             }
             
             if displayRecentlyBookmarked {
                 // put last 5 items as the short cut items
-                let bookmarks: [URL] = newValue.suffix(5)
+                let bookmarks: [Path] = newValue.suffix(5)
                 UIApplication.shared.setShortcutItems(intoURLs: bookmarks)
             }
         }

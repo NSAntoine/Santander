@@ -9,7 +9,7 @@ import UIKit
 import QuickLook
 
 /// A View Controller which presents a path to be selected, and then executes a specified operation, such as moving or copying the path
-class PathOperationViewController: SubPathsTableViewController {
+class PathOperationViewController: PathListViewController {
     
     /// The paths being moved / copied / imported / etc.
     let paths: [URL]
@@ -19,7 +19,7 @@ class PathOperationViewController: SubPathsTableViewController {
     
     let dismissWhenDone: Bool
     
-    init(paths: [URL], operationType: PathSelectionOperation, startingPath: URL = .root, dismissWhenDone: Bool = true) {
+    init(paths: [URL], operationType: PathSelectionOperation, startingPath: Path = .root, dismissWhenDone: Bool = true) {
         self.paths = paths
         self.operationType = operationType
         self.dismissWhenDone = dismissWhenDone
@@ -54,13 +54,13 @@ class PathOperationViewController: SubPathsTableViewController {
         do {
             switch operationType {
             case .move:
-                try FSOperation.perform(.moveItem(items: paths, resultPath: currentPath), rootHelperConf: RootConf.shared)
+                try FSOperation.perform(.moveItem(items: paths, resultPath: currentPath.url), rootHelperConf: RootConf.shared)
             case .copy, .import:
-                try FSOperation.perform(.copyItem(items: paths, resultPath: currentPath), rootHelperConf: RootConf.shared)
+                try FSOperation.perform(.copyItem(items: paths, resultPath: currentPath.url), rootHelperConf: RootConf.shared)
             case .symlink:
-                try FSOperation.perform(.symlink(items: paths, resultPath: currentPath), rootHelperConf: RootConf.shared)
+                try FSOperation.perform(.symlink(items: paths, resultPath: currentPath.url), rootHelperConf: RootConf.shared)
             case .custom(_, _, let action):
-                try action(self, currentPath)
+                try action(self, currentPath.url)
             }
             
             if dismissWhenDone {
@@ -72,7 +72,7 @@ class PathOperationViewController: SubPathsTableViewController {
         
     }
     
-    override func goToPath(path: URL) {
+    override func goToPath(path: Path) {
         let parentDirectory = path.deletingLastPathComponent()
         
         if parentDirectory != currentPath {
@@ -87,9 +87,9 @@ class PathOperationViewController: SubPathsTableViewController {
         }
     }
     
-    override func traverseThroughPath(_ path: URL) {
-        let vcs = path.fullPathComponents().map { [self] newPath in
-            PathOperationViewController(paths: paths, operationType: operationType, startingPath: newPath, dismissWhenDone: dismissWhenDone)
+    override func traverseThroughPath(_ path: Path) {
+        let vcs = path.url.fullPathComponents().map { [self] newPath in
+            PathOperationViewController(paths: paths, operationType: operationType, startingPath: Path(url: newPath), dismissWhenDone: dismissWhenDone)
         }
         
         self.navigationController?.setViewControllers(vcs, animated: true)

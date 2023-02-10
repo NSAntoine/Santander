@@ -11,7 +11,7 @@ import UIKit
 #warning("Make a view controller to create a new group")
 class PathSidebarListViewController: UIViewController, PathTransitioning, UICollectionViewDelegate {
     
-    typealias Item = DiffableDataSourceItem<String, URL>
+    typealias Item = DiffableDataSourceItem<String, Path>
     typealias DataSource = UICollectionViewDiffableDataSource<String, Item>
     typealias CellRegistration = UICollectionView.CellRegistration<UICollectionViewListCell, Item>
     
@@ -20,8 +20,8 @@ class PathSidebarListViewController: UIViewController, PathTransitioning, UIColl
     var collectionView: UICollectionView!
     
     /// The view controller in the secondary column displaying the path list
-    var subPathsSecondary: SubPathsTableViewController? {
-        splitViewController?.viewController(for: .secondary) as? SubPathsTableViewController
+    var subPathsSecondary: PathListViewController? {
+        splitViewController?.viewController(for: .secondary) as? PathListViewController
     }
     
     init() {
@@ -103,7 +103,7 @@ class PathSidebarListViewController: UIViewController, PathTransitioning, UIColl
                 conf = .sidebarHeader()
                 conf.text = headerTitle
                 cell.accessories = [.outlineDisclosure()]
-            case .item(let path):
+            case .item(var path):
                 conf = cell.defaultContentConfiguration()
                 conf.text = path.lastPathComponent
                 conf.image = path.displayImage
@@ -132,7 +132,7 @@ class PathSidebarListViewController: UIViewController, PathTransitioning, UIColl
             sectionSnapshot.append([section])
             sectionSnapshot.expand([section])
             
-            let items = Item.fromItems(group.paths)
+            let items = Item.fromItems(group.paths.map(Path.init(url:)))
             sectionSnapshot.append(items, to: section)
             dataSource.apply(sectionSnapshot, to: group.name)
         }
@@ -144,7 +144,7 @@ class PathSidebarListViewController: UIViewController, PathTransitioning, UIColl
         dataSource.apply(snapshot)
     }
     
-    func goToPath(path: URL) {
+    func goToPath(path: Path) {
         let secondary = subPathsSecondary
         if !path.isDirectory {
             secondary?.goToFile(path: path)
@@ -160,7 +160,7 @@ class PathSidebarListViewController: UIViewController, PathTransitioning, UIColl
             // to go to /var or /var/jb
             // then we pop to the view controller rather than creating new ones
             if currentSubpathsPath.path.hasPrefix(path.path) {
-                if let vcs = secondary?.navigationController?.viewControllers as? [SubPathsTableViewController],
+                if let vcs = secondary?.navigationController?.viewControllers as? [PathListViewController],
                    let first = vcs.first(where: { $0.currentPath == path }) {
                        secondary?.navigationController?.popToViewController(first, animated: true)
                 }
@@ -170,11 +170,11 @@ class PathSidebarListViewController: UIViewController, PathTransitioning, UIColl
                 // call the traverse function
                 secondary?.traverseThroughPath(path)
             } else {
-                splitViewController?.setViewController(SubPathsTableViewController(path: path), for: .secondary)
+                splitViewController?.setViewController(PathListViewController(path: path), for: .secondary)
             }
             
         } else {
-            let vc = SubPathsTableViewController(path: .root)
+            let vc = PathListViewController(path: .root)
             splitViewController?.setViewController(vc, for: .secondary)
             if path != .root { subPathsSecondary?.traverseThroughPath(path) }
         }

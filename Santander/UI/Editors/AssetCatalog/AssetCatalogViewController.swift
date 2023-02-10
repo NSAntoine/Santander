@@ -167,7 +167,7 @@ class AssetCatalogViewController: UIViewController {
                                 vcToPushFrom = (rootVC as? UINavigationController)?.visibleViewController as? PathTransitioning
                             }
                             
-                            vcToPushFrom?.goToPath(path: extractionPath)
+                            vcToPushFrom?.goToPath(path: Path(url: extractionPath))
                         }
                     }
                 }
@@ -177,7 +177,7 @@ class AssetCatalogViewController: UIViewController {
         let vc = PathOperationViewController(paths: [fileURL], operationType: action, dismissWhenDone: false)
         present(UINavigationController(rootViewController: vc), animated: true) {
             // go to .car's parent path once the operation vc is presented
-            vc.goToPath(path: self.fileURL.deletingLastPathComponent())
+            vc.goToPath(path: Path(url: self.fileURL.deletingLastPathComponent()))
         }
     }
     
@@ -582,9 +582,12 @@ extension AssetCatalogViewController {
         func edit(to newItem: Rendition.Representation) {
             DispatchQueue.main.async { [self] in
                 // So, because CoreUI is dumb,
-                // CUIMutableCommonAssetStorage fails to init for some paths??
-                // so if we move the fileURL to a temporary directory, the asset storage will most definitely init
-                // then, we edit the file at the temporary directory, and overwrite the original file with this new one
+                // CUIMutableCommonAssetStorage fails to init for some paths
+                // (Even paths we have access to)
+                // So, to circumvent this:
+                // 1) We copy the existing .car to the temporary directory (because asset storage won't fail to init there)
+                // 2) We edit the one in the tmp directory
+                // 3) We overwrite the original file with the edited one from the temporary directory
                 
                 let tmpFilename = "\(sender.fileURL.lastPathComponent)-TMP-EDIT-\(UUID().uuidString.prefix(5))"
                 let temporaryFileURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(tmpFilename)
@@ -593,10 +596,10 @@ extension AssetCatalogViewController {
                     try FileManager.default.copyItem(at: sender.fileURL, to: temporaryFileURL)
                     // edit the temporary file
                     try sender.catalog.editItem(selectedRendition, fileURL: temporaryFileURL, to: newItem)
+                    try FSOperation.perform(.removeItems(items: [sender.fileURL]), rootHelperConf: RootConf.shared)
                     // overwrite original file with the temporary one
-                    
-                    try FileManager.default.removeItem(at: sender.fileURL)
-                    try FileManager.default.moveItem(at: temporaryFileURL, to: sender.fileURL)
+                    // move, but .moveItem is kinda finnicky and changing it would break like 4 parts of the app
+                    try FSOperation.perform(.rename(item: temporaryFileURL, newPath: sender.fileURL), rootHelperConf: RootConf.shared)
                     
                     finishedEditingCallback?(nil)
                     sender.fetchItemsFromFile()

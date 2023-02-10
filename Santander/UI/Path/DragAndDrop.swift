@@ -9,7 +9,7 @@
 import UIKit
 import UniformTypeIdentifiers
 
-extension SubPathsTableViewController: UITableViewDropDelegate, UITableViewDragDelegate {
+extension PathListViewController: UITableViewDropDelegate, UITableViewDragDelegate {
     
     func tableView(_ tableView: UITableView, performDropWith coordinator: UITableViewDropCoordinator) {
         for item in coordinator.items {
@@ -27,7 +27,7 @@ extension SubPathsTableViewController: UITableViewDropDelegate, UITableViewDragD
                 }
                 
                 do {
-                    try FSOperation.perform(.moveItem(items: [url], resultPath: currentPath), rootHelperConf: RootConf.shared)
+                    try FSOperation.perform(.moveItem(items: [url], resultPath: currentPath.url), rootHelperConf: RootConf.shared)
                 } catch {
                     DispatchQueue.main.async {
                         self.errorAlert("Error: \(error.localizedDescription)", title: "Failed to copy item")
@@ -55,7 +55,7 @@ extension SubPathsTableViewController: UITableViewDropDelegate, UITableViewDragD
         itemProvider.registerFileRepresentation(
             forTypeIdentifier: typeID,
             visibility: .all) { completion in
-                completion(selectedItem, true, nil)
+                completion(selectedItem.url, true, nil)
                 return nil
             }
         

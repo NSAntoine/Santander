@@ -12,7 +12,8 @@ struct FileEditor {
     let type: FileEditorType
     let viewController: UIViewController
     
-    static func preferred(forURL url: URL) -> FileEditor? {
+    static func preferred(forURL _url: Path) -> FileEditor? {
+        let url = _url.url
         if url.pathExtension == "car", let carVC = FileEditorType.assetCatalog.viewController(forPath: url, data: nil) {
             return FileEditor(type: .assetCatalog, viewController: carVC)
         }
@@ -59,7 +60,8 @@ struct FileEditor {
         return nil
     }
     
-    static func allEditors(forURL url: URL) -> [FileEditor] {
+    static func allEditors(forPath path: Path) -> [FileEditor] {
+        let url = path.url
         let data = try? Data(contentsOf: url)
         
         return FileEditorType.allCases.compactMap { type in

@@ -4,11 +4,11 @@
 //
 //  Created by Serena on 10/11/2022
 //
-	
 
 import Foundation
 import ArgumentParser
 import CompressionWrapper
+import os
 import AssetCatalogWrapper
 
 struct Delete: ParsableCommand {
@@ -18,7 +18,6 @@ struct Delete: ParsableCommand {
     func run() throws {
         for path in paths {
             try FileManager.default.removeItem(at: path)
-            
         }
     }
 }
@@ -58,8 +57,12 @@ struct Create: ParsableCommand {
         
         for file in files {
             // mode a: create if doesn't exist
-            guard let fPtr = fopen((file as NSURL).fileSystemRepresentation, "a") else {
-                throw StringError("Failed to create file \(file): \(String(cString: strerror(errno)))")
+            let fPtr = try file.withUnsafeFileSystemRepresentation { cPathPointer in
+                guard let cPathPointer, let fPtr = fopen(cPathPointer, "a") else {
+                    throw StringError("Failed to create file \(file): \(String(cString: strerror(errno)))")
+                }
+                
+                return fPtr
             }
             
             fclose(fPtr)
@@ -95,6 +98,18 @@ struct Copy: ParsableCommand {
     }
 }
 
+struct Rename: ParsableCommand {
+    @Argument(help: "The path to rename.")
+    var path: URL
+    
+    @Argument(help: "The new path.")
+    var destination: URL
+    
+    func run() throws {
+        try FileManager.default.moveItem(at: path, to: destination)
+    }
+}
+
 struct Link: ParsableCommand {
     @Argument(help: "The paths to link.")
     var paths: [URL]
@@ -126,8 +141,7 @@ struct WriteData: ParsableCommand {
     var path: URL
     
     func run() throws {
-        let data = FileHandle.standardInput.availableData
-        try data.write(to: path)
+        NSLog("availableData: \(FileHandle.standardInput.availableData)")
     }
 }
 
@@ -210,8 +224,7 @@ struct GetContents: ParsableCommand {
     var path: URL
     
     func run() throws {
-        let contents = try FileManager.default.contentsOfDirectory(at: path,
-                                                                   includingPropertiesForKeys: nil)
-        print(contents.map(\.path).joined(separator: " "))
+        let contents = try FileManager.default.contentsOfDirectory(at: path, includingPropertiesForKeys: nil)
+        fputs(contents.map(\.path).joined(separator: " "), stdout)
     }
 }

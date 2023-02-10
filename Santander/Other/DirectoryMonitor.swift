@@ -29,24 +29,23 @@ class DirectoryMonitor {
     var directoryMonitorSource: DispatchSource?
 
     /// URL for the directory being monitored.
-    var url: URL
-
-    // MARK: Initializers
-    init(url: URL) {
-        self.url = url
+    var path: Path
+    
+    init(path: Path) {
+        self.path = path
     }
-
+    
     // MARK: Monitoring
 
     func startMonitoring() {
         // Listen for changes to the directory (if we are not already).
         if directoryMonitorSource == nil && monitoredDirectoryFileDescriptor == -1 {
             // Open the directory referenced by URL for monitoring only.
-            monitoredDirectoryFileDescriptor = open((url as NSURL).fileSystemRepresentation, O_EVTONLY)
+            monitoredDirectoryFileDescriptor = open((path.url as NSURL).fileSystemRepresentation, O_EVTONLY)
 
             // We initialize directoryMonitorSource only if the path is readable
             // otherwise, we'd encounter a crash
-            if url.isReadable {
+            if path.isReadable {
                 // Define a dispatch source monitoring the directory for additions, deletions, and renamings.
                 directoryMonitorSource = DispatchSource.makeFileSystemObjectSource(fileDescriptor: monitoredDirectoryFileDescriptor, eventMask: .all, queue: directoryMonitorQueue) as? DispatchSource
             }
