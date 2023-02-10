@@ -76,7 +76,16 @@ struct Path: Hashable, ExpressibleByStringLiteral {
     }
     
     private func _getSize() -> Int? {
-        return nil
+        if isDirectory {
+            var _size: Int = 0
+            for var content in contents {
+                _size += content.size ?? 0
+            }
+            
+            return _size
+        }
+        
+        return try? url.resourceValues(forKeys: [.fileSizeKey]).fileSize
     }
     
     var isReadable: Bool {
