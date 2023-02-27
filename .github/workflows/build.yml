@@ -7,15 +7,17 @@ on:
       - serena/root-helper-proper
     paths-ignore:
       - '**/*.md'
+      - 'README.md'
       - '.gitignore'
   pull_request:
     branches:
       - main
     paths-ignore:
       - '**/*.md'
+      - 'README.md'
       - '.gitignore'
   workflow_dispatch:
-  
+
 jobs:
   build:
     name: Build
@@ -24,22 +26,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        
+
       - name: Set up Procursus
-        uses: beerpiss/procursus-action@v1
+        uses: beerpiss/procursus-action@v2
         with:
           packages: ldid
           cache: true
           cache-path: ~/__cache
-          
+
       - name: Select Xcode version (14.0)
         run: |
           sudo xcode-select --switch /Applications/Xcode_14.0.app
-          
+
       - name: Build IPA
         run: |
           make
-            
+
       - name: Permasign IPA
         uses: permasigner/action@v1.1.0
         with:
@@ -47,19 +49,19 @@ jobs:
           output: "${{ github.workspace }}/build/Santander.deb"
           entitlements: "${{ github.workspace }}/entitlements-TS.plist"
           args: "--author Serena"
-          
+
       - name: Upload IPA
         uses: actions/upload-artifact@v3.1.0
         with:
           name: SantanderJailed
           path: ${{ github.workspace }}/build/SantanderJailed.ipa
-          
+
       - name: Upload IPA for TrollStore
         uses: actions/upload-artifact@v3.1.0
         with:
           name: SantanderTrollStore
           path: ${{ github.workspace }}/build/SantanderTrollStore.tipa
-          
+
       - name: Upload Permasigned deb
         uses: actions/upload-artifact@v3.1.0
         with:
