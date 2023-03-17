@@ -12,9 +12,7 @@ import NSTaskBridge
 class BinaryExecutionViewController: UIViewController {
     let executableURL: URL
     var task: NSTask = NSTask()
-    
-    var outputTextView: UITextView!
-    var executableTextView: UITextView!
+    var textView: UITextView!
     
     init(executableURL: URL) {
         self.executableURL = executableURL
@@ -34,7 +32,7 @@ class BinaryExecutionViewController: UIViewController {
         title = "Execution"
         let doneAction = UIAction {
             if self.task.isRunning {
-                self.task.suspend()
+                self.task.interrupt()
             }
             self.dismiss(animated: true)
         }
@@ -42,47 +40,54 @@ class BinaryExecutionViewController: UIViewController {
         navigationItem.rightBarButtonItem = UIBarButtonItem(systemItem: .done, primaryAction: doneAction)
         configureNavigationBarToNormal()
         
-        executableTextView = UITextView()
+        let executableTextField = UITextField()
         
-        executableTextView.delegate = self
-        executableTextView.autocorrectionType = .no
-        executableTextView.returnKeyType = .go
-        executableTextView.text = executableURL.path
-        executableTextView.font = UIFont(name: "Menlo", size: UIFont.systemFontSize)
-        executableTextView.translatesAutoresizingMaskIntoConstraints = false
-        executableTextView.backgroundColor = .systemBackground
-        executableTextView.inputAccessoryView = makeKeyboardToolbar(for: executableTextView)
-        view.addSubview(executableTextView)
+        let action = UIAction {
+            if self.task.isRunning {
+                self.task.interrupt()
+            }
+            self.spawnExecutable(pathAndArgs: executableTextField.text!)
+        }
+        
+        executableTextField.autocorrectionType = .no
+        executableTextField.returnKeyType = .go
+        executableTextField.addAction(action, for: .primaryActionTriggered)
+        executableTextField.text = executableURL.path
+        executableTextField.font = UIFont(name: "Menlo", size: UIFont.systemFontSize)
+        executableTextField.translatesAutoresizingMaskIntoConstraints = false
+        executableTextField.backgroundColor = .systemBackground
+        executableTextField.inputAccessoryView = makeKeyboardToolbar(forTextField: executableTextField)
+        view.addSubview(executableTextField)
         
         let guide = view.safeAreaLayoutGuide
         NSLayoutConstraint.activate([
-            executableTextView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            executableTextView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            executableTextView.topAnchor.constraint(equalTo: guide.topAnchor),
-            executableTextView.heightAnchor.constraint(equalToConstant: 50),
+            executableTextField.trailingAnchor.constraint(equalTo: guide.trailingAnchor),
+            executableTextField.leadingAnchor.constraint(equalTo: guide.leadingAnchor),
+            executableTextField.topAnchor.constraint(equalTo: guide.topAnchor),
+            executableTextField.heightAnchor.constraint(equalToConstant: 50),
         ])
         
-        self.outputTextView = UITextView()
-        outputTextView.text = ""
-        outputTextView.font = .systemFont(ofSize: 20)
-        outputTextView.isEditable = false
-        outputTextView.translatesAutoresizingMaskIntoConstraints = false
-        outputTextView.backgroundColor = view.backgroundColor
-        view.addSubview(outputTextView)
+        self.textView = UITextView()
+        textView.text = ""
+        textView.font = .systemFont(ofSize: 20)
+        textView.isEditable = false
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        textView.backgroundColor = view.backgroundColor
+        view.addSubview(textView)
         
         NSLayoutConstraint.activate([
-            outputTextView.leadingAnchor.constraint(equalTo: guide.leadingAnchor),
-            outputTextView.trailingAnchor.constraint(equalTo: guide.trailingAnchor),
-            outputTextView.topAnchor.constraint(equalTo: executableTextView.bottomAnchor),
-            outputTextView.heightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.heightAnchor)
+            textView.leadingAnchor.constraint(equalTo: guide.leadingAnchor),
+            textView.trailingAnchor.constraint(equalTo: guide.trailingAnchor),
+            textView.topAnchor.constraint(equalTo: executableTextField.bottomAnchor),
+            textView.heightAnchor.constraint(equalTo: view.heightAnchor)
         ])
     }
     
-    func makeKeyboardToolbar(for respondor: UIResponder) -> UIToolbar {
+    func makeKeyboardToolbar(forTextField textField: UITextField) -> UIToolbar {
         let toolbar = UIToolbar()
         
         let dismissKeyboardAction = UIAction {
-            respondor.resignFirstResponder()
+            textField.resignFirstResponder()
         }
         
         let dismissButton = UIBarButtonItem(title: "Dismiss", primaryAction: dismissKeyboardAction)
@@ -112,32 +117,18 @@ class BinaryExecutionViewController: UIViewController {
             }
             
             DispatchQueue.main.async {
-                self.outputTextView.text.append(output)
+                self.textView.text.append(output)
             }
         }
         
         task.standardError = pipe
         task.standardOutput = pipe
         do {
-            outputTextView.text = ""
+            textView.text = ""
             try task.launchAndReturnError()
             task.waitUntilExit()
         } catch {
             self.errorAlert(error, title: "Unable to launch process")
         }
-    }
-}
-
-extension BinaryExecutionViewController: UITextViewDelegate {
-    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
-        if text == "\n" {
-            if self.task.isRunning {
-                self.task.interrupt()
-            }
-            self.spawnExecutable(pathAndArgs: executableTextView.text!)
-            return false
-        }
-        
-        return true
     }
 }

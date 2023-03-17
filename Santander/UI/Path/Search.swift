@@ -53,7 +53,7 @@ extension PathListViewController: UISearchResultsUpdating, UISearchControllerDel
                 }
                 
             case 1: // searching in subdirectories of the directory
-                var snapshot = Snapshot()
+                var snapshot = SnapshotType()
                 snapshot.appendSections([0])
                 __enumeratePaths(unfilteredContents, withQuery: query, doBreak: { !isSearching }) { [self] path in
                     DispatchQueue.main.async {

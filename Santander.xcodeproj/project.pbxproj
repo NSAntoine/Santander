@@ -78,6 +78,9 @@
 		CECF6EDA28C37F660080B805 /* FontViewerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CECF6ED928C37F660080B805 /* FontViewerController.swift */; };
 		CEDAF42028C36B2900DF03E6 /* Runestone in Frameworks */ = {isa = PBXBuildFile; productRef = CEDAF41F28C36B2900DF03E6 /* Runestone */; };
 		CEE06A37291E1E0A00DA8C75 /* CompressionWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = CEE06A36291E1E0A00DA8C75 /* CompressionWrapper */; };
+		CEE9B2D829C4590E00D6C826 /* ApplicationsWrapper in Frameworks */ = {isa = PBXBuildFile; productRef = CEE9B2D729C4590E00D6C826 /* ApplicationsWrapper */; };
+		CEE9B2DA29C4591B00D6C826 /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CEE9B2D929C4591B00D6C826 /* CoreServices.framework */; };
+		CEE9B2DC29C4592700D6C826 /* NSTask in Frameworks */ = {isa = PBXBuildFile; productRef = CEE9B2DB29C4592700D6C826 /* NSTask */; };
 		CEF032BB291ED00700B6F768 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF032B8291ED00700B6F768 /* Extensions.swift */; };
 		CEF032BD291ED00700B6F768 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF032BA291ED00700B6F768 /* main.swift */; };
 		CEF54FF528C3D4E30078A146 /* FontInformationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEF54FF428C3D4E30078A146 /* FontInformationViewController.swift */; };
@@ -163,6 +166,7 @@
 		CEC433C028FF20B400C18BD8 /* RootHelper */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.dylib"; includeInIndex = 0; path = RootHelper; sourceTree = BUILT_PRODUCTS_DIR; };
 		CECB3A0B28E330BC00328434 /* AssetCatalogDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AssetCatalogDetailsView.swift; sourceTree = "<group>"; };
 		CECF6ED928C37F660080B805 /* FontViewerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontViewerController.swift; sourceTree = "<group>"; };
+		CEE9B2D929C4591B00D6C826 /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX13.1.sdk/System/Library/Frameworks/CoreServices.framework; sourceTree = DEVELOPER_DIR; };
 		CEF032B8291ED00700B6F768 /* Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		CEF032BA291ED00700B6F768 /* main.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
 		CEF54FF428C3D4E30078A146 /* FontInformationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontInformationViewController.swift; sourceTree = "<group>"; };
@@ -190,9 +194,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				CEE9B2DA29C4591B00D6C826 /* CoreServices.framework in Frameworks */,
 				CE2D13DE291D8F8A0023F16D /* ArgumentParser in Frameworks */,
+				CEE9B2DC29C4592700D6C826 /* NSTask in Frameworks */,
 				CE2D13DA291D8F210023F16D /* FSOperations in Frameworks */,
 				CEE06A37291E1E0A00DA8C75 /* CompressionWrapper in Frameworks */,
+				CEE9B2D829C4590E00D6C826 /* ApplicationsWrapper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -370,6 +377,7 @@
 			isa = PBXGroup;
 			children = (
 				CE7E02DF290006C70046A7D4 /* CoreServices.framework */,
+				CEE9B2D929C4591B00D6C826 /* CoreServices.framework */,
 				CE7E02DE290006C70046A7D4 /* MobileCoreServices.framework */,
 			);
 			name = Frameworks;
@@ -442,6 +450,8 @@
 				CE2D13D9291D8F210023F16D /* FSOperations */,
 				CE2D13DD291D8F8A0023F16D /* ArgumentParser */,
 				CEE06A36291E1E0A00DA8C75 /* CompressionWrapper */,
+				CEE9B2D729C4590E00D6C826 /* ApplicationsWrapper */,
+				CEE9B2DB29C4592700D6C826 /* NSTask */,
 			);
 			productName = RootHelper;
 			productReference = CEC433C028FF20B400C18BD8 /* RootHelper */;
@@ -958,6 +968,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = CEA33B35291619EB00DD7BAC /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
 			productName = CompressionWrapper;
+		};
+		CEE9B2D729C4590E00D6C826 /* ApplicationsWrapper */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEA33B35291619EB00DD7BAC /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
+			productName = ApplicationsWrapper;
+		};
+		CEE9B2DB29C4592700D6C826 /* NSTask */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = CEA33B35291619EB00DD7BAC /* XCRemoteSwiftPackageReference "SantanderWrappers" */;
+			productName = NSTask;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

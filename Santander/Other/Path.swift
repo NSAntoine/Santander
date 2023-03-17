@@ -23,6 +23,20 @@ struct Path: Hashable, ExpressibleByStringLiteral {
     lazy var size = _getSize()
     lazy var displayImage: UIImage? = _displayImage()
     
+    /// A Dictionary containing the systemName for icons for of certain UTTypes
+    static let iconsDictionary: [UTType: String] = [
+        .text: "doc.text",
+        .image: "photo",
+        .audio: "waveform",
+        .video: "play",
+        .movie: "play",
+        .executable: "terminal"
+    ]
+    
+    static func isUType(_ type: UTType, ofAnotherType another: UTType) -> Bool {
+        return type == another || type.isSubtype(of: another)
+    }
+    
     var path: String {
         url.path
     }
@@ -64,7 +78,10 @@ struct Path: Hashable, ExpressibleByStringLiteral {
     }
     
     var contents: [Path] {
-        return url.contents.map(Path.init(url:))
+        let urls = (try? FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil)) ?? []
+        return urls.map { url in
+            Path(url:url)
+        }
     }
     
     var applicationItem: LSApplicationProxy? {
@@ -102,11 +119,11 @@ struct Path: Hashable, ExpressibleByStringLiteral {
                 return UIImage(systemName: "doc")
             }
             
-            let imageName = UTType.iconsDictionary.first { (key, _) in
-                type.isOfType(key)
-            }?.value
+            let imageName = Self.iconsDictionary.first { (key, _) in
+                Self.isUType(type, ofAnotherType: key)
+            }
             
-            return UIImage(systemName: imageName ?? "doc")
+            return UIImage(systemName: imageName?.value ?? "doc")
         }
     }
     

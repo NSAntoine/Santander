@@ -94,25 +94,6 @@ extension URL {
         return FileManager.default.isReadableFile(atPath: self.path)
     }
     
-    /// The image to represent this URL in the UI.
-    var displayImage: UIImage? {
-        if isDirectory {
-            return UIImage(systemName: "folder.fill")
-        } else {
-            // `UTType.data` is a generic type,
-            // return the generic symbol for files for it.
-            guard let type = self.contentType, type != .data else {
-                return UIImage(systemName: "doc")
-            }
-            
-            let imageName = UTType.iconsDictionary.first { (key, _) in
-                type.isOfType(key)
-            }?.value
-            
-            return UIImage(systemName: imageName ?? "doc")
-        }
-    }
-    
     func setPermissions(forOwner owner: Permission, group: Permission = [], others: Permission = []) throws {
         let octal = Permission.octalRepresentation(of: [owner, group, others])
         try FSOperation.perform(.setPermissions(url: self, newOctalPermissions: octal), rootHelperConf: RootConf.shared)
@@ -429,16 +410,6 @@ extension UTType {
         ]
             .compactMap { $0 }
     }
-    
-    /// A Dictionary containing the systemName for icons for of certain UTTypes
-    static let iconsDictionary: [UTType: String] = [
-        .text: "doc.text",
-        .image: "photo",
-        .audio: "waveform",
-        .video: "play",
-        .movie: "play",
-        .executable: "terminal"
-    ]
     
     /// Checks whether the type is equal to the type given in the parameters
     /// or a parameter of said type

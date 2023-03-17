@@ -79,10 +79,9 @@ class PathListViewController: UITableViewController, PathTransitioning {
     
     var searchItem: DispatchWorkItem?
     
-    typealias Snapshot = NSDiffableDataSourceSnapshot<Int, SubPathsRowItem>
-    typealias DataSource = UITableViewDiffableDataSource<Int, SubPathsRowItem>
-    
-    lazy var dataSource = DataSource(tableView: tableView) { tableView, indexPath, itemIdentifier in
+    typealias SnapshotType = NSDiffableDataSourceSnapshot<Int, SubPathsRowItem>
+    typealias DataSourceType = UITableViewDiffableDataSource<Int, SubPathsRowItem>
+    lazy var dataSource = DataSourceType(tableView: self.tableView) { tableView, indexPath, itemIdentifier in
         switch itemIdentifier {
         case .path(let url):
             return self.pathCellRow(forURL: url, displayFullPathAsSubtitle: self.isSearching || self.isBookmarksSheet)
@@ -215,7 +214,7 @@ class PathListViewController: UITableViewController, PathTransitioning {
     /// Setup the snapshot to show the paths given
     func showPaths(animatingDifferences: Bool = false) {
         self.displayingSearchSuggestions = false
-        var snapshot = Snapshot()
+        var snapshot = SnapshotType()
         
         snapshot.appendSections([0])
         snapshot.appendItems(SubPathsRowItem.fromPaths(contents))
@@ -225,7 +224,7 @@ class PathListViewController: UITableViewController, PathTransitioning {
     /// Show the search suggestions
     func switchToSearchSuggestions() {
         displayingSearchSuggestions = true
-        var snapshot = Snapshot()
+        var snapshot = SnapshotType()
         
         snapshot.appendSections([0, 1, 2])
         
