@@ -705,7 +705,7 @@ class PathListViewController: UITableViewController, PathTransitioning {
             }
             
             let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                self.presentActivityVC(forItems: [item])
+                self.presentActivityVC(forItems: [item.url])
             }
             
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "rectangle.and.pencil.and.ellipsis")) { _ in
