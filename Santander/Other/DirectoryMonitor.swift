@@ -2,9 +2,9 @@
 //  DirectoryMonitor.swift
 //  Santander
 //
-//  Created by Serena on 27/06/2022
+//  Created by Antoine on 27/06/2022
 //
-//  Code originally written by Apple, modified for use by Serena A.
+//  Code originally written by Apple, modified for use by Antoine A.
 
 import Foundation
 

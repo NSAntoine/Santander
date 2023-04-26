@@ -2,7 +2,7 @@
 //  AssetCatalogRenditionViewController.swift
 //  Santander
 //
-//  Created by Serena on 01/10/2022
+//  Created by Antoine on 01/10/2022
 //
 
 

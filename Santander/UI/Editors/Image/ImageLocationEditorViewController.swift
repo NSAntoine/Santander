@@ -2,7 +2,7 @@
 //  ImageLocationEditorViewController.swift
 //  Santander
 //
-//  Created by Serena on 25/08/2022.
+//  Created by Antoine on 25/08/2022.
 //
 
 import UIKit

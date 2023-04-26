@@ -4,7 +4,7 @@ on:
   push:
     branches:
       - main
-      - serena/root-helper-proper
+      - Antoine/root-helper-proper
     paths-ignore:
       - '**/*.md'
       - 'README.md'
@@ -48,7 +48,7 @@ jobs:
           input: "${{ github.workspace }}/build/Santander.ipa"
           output: "${{ github.workspace }}/build/Santander.deb"
           entitlements: "${{ github.workspace }}/entitlements-TS.plist"
-          args: "--author Serena"
+          args: "--author Antoine"
 
       - name: Upload IPA
         uses: actions/upload-artifact@v3.1.0

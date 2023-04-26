@@ -2,7 +2,7 @@
 //  main.swift
 //  RootHelper
 //
-//  Created by Serena on 17/10/2022
+//  Created by Antoine on 17/10/2022
 //
 
 import ArgumentParser

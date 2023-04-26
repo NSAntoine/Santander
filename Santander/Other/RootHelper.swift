@@ -2,7 +2,7 @@
 //  FSOperation.swift
 //  Santander
 //
-//  Created by Serena on 15/09/2022
+//  Created by Antoine on 15/09/2022
 //
 
 
@@ -144,7 +144,7 @@ struct RootConf: RootHelperConfiguration {
         
         let mutex = DispatchSemaphore(value: 0)
         
-        let readQueue = DispatchQueue(label: "com.serena.Santander.RootHelper",
+        let readQueue = DispatchQueue(label: "com.Antoine.Santander.RootHelper",
                                       qos: .userInitiated,
                                       attributes: .concurrent,
                                       autoreleaseFrequency: .inherit,

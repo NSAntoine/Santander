@@ -2,7 +2,7 @@
 //  PathSidebarListViewController.swift
 //  Santander
 //
-//  Created by Serena on 25/06/2022
+//  Created by Antoine on 25/06/2022
 //
 	
 
@@ -41,6 +41,7 @@ class PathSidebarListViewController: UIViewController, PathTransitioning, UIColl
             self.presentNewGroupAlert()
         }
         
+        navigationController?.navigationBar.prefersLargeTitles = true
         let newGroupsButton = UIBarButtonItem(systemItem: .add, primaryAction: newGroupAction)
         setToolbarItems([newGroupsButton], animated: true)
         navigationController?.setToolbarHidden(false, animated: false)

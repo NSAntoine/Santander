@@ -2,7 +2,7 @@
 //  KeyboardSearchView.swift
 //  Santander
 //
-//  Created by Serena on 09/02/2023.
+//  Created by Antoine on 09/02/2023.
 //
 
 import UIKit
@@ -20,7 +20,7 @@ fileprivate func makeGenericButton(image: UIImage?) -> UIButton {
 class KeyboardSearchView: UIInputView {
     weak var textView: TextView?
     
-    let searchQueue = DispatchQueue(label: "com.serena.Santander.KeyboardSearchView.search", qos: .background)
+    let searchQueue = DispatchQueue(label: "com.Antoine.Santander.KeyboardSearchView.search", qos: .background)
     var searchWorkItem: DispatchWorkItem?
     
     var searchMethod: SearchQuery.MatchMethod = .contains

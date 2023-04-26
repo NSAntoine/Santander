@@ -2,7 +2,7 @@
 //  SerializedItemType.swift
 //  Santander
 //
-//  Created by Serena on 17/08/2022.
+//  Created by Antoine on 17/08/2022.
 //
 
 import Foundation

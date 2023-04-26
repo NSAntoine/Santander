@@ -2,7 +2,7 @@
 //  SceneDelegate.swift
 //  Santander
 //
-//  Created by Serena on 21/06/2022
+//  Created by Antoine on 21/06/2022
 //
 
 
@@ -17,7 +17,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     func performShortcut(_ shortcut: UIApplicationShortcutItem) {
         switch shortcut.type {
-        case "com.serena.santander.bookmarks":
+        case "com.Antoine.santander.bookmarks":
             let vc = UINavigationController(rootViewController: PathListViewController.bookmarks())
             window?.rootViewController?.present(vc, animated: true)
         default:

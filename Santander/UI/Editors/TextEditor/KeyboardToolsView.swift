@@ -2,13 +2,13 @@
 //  KeyboardToolsView.swift
 //  Santander
 //
-//  Created by Serena on 04/07/2022
+//  Created by Antoine on 04/07/2022
 //
 	
 import Runestone
 import UIKit
 
-// Stolen directly from Runestone example source code, modified for use by Serena
+// Stolen directly from Runestone example source code, modified for use by Antoine
 fileprivate func _makeGenericButton(image: UIImage?) -> UIButton {
     let button = UIButton(type: .system)
     button.translatesAutoresizingMaskIntoConstraints = false

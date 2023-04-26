@@ -2,7 +2,7 @@
 //  PathListViewController.swift
 //  Santander
 //
-//  Created by Serena on 21/06/2022
+//  Created by Antoine on 21/06/2022
 //
 
 
@@ -404,6 +404,18 @@ class PathListViewController: UITableViewController, PathTransitioning {
         }
         
         let otherLocationAction = UIAction(title: "Other..") { _ in
+            let goToView = GoToView()
+            goToView.translatesAutoresizingMaskIntoConstraints = false
+            self.view.addSubview(goToView)
+            
+            NSLayoutConstraint.activate([
+                goToView.centerXAnchor.constraint(equalTo: self.view.layoutMarginsGuide.centerXAnchor),
+                goToView.centerYAnchor.constraint(equalTo: self.view.layoutMarginsGuide.centerYAnchor),
+                goToView.heightAnchor.constraint(equalToConstant: 150),
+                goToView.widthAnchor.constraint(equalToConstant: 600),
+            ])
+            
+            /*
             let alert = UIAlertController(title: "Other Location", message: "Type the URL of the other path you want to go to", preferredStyle: .alert)
             
             alert.addTextField { textfield in
@@ -423,6 +435,7 @@ class PathListViewController: UITableViewController, PathTransitioning {
             alert.addAction(goAction)
             alert.preferredAction = goAction
             self.present(alert, animated: true)
+             */
         }
         
         items.append(otherLocationAction)
@@ -710,8 +723,29 @@ class PathListViewController: UITableViewController, PathTransitioning {
             
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "rectangle.and.pencil.and.ellipsis")) { _ in
                 let alert = UIAlertController(title: "Rename", message: nil, preferredStyle: .alert)
-                
+				if let cell = tableView.cellForRow(at: indexPath), var conf = cell.contentConfiguration as? UIListContentConfiguration,
+				   let imageGuide = (cell.contentView as? UIListContentView)?.imageLayoutGuide {
+					let textField = RenamerTextField(path: item)
+					textField.returnKeyType = .done
+					textField.translatesAutoresizingMaskIntoConstraints = false
+					textField.delegate = self
+					
+					textField.text = conf.text
+					
+					conf.text = nil /* Always make sure this is after textField.text = conf.text */
+					cell.contentConfiguration = conf
+					cell.contentView.addSubview(textField)
+					NSLayoutConstraint.activate([
+						textField.leadingAnchor.constraint(equalTo: imageGuide.trailingAnchor, constant: conf.imageToTextPadding),
+						textField.centerYAnchor.constraint(equalTo: imageGuide.centerYAnchor)
+					])
+					tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+					textField.becomeFirstResponder()
+					return // We're done, proceed to alert method only if we can't get the stuff we tried to in the `if let` statement
+				}
+				
                 let renameAction = UIAlertAction(title: "Rename", style: .default) { _ in
+					
                     guard let name = alert.textFields?.first?.text else {
                         return
                     }
@@ -1014,6 +1048,36 @@ extension PathListViewController: UINavigationItemRenameDelegate {
     }
 }
 #endif
+
+extension PathListViewController: UITextFieldDelegate {
+	func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+		guard let textField = textField as? RenamerTextField else {
+			fatalError("How What When Where Why")
+		}
+		
+		textField.notifyShouldReturnUponResigning = false
+		defer {
+			textField.resignFirstResponder()
+			textField.removeFromSuperview()
+		}
+		
+		guard let name = textField.text else { return false }
+		let item = textField.path
+		let newPath: URL = item.deletingLastPathComponent().appendingPathComponent(name)
+		if newPath == item.url { // Same URL, don't try to move
+			return true
+		}
+		
+		do {
+			try FSOperation.perform(.rename(item: item.url, newPath: newPath), rootHelperConf: RootConf.shared)
+		} catch {
+			self.errorAlert(error, title: "Unable to rename \(item.lastPathComponent)")
+		}
+		
+		print(textField.path)
+		return true
+	}
+}
 
 /// Represents an item which could be displayed in SubPathsTableViewController,
 /// being either a search suggestion or a path
