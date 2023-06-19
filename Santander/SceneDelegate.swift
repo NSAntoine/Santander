@@ -126,14 +126,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             let viewItemAction = UIAlertAction(title: "View item", style: .default) { _ in
                 let item = urls[0]
                 let itemParentPath = item.deletingLastPathComponent()
-                let rootVC = self.window?.rootViewController as? UINavigationController
                 let vcToPush = PathListViewController(path: Path(url: itemParentPath))
-                rootVC?.pushViewController(vcToPush, animated: true) {
-                    if let indx = vcToPush.contents.firstIndex(of: Path(url: item)) {
-                        let indexPath = IndexPath(row: indx, section: 0)
-                        vcToPush.tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
-                        vcToPush.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .middle)
-                    }
+                self.window?.rootViewController = UINavigationController(rootViewController: vcToPush)
+                if let indx = vcToPush.contents.firstIndex(of: Path(url: item)) {
+                    let indexPath = IndexPath(row: indx, section: 0)
+                    vcToPush.tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+                    vcToPush.tableView.selectRow(at: indexPath, animated: true, scrollPosition: .middle)
                 }
             }
             
@@ -143,18 +141,5 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         alertController.addAction(.cancel())
         window?.rootViewController?.present(alertController, animated: true)
         
-    }
-}
-
-fileprivate extension UINavigationController {
-    func pushViewController(_ viewController: UIViewController, animated: Bool, completion: @escaping (() -> Void)) {
-        pushViewController(viewController, animated: animated)
-        
-        guard animated, let coordinator = transitionCoordinator else {
-            completion()
-            return
-        }
-        
-        coordinator.animate(alongsideTransition: nil) { _ in completion() }
     }
 }
