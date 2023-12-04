@@ -1,0 +1,69 @@
+
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - serena/root-helper-proper
+    paths-ignore:
+      - '**/*.md'
+      - '.gitignore'
+  pull_request:
+    branches:
+      - main
+    paths-ignore:
+      - '**/*.md'
+      - '.gitignore'
+  workflow_dispatch:
+  
+jobs:
+  build:
+    name: Build
+    runs-on: macos-12
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        
+      - name: Set up Procursus
+        uses: beerpiss/procursus-action@v1
+        with:
+          packages: ldid
+          cache: true
+          cache-path: ~/__cache
+          mirror: 'https://repo.quiprr.dev/procursus/'
+          
+      - name: Select Xcode version (14.0)
+        run: |
+          sudo xcode-select --switch /Applications/Xcode_14.0.app
+          
+      - name: Build IPA
+        run: |
+          make
+            
+      - name: Permasign IPA
+        uses: permasigner/action@v1.1.0
+        with:
+          input: "${{ github.workspace }}/build/Santander.ipa"
+          output: "${{ github.workspace }}/build/Santander.deb"
+          entitlements: "${{ github.workspace }}/entitlements-TS.plist"
+          args: "--author Serena"
+          
+      - name: Upload IPA
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: SantanderJailed
+          path: ${{ github.workspace }}/build/SantanderJailed.ipa
+          
+      - name: Upload IPA
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: SantanderTrollStore
+          path: ${{ github.workspace }}/build/SantanderTrollStore.ipa
+          
+      - name: Upload Permasign deb
+        uses: actions/upload-artifact@v3.1.0
+        with:
+          name: SantanderJailbroken
+          path: ${{ github.workspace }}/build/Santander.deb
