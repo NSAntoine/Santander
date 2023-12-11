@@ -28,14 +28,12 @@
     </array>
     <key>com.apple.private.persona-mgmt</key>
     <true/>
-
-	<key>com.apple.private.security.system-application</key>
-	<true/>
-	<key>com.apple.private.security.container-manager</key>
-	<true/>
+    <key>com.apple.private.security.system-application</key>
+    <true/>
+    <key>com.apple.private.security.container-manager</key>
+    <true/>
     <key>com.apple.private.MobileContainerManager.allowed</key>
-	<true/>
-
+    <true/>
     <key>com.apple.private.security.storage.adprivacyd</key>
     <true/>
     <key>com.apple.private.security.storage.amfid</key>
@@ -287,6 +285,130 @@
     <key>com.apple.rootless.storage.triald</key>
     <true/>
     <key>com.apple.rootless.storage.voiceshortcuts</key>
+    <true/>
+    <key>com.apple.private.security.storage-exempt.heritable</key>
+    <true/>
+    <key>com.apple.private.security.storage.AppleMediaServices</key>
+    <true/>
+    <key>com.apple.private.security.storage.ContactlessReader</key>
+    <true/>
+    <key>com.apple.private.security.storage.CoreRoutine</key>
+    <true/>
+    <key>com.apple.private.security.storage.DiagnosticReports</key>
+    <true/>
+    <key>com.apple.private.security.storage.DiagnosticReports.read-write</key>
+    <true/>
+    <key>com.apple.private.security.storage.DoNotDisturb</key>
+    <true/>
+    <key>com.apple.private.security.storage.Home</key>
+    <true/>
+    <key>com.apple.private.security.storage.IntelligencePlatform</key>
+    <true/>
+    <key>com.apple.private.security.storage.Location</key>
+    <true/>
+    <key>com.apple.private.security.storage.ManagedConfiguration</key>
+    <true/>
+    <key>com.apple.private.security.storage.MapsSync</key>
+    <true/>
+    <key>com.apple.private.security.storage.MobileBackup</key>
+    <true/>
+    <key>com.apple.private.security.storage.MobileStorageMounter</key>
+    <true/>
+    <key>com.apple.private.security.storage.PassKit</key>
+    <true/>
+    <key>com.apple.private.security.storage.SiriFeatureStore</key>
+    <true/>
+    <key>com.apple.private.security.storage.SiriSELF</key>
+    <true/>
+    <key>com.apple.private.security.storage.SoundProfileAsset</key>
+    <true/>
+    <key>com.apple.private.security.storage.TextUnderstanding</key>
+    <true/>
+    <key>com.apple.private.security.storage.Weather</key>
+    <true/>
+    <key>com.apple.private.security.storage.appleaccountd</key>
+    <true/>
+    <key>com.apple.private.security.storage.ciconia</key>
+    <true/>
+    <key>com.apple.private.security.storage.clipserviced</key>
+    <true/>
+    <key>com.apple.private.security.storage.coreduet_knowledge_store</key>
+    <true/>
+    <key>com.apple.private.security.storage.driverkitd</key>
+    <true/>
+    <key>com.apple.private.security.storage.geoanalyticsd</key>
+    <true/>
+    <key>com.apple.private.security.storage.geod</key>
+    <true/>
+    <key>com.apple.private.security.storage.launchd</key>
+    <true/>
+    <key>com.apple.private.security.storage.sessionkitd</key>
+    <true/>
+    <key>com.apple.private.security.storage.sysdiagnose.ScreenshotServicesService</key>
+    <true/>
+    <key>com.apple.private.security.storage.sysdiagnose.sysdiagnose</key>
+    <true/>
+    <key>com.apple.private.security.storage.tmp</key>
+    <true/>
+    <key>com.apple.rootless.critical</key>
+    <true/>
+    <key>com.apple.rootless.datavault.metadata</key>
+    <true/>
+    <key>com.apple.rootless.install</key>
+    <true/>
+    <key>com.apple.rootless.install.heritable</key>
+    <true/>
+    <key>com.apple.rootless.restricted-block-devices</key>
+    <true/>
+    <key>com.apple.rootless.storage.MobileAssetDownload</key>
+    <true/>
+    <key>com.apple.rootless.storage.amsengagementd</key>
+    <true/>
+    <key>com.apple.rootless.storage.com.apple.MobileAsset.HealthKit.FeatureAvailability</key>
+    <true/>
+    <key>com.apple.rootless.storage.com.apple.MobileAsset.Trial.Siri.SiriDialogAssets</key>
+    <true/>
+    <key>com.apple.rootless.storage.com.apple.MobileAsset.Trial.Siri.SiriExperienceCam</key>
+    <true/>
+    <key>com.apple.rootless.storage.com.apple.MobileAsset.Trial.Siri.SiriFindMyConfigurationFiles</key>
+    <true/>
+    <key>com.apple.rootless.storage.com.apple.MobileAsset.Trial.Siri.SiriInferredHelpfulness</key>
+    <true/>
+    <key>com.apple.rootless.storage.com.apple.MobileAsset.Trial.Siri.SiriTextToSpeech</key>
+    <true/>
+    <key>com.apple.rootless.storage.com.apple.MobileAsset.Trial.Siri.SiriUnderstandingAsrAssistant</key>
+    <true/>
+    <key>com.apple.rootless.storage.com.apple.MobileAsset.Trial.Siri.SiriUnderstandingAsrHammer</key>
+    <true/>
+    <key>com.apple.rootless.storage.com.apple.MobileAsset.Trial.Siri.SiriUnderstandingAsrUaap</key>
+    <true/>
+    <key>com.apple.rootless.storage.com.apple.MobileAsset.Trial.Siri.SiriUnderstandingAttentionAssets</key>
+    <true/>
+    <key>com.apple.rootless.storage.com.apple.MobileAsset.Trial.Siri.SiriUnderstandingMorphun</key>
+    <true/>
+    <key>com.apple.rootless.storage.com.apple.MobileAsset.Trial.Siri.SiriUnderstandingNL</key>
+    <true/>
+    <key>com.apple.rootless.storage.com.apple.MobileAsset.Trial.Siri.SiriUnderstandingNLOverrides</key>
+    <true/>
+    <key>com.apple.rootless.storage.coreparsec_feedbacks</key>
+    <true/>
+    <key>com.apple.rootless.storage.coreparsec_uploadables</key>
+    <true/>
+    <key>com.apple.rootless.storage.early_boot_mount</key>
+    <true/>
+    <key>com.apple.rootless.storage.screentime</key>
+    <true/>
+    <key>com.apple.rootless.volume.ISCRecovery</key>
+    <true/>
+    <key>com.apple.rootless.volume.Preboot</key>
+    <true/>
+    <key>com.apple.rootless.volume.Recovery</key>
+    <true/>
+    <key>com.apple.rootless.volume.Update</key>
+    <true/>
+    <key>com.apple.rootless.volume.VM</key>
+    <true/>
+    <key>com.apple.rootless.volume.iSCPreboot</key>
     <true/>
 </dict>
 </plist>
